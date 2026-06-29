@@ -1,4 +1,4 @@
-```bash
+```console
 ./parsesdcodes.py \
 -rf JSON \
 -min_cc 250 \
