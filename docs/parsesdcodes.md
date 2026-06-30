@@ -37,3 +37,12 @@ CODE_LIST
   }
 ]
 ```
+
+### Formatting Codes
+
+{code}
+{field}
+{filename}
+{num}
+{shapefile}
+
