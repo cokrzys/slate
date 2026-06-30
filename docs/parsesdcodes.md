@@ -40,9 +40,11 @@ CODE_LIST
 
 ### Formatting Codes
 
-{code}
-{field}
-{filename}
-{num}
-{shapefile}
+Replaces argument text with values as noted.
+
+- {code}
+- {field}
+- {filename}
+- {num}
+- {shapefile}
 
