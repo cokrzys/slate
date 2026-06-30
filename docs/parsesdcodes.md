@@ -1,3 +1,11 @@
+## parsesdcodes.py
+
+Parse space delimited codes from a shapefile field.
+ 
+Reads a space delimited codes field with data like "NB TA BE ABR_G MIC FLD" and parses it into a unique set of individual items.  Originally written to support using the space delimited commodity lists in MRDS data.
+ 
+https://mrdata.usgs.gov/mrds/commodity-codes.html
+
 ### Basic Example
 ```shell
 ./parsesdcodes.py mrds.shp CODE_LIST
