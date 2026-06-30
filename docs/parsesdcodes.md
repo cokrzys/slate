@@ -2,7 +2,7 @@
 ./parsesdcodes.py mrds.shp CODE_LIST
 ```
 
-```shell
+```console
 Read 38952 shapes from mrds.shp.
 129 unique codes found for field 'CODE_LIST'.
 'AU' 21486
