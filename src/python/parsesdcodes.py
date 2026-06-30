@@ -135,6 +135,6 @@ if args.report_format.upper() == 'JSON':
     print(json.dumps(data_list, indent=2))
 else:
     for attribute, value in unique_codes.items():
-        if value >= args.count_cutoff:
+        if value >= args.min_count_cutoff and value <= args.max_count_cutoff:
             print('%r %r' % (attribute, value))
 
