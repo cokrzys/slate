@@ -1,3 +1,4 @@
+### Basic Example
 ```shell
 ./parsesdcodes.py mrds.shp CODE_LIST
 ```
@@ -11,6 +12,7 @@ Read 38952 shapes from mrds.shp.
 ...
 ```
 
+### JSON Output Example
 ```shell
 ./parsesdcodes.py \
 -rf JSON \
