@@ -1,3 +1,3 @@
-Python Utilities
+## Python Utilities
 
-- parsesdcodes.py
+- [parsesdcodes.py](docs/parsesdcodes.md)
