@@ -7,5 +7,7 @@
 
 ## Software Stack
 
-- Linux, [Ubuntu Latest LTS Release](https://www.releases.ubuntu.com)
-- 
+- OS | [Ubuntu Latest LTS Release](https://www.releases.ubuntu.com)
+- Database | [PostgreSQL](https://www.postgresql.org/) + [PostGIS](https://postgis.net/)
+- Web | [Apache] + [PHP] + [MapServer] + [Leaflet] + [D3]
+- Server | [Python] + [GDAL]
