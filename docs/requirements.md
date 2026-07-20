@@ -9,5 +9,5 @@
 
 - OS | [Ubuntu Latest LTS Release](https://www.releases.ubuntu.com)
 - Database | [PostgreSQL](https://www.postgresql.org/) + [PostGIS](https://postgis.net/)
-- Web | [Apache] + [PHP] + [MapServer] + [Leaflet] + [D3]
+- Web | [Apache](https://httpd.apache.org/) + [PHP](https://www.php.net/) + [MapServer](https://rtspatial.com/wikobi/index.php/GitHub_Markdown) + [Leaflet](https://leafletjs.com/) + [D3](https://d3js.org/)
 - Server | [Python] + [GDAL]
