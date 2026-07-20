@@ -1,4 +1,4 @@
-Basic hardware and software requirements for setting up a slate server to handle models with 100s of layers.
+Hardware and software requirements for setting up a slate server to handle models with 100s of layers.
 
 ## Hardware Specs
 
