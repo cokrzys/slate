@@ -11,4 +11,4 @@ Web based Geospatial analytics and predictive modeling.
 
 ## References
 
-- [Utilities](docs/references.md)
+- [Legend Files](docs/legend_files.md)
