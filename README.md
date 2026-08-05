@@ -7,7 +7,7 @@ Web based Geospatial analytics and predictive modeling.
 
 ## Utilities
 
-- [Utilities](docs/utilities.md)
+- [parsesdcodes.py](/docs/parsesdcodes.md) - Parse space delimited codes in shapefiles.
 
 ## References
 
