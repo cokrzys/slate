@@ -5,6 +5,10 @@ Web based Geospatial analytics and predictive modeling.
 
 - [Requirements](docs/requirements.md)
 
-## Utilties
+## Utilities
 
 - [Utilities](docs/utilities.md)
+
+## References
+
+- [Utilities](docs/references.md)
