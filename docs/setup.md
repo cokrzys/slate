@@ -3,7 +3,7 @@
 # Get slate
 
 ```shell
-# change to location to install 3rd party apps
+# place to install 3rd party apps
 cd /opt
 
 # download the latest version
