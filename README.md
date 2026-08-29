@@ -5,6 +5,7 @@ Web based Geospatial analytics and predictive modeling.
 
 - [Requirements](docs/requirements.md)
 - [Install and Setup the algae framework](https://github.com/cokrzys/algae)
+- [Setup slate][docs/setup.md)
 
 ## Utilities
 
