@@ -1,4 +1,5 @@
 # slate Setup
+Benchmark system setup on Ubuntu Server 26.04 LTS.
 
 # Get slate
 
