@@ -1,5 +1,5 @@
 # slate
-Web based Geospatial analytics and predictive modeling.
+Web based Geospatial analytics and predictive modeling with a focus on minerals exploration.
 
 ## Setup
 
