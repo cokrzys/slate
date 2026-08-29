@@ -1,11 +1,27 @@
 /**
-  Slate PostgreSQL initial database setup.
+
+  slate | PostgreSQL database setup.
   
-  Expands on the alage Framework data model that must be built first.
+  Builds the slate data model.
+	
+  @author    Brian Krzys (brian.krzys@rtspatial.com)
+  @copyright (c) 2026 RTSpatial Ltd.
+  @license   SPDX-License-Identifier: MIT
+  @link      https://github.com/cokrzys/algae
   
-  @author    Brian Krzys (cokrzys@gmail.com)
-  @copyright 2024 RTSpatial Ltd.
+  Versions
+  
+  Notes specific to this file, may or may not coincide with git comments when added.
+  
+  2026.08.29 | Beta.
+
 */
+
+--
+-- function to get the version
+--
+CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
+  $$ SELECT CAST('2026.08.29' AS VARCHAR); $$;
 
 --
 -- application object
