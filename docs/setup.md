@@ -1,4 +1,3 @@
 # slate Setup
 
-- 
-- [setup_database.md](Database)
+- [Database](setup_database.md)
