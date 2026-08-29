@@ -7,6 +7,12 @@ Web based Geospatial analytics and predictive modeling.
 - [Install and Setup the algae framework](https://github.com/cokrzys/algae)
 - [Setup slate](docs/setup.md)
 
+## Objectives
+
+- Data organization framework
+- Batch processing including full model updates
+- Multi-resolution support
+
 ## Utilities
 
 - [parsesdcodes.py](/docs/parsesdcodes.md) - Parse space delimited codes in shapefiles.
