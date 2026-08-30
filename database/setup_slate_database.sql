@@ -18,16 +18,21 @@
 */
 
 --
+-- turn notices off to make the output easier to read
+--
+SET client_min_messages TO WARNING;
+
+--
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
   $$ SELECT CAST('2026.08.29' AS VARCHAR); $$;
-
+  
 --
--- application object
+-- add PostGIS support
 --
-INSERT INTO ref.object (name, description) VALUES 
-  ('slate', 'The slate application.'); 
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
   
 -- ============================================================================
 --  ref - ref schema additions
@@ -44,7 +49,7 @@ CREATE TABLE ref.geometry_type
   rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.geometry_type_rowid'),
   record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
   name VARCHAR NOT NULL UNIQUE,
-  sort_order INTEGER NOT NULL UNIQUE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
   html_color VARCHAR NOT NULL default algae_default_color(),
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
@@ -224,13 +229,6 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   ON ref.resolution FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
-INSERT INTO ref.resolution (name, folder, description) 
-  VALUES ('Low', 'r01', 'Low resolution for testing and fast processing.');
-INSERT INTO ref.resolution (name, folder, description) 
-  VALUES ('Medium', 'r02', 'Medium resolution for a balance between processing speed and quality.');
-INSERT INTO ref.resolution (name, folder, description) 
-  VALUES ('High', 'r03', 'High resolution for final products.');
-  
 --
 -- ref.timeframe
 --
@@ -390,6 +388,38 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   algae_update_modified_column();
   
 --
+-- sp.geoprocess
+--
+DROP TABLE IF EXISTS sp.geoprocess;
+DROP SEQUENCE IF EXISTS sp.geoprocess_rowid;
+CREATE SEQUENCE sp.geoprocess_rowid START 1;
+CREATE TABLE sp.geoprocess
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.geoprocess_rowid'),
+  project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
+  process_rowid_fk INTEGER REFERENCES core.process,
+  output_type_rowid_fk INTEGER NOT NULL REFERENCES ref.output_type,
+  data_type_rowid_fk INTEGER NOT NULL REFERENCES ref.data_type,
+  data_group_rowid_fk INTEGER NOT NULL REFERENCES ref.data_group,
+  units_rowid_fk INTEGER REFERENCES ref.units,
+  name VARCHAR NOT NULL,
+  relative_folder VARCHAR NOT NULL,
+  php_class VARCHAR NOT NULL,
+  command VARCHAR NOT NULL,
+  sequence INTEGER NOT NULL DEFAULT 100,
+  parameters VARCHAR,
+  num_decimals INTEGER,
+  batch_parameters VARCHAR,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(project_rowid_fk, name)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.geoprocess FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+    
+--
 -- sp.study_area
 --
 DROP TABLE IF EXISTS sp.study_area;
@@ -419,49 +449,6 @@ CREATE TABLE sp.study_area
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.study_area FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
-    
---
--- sp.geoprocess
---
-DROP TABLE IF EXISTS sp.geoprocess;
-DROP SEQUENCE IF EXISTS sp.geoprocess_rowid;
-CREATE SEQUENCE sp.geoprocess_rowid START 1;
-CREATE TABLE sp.geoprocess
-(
-  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.geoprocess_rowid'),
-  project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
-  process_rowid_fk INTEGER REFERENCES core.process,
-  project_geoprocess_id INTEGER NOT NULL,
-  output_type_rowid_fk INTEGER NOT NULL REFERENCES ref.output_type,
-  data_type_rowid_fk INTEGER NOT NULL REFERENCES ref.data_type,
-  data_group_rowid_fk INTEGER NOT NULL REFERENCES ref.data_group,
-  units_rowid_fk INTEGER REFERENCES ref.units,
-  name VARCHAR NOT NULL,
-  relative_folder VARCHAR NOT NULL,
-  php_class VARCHAR NOT NULL,
-  command VARCHAR NOT NULL,
-  sequence INTEGER NOT NULL DEFAULT 100,
-  parameters VARCHAR,
-  num_decimals INTEGER,
-  batch_parameters VARCHAR,
-  description VARCHAR,
-  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  UNIQUE(project_rowid_fk, name)
-);
-CREATE TRIGGER update_modified BEFORE UPDATE
-  ON sp.geoprocess FOR EACH ROW EXECUTE PROCEDURE
-  algae_update_modified_column();
-  
-ALTER TABLE sp.geoprocess ADD UNIQUE (project_rowid_fk, project_geoprocess_id);
-
-ALTER TABLE sp.geoprocess ADD COLUMN data_group_rowid_fk INTEGER REFERENCES ref.data_group;
-UPDATE sp.geoprocess SET data_group_rowid_fk = (SELECT rowid FROM ref.data_group WHERE name = 'Other');
-ALTER TABLE sp.geoprocess ALTER COLUMN data_group_rowid_fk SET NOT NULL;
-
-ALTER TABLE sp.geoprocess ADD COLUMN data_type_rowid_fk INTEGER REFERENCES ref.data_type;
-UPDATE sp.geoprocess SET data_type_rowid_fk = (SELECT rowid FROM ref.data_type WHERE name = 'Unknown');
-ALTER TABLE sp.geoprocess ALTER COLUMN data_type_rowid_fk SET NOT NULL;
    
 --
 -- sp.layer
@@ -477,7 +464,7 @@ CREATE TABLE sp.layer
   filename VARCHAR NOT NULL,
   num_cols INTEGER,
   num_rows INTEGER,
-  num_nodata_cells INTEGER,
+  num_nodata_cells BIGINT,
   data_format VARCHAR,
   data_min NUMERIC,
   data_max NUMERIC,
@@ -528,7 +515,7 @@ CREATE TABLE sp.class
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.class_rowid'),
   layer_rowid_fk INTEGER NOT NULL REFERENCES sp.layer,
   raster_value INTEGER NOT NULL,
-  num_values INTEGER NOT NULL,
+  num_values BIGINT NOT NULL,
   code VARCHAR NOT NULL,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
   description VARCHAR,
@@ -601,7 +588,7 @@ CREATE TABLE sp.map_layer
   initial_state VARCHAR NOT NULL CHECK (initial_state = 'On' OR initial_state = 'Off'),
   filter VARCHAR,
   styling VARCHAR,
-  queryable VARCHAR,
+  queryable VARCHAR NOT NULL CHECK ( queryable = 'Yes' OR queryable = 'No') DEFAULT 'Yes',
   query_template VARCHAR,
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
@@ -611,21 +598,11 @@ CREATE TABLE sp.map_layer
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.map_layer FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
-  
-ALTER TABLE sp.map_layer ADD COLUMN queryable VARCHAR CONSTRAINT queryable_constraint CHECK ( queryable = 'Yes' OR queryable = 'No');
-UPDATE sp.map_layer SET queryable = 'Yes';
-ALTER TABLE sp.map_layer ALTER COLUMN queryable SET NOT NULL;
 
 --
--- manually add a map layer
+-- cleanup, refresh stats
 --
-INSERT INTO sp.map_layer (map_rowid_fk, name, shapefile_rowid_fk, initial_state) VALUES
-(
-  (SELECT rowid FROM sp.map WHERE name = 'Trails'),
-  'COTREX Trails',
-  (SELECT rowid FROM sp.shapefile WHERE name = 'co_trails_cotrex_ln_32613'),
-  'On'
-);
+VACUUM ANALYZE;
   
 
   
