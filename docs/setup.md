@@ -1,7 +1,7 @@
 # slate Setup
 Benchmark system setup on Ubuntu Server 26.04 LTS.
 
-# Get slate
+## Get slate
 
 ```shell
 # place to install 3rd party apps
@@ -17,9 +17,7 @@ sudo unzip main.zip
 sudo rm main.zip
 ```
 
-```shell
-/opt/slate-main/web
-```
+## Setup a slate Database
 
 
 
