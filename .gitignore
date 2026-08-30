@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# RTSpatial
+deploy/
+testing/
+# eclipse IDE items
+.metadata/
+.buildpath
+.project
+.settings/
