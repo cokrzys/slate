@@ -45,3 +45,19 @@ psql slate postgres -c "SELECT algae_app_database_version(), slate_database_vers
 ```shell
 sudo ln -s /opt/slate-main/web /var/www/html/slate
 ```
+
+## Add slate to algae Admin Database
+
+```sql
+algae=# INSERT INTO ref.object (name, description) VALUES 
+  ('slate', 'The slate application.');
+  
+INSERT INTO core.user_right (user_rowid_fk, object_rowid_fk, role_rowid_fk) VALUES
+(
+  (SELECT rowid FROM core.user WHERE username = 'algae'),
+  (SELECT rowid FROM ref.object WHERE name = 'slate'),
+  (SELECT rowid FROM ref.role WHERE name = 'SysAdmin')
+);
+```
+
+## Add slate to algae Applications Config File
