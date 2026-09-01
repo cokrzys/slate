@@ -39,3 +39,9 @@ psql slate postgres -c "SELECT algae_app_database_version(), slate_database_vers
  2026.08.29                 | 2026.08.29
 (1 row)
 ```
+
+## Setup Web
+
+```shell
+sudo ln -s /opt/slate-main/web /var/www/html/slate
+```
