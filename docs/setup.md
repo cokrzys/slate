@@ -61,3 +61,14 @@ INSERT INTO core.user_right (user_rowid_fk, object_rowid_fk, role_rowid_fk) VALU
 ```
 
 ## Add slate to algae Applications Config File
+
+```json
+[
+  {
+    "name": "slate",
+    "abbreviation": "slate",
+    "phpIncludesPath": "/opt/slate-main/src/php",
+    "pythonIncludesPath": "/opt/slate-main/src/python"
+  }
+]
+```
