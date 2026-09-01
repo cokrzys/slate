@@ -47,6 +47,8 @@ sudo ln -s /opt/slate-main/web /var/www/html/slate
 ```
 
 ## Add slate to algae Admin Database
+Creates an application object and assigns rights to the algae user.
+
 ```shell
 psql algae postgres
 ```
@@ -64,6 +66,11 @@ INSERT INTO core.user_right (user_rowid_fk, object_rowid_fk, role_rowid_fk) VALU
 ```
 
 ## Add slate to algae Applications Config File
+Allows algae to setup include paths and other details for the framework.
+
+```shell
+sudo vi /opt/rtspatial/config/algae_apps.json
+```
 
 ```json
 [
