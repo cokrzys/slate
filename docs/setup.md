@@ -47,6 +47,9 @@ sudo ln -s /opt/slate-main/web /var/www/html/slate
 ```
 
 ## Add slate to algae Admin Database
+```shell
+psql algae postgres
+```
 
 ```sql
 algae=# INSERT INTO ref.object (name, description) VALUES 
