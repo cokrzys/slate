@@ -20,3 +20,8 @@ Web based Geospatial analytics and predictive modeling with a focus on minerals 
 ## References
 
 - [Legend Files](docs/legend_files.md)
+
+## TODO
+
+- rebuild test database with sp.file change
+- added setup notes re: PHP upload sizes, two settings
