@@ -539,7 +539,7 @@ CREATE TABLE sp.file
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   data_group_rowid_fk INTEGER NOT NULL REFERENCES ref.data_group,
   filename VARCHAR NOT NULL,
-  size_bytes INT NOT NULL,
+  size_bytes BIGINT NOT NULL,
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
