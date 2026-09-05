@@ -598,6 +598,41 @@ CREATE TABLE sp.map_layer
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.map_layer FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
+  
+-- ============================================================================
+--  views
+-- ============================================================================ 
+  
+--
+--
+--
+DROP VIEW IF EXISTS sp.view_study_area_lat_long_bounds;
+CREATE OR REPLACE VIEW sp.view_study_area_lat_long_bounds AS 
+SELECT t2.* 
+  -- t2.max_long_int - min_long_int AS long_diff,
+  -- t2.max_lat_int - min_lat_int AS lat_diff
+FROM
+(
+  SELECT rowid,
+    ST_X(t1.lower_left_ll) AS min_long, ST_Y(t1.lower_left_ll) AS min_lat,
+  ST_X(t1.upper_right_ll) AS max_long, ST_Y(t1.upper_right_ll) AS max_lat,
+    ST_X(t1.lower_left_ll_with_buffer) AS min_long_with_buffer, ST_Y(t1.lower_left_ll_with_buffer) AS min_lat_with_buffer,
+  ST_X(t1.upper_right_ll_with_buffer) AS max_long_with_buffer, ST_Y(t1.upper_right_ll_with_buffer) AS max_lat_with_buffer
+  -- floor(ST_X(t1.lower_left_ll)) AS min_long_int, floor(ST_Y(t1.lower_left_ll)) AS min_lat_int,
+  -- ceil(ST_X(t1.upper_right_ll)) AS max_long_int, ceil(ST_Y(t1.upper_right_ll)) AS max_lat_int
+  FROM
+  (
+	  SELECT rowid, 
+	    ST_Transform(ST_GeomFromText('POINT(' || min_x || ' ' || min_y || ')', srid_fk), 4326) AS lower_left_ll,
+	    ST_Transform(ST_GeomFromText('POINT(' || max_x || ' ' || max_y || ')', srid_fk), 4326) AS upper_right_ll,
+	    ST_Transform(ST_GeomFromText('POINT(' || min_x - buffer || ' ' || min_y - buffer || ')', srid_fk), 4326) AS 
+	      lower_left_ll_with_buffer,
+	    ST_Transform(ST_GeomFromText('POINT(' || max_x + buffer || ' ' || max_y + buffer || ')', srid_fk), 4326) AS 
+	      upper_right_ll_with_buffer
+	  FROM sp.study_area
+	  GROUP BY rowid
+  ) t1
+) t2;
 
 --
 -- cleanup, refresh stats
