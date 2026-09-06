@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.08.29 | Beta.
+  2026.09.05 | Beta.
 
 */
 
@@ -26,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.08.29' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.09.05' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -50,7 +50,7 @@ CREATE TABLE ref.geometry_type
   record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
   name VARCHAR NOT NULL UNIQUE,
   sort_order INTEGER NOT NULL DEFAULT 0,
-  html_color VARCHAR NOT NULL default algae_default_color(),
+  html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
@@ -240,7 +240,7 @@ CREATE TABLE ref.timeframe
   name VARCHAR NOT NULL UNIQUE,
   short_name VARCHAR NOT NULL UNIQUE,
   sort_order INTEGER NOT NULL UNIQUE,
-  html_color VARCHAR NOT NULL,
+  html_color VARCHAR NOT NULL default algae_default_color(),
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
