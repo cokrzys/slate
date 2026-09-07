@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.09.05 | Beta.
+  2026.09.06 | Beta.
 
 */
 
@@ -26,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.09.05' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.09.06' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -90,19 +90,28 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   ON ref.output_type FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
-INSERT INTO ref.output_type (name, description) VALUES 
-  ('Byte', 'GDAL range: 0 | 255.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+  ('Byte', 0, 255, 255, 'GDAL range: 0 | 255.');
   
-INSERT INTO ref.output_type (name, description) VALUES 
-  ('UInt16', 'GDAL range: 0 | 65,535.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+  ('Int16', -32768, 32767, 32767, 'GDAL range: -32,768 | 32,767.');
   
-INSERT INTO ref.output_type (name, description) VALUES 
-  ('UInt32', 'GDAL range: 0 | 4,294,967,295.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+  ('UInt16', 0, 65535, 65535, 'GDAL range: 0 | 65,535.');
   
-INSERT INTO ref.output_type (name, description) VALUES 
-  ('Float32', 'GDAL range: -3.4E38 | 3.4E38.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+  ('Int32', -2147483648, 2147483647, 2147483647, 'GDAL range: -2,147,483,648 | -2,147,483,647.');
   
-INSERT INTO ref.output_type (name, description) VALUES 
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+  ('UInt32', 0, 4294967295, 4294967295, 'GDAL range: 0 | 4,294,967,295.');
+  
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+  ('Float32', -3.4e38, 3.4e38, -99999.99, 'GDAL range: -3.4E38 | 3.4E38.');
+  
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+  ('Float64', -1.79e308, 1.79e308, -99999.99, 'GDAL range: -1.79E308 | 1.79E308.');
+  
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
   ('Shapefile', 'ESRI shapefile.');
   
 --
