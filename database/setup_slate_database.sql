@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.09.06 | Beta.
+  2026.09.09 | Beta.
 
 */
 
@@ -439,6 +439,7 @@ CREATE TABLE sp.study_area
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.study_area_rowid'),
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   shapefile_rowid_fk INTEGER NOT NULL REFERENCES sp.shapefile,
+  resolution_rowid_fk = INTEGER NOT NULL REFERENCES ref.resolution,
   user_rowid_fk INTEGER NOT NULL REFERENCES core.user,
   srid_fk INTEGER NOT NULL REFERENCES spatial_ref_sys,
   geoprocess_rowid_fk INTEGER REFERENCES sp.geoprocess,
@@ -448,9 +449,6 @@ CREATE TABLE sp.study_area
   max_x NUMERIC NOT NULL,
   max_y NUMERIC NOT NULL,
   buffer NUMERIC NOT NULL,
-  low_resolution NUMERIC NOT NULL,
-  medium_resolution NUMERIC NOT NULL,
-  high_resolution NUMERIC NOT NULL,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   UNIQUE(project_rowid_fk)
