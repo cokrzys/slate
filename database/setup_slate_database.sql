@@ -81,6 +81,7 @@ CREATE TABLE ref.output_type
   sort_order INTEGER NOT NULL DEFAULT 0,
   min_value NUMERIC,
   max_value NUMERIC,
+  size_bytes INTEGER,
   nodata_value NUMERIC,
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
@@ -90,28 +91,28 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   ON ref.output_type FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
-  ('Byte', 0, 255, 255, 'GDAL range: 0 | 255.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+  ('Byte', 0, 255, 255, 'GDAL range: 0 | 255.', 1);
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
-  ('Int16', -32768, 32767, 32767, 'GDAL range: -32,768 | 32,767.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+  ('Int16', -32768, 32767, 32767, 2, 'GDAL range: -32,768 | 32,767.', 2);
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
-  ('UInt16', 0, 65535, 65535, 'GDAL range: 0 | 65,535.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+  ('UInt16', 0, 65535, 65535, 2, 'GDAL range: 0 | 65,535.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
-  ('Int32', -2147483648, 2147483647, 2147483647, 'GDAL range: -2,147,483,648 | -2,147,483,647.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+  ('Int32', -2147483648, 2147483647, 2147483647, 4, 'GDAL range: -2,147,483,648 | -2,147,483,647.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
-  ('UInt32', 0, 4294967295, 4294967295, 'GDAL range: 0 | 4,294,967,295.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+  ('UInt32', 0, 4294967295, 4294967295, 4, 'GDAL range: 0 | 4,294,967,295.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
-  ('Float32', -3.4e38, 3.4e38, -99999.99, 'GDAL range: -3.4E38 | 3.4E38.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+  ('Float32', -3.4e38, 3.4e38, -99999.99, 4, 'GDAL range: -3.4E38 | 3.4E38.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
-  ('Float64', -1.79e308, 1.79e308, -99999.99, 'GDAL range: -1.79E308 | 1.79E308.');
+INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+  ('Float64', -1.79e308, 1.79e308, -99999.99, 8, 'GDAL range: -1.79E308 | 1.79E308.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, description) VALUES 
+INSERT INTO ref.output_type (name, description) VALUES 
   ('Shapefile', 'ESRI shapefile.');
   
 --
