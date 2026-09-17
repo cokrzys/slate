@@ -21,9 +21,10 @@ class slateApp extends algaeApp
   // --------------------------------------------------------------------------
   {
     parent::__construct();
-    $this->config->app_folder = 'sladah';
+    $this->config->app_folder = 'slate';
     $this->addAppSpecificClasses();
     $this->config->app_name = 'slate';
+    $this->config = new slateConfig();
   }
   
   /**
@@ -33,6 +34,7 @@ class slateApp extends algaeApp
   // --------------------------------------------------------------------------
   {
     parent::addAppSpecificClasses();
+    require_once 'slateConfig.php';
   }
   
 }

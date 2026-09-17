@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.09.09 | Beta.
+  2026.09.16 | Beta.
 
 */
 
@@ -26,13 +26,18 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.09.06' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.09.16' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
 --
 CREATE EXTENSION postgis;
 CREATE EXTENSION postgis_topology;
+
+--
+-- add algae user
+--
+INSERT INTO core.user (username) VALUES ('algae');
   
 -- ============================================================================
 --  ref - ref schema additions
@@ -484,6 +489,8 @@ CREATE TABLE sp.layer
   sig_lower_cutoff NUMERIC,
   sig_upper_cutoff NUMERIC,
   last_updated_utc TIMESTAMP,
+  calc_begin_utc TIMESTAMP,
+  calc_end_utc TIMESTAMP,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   UNIQUE(geoprocess_rowid_fk, resolution_rowid_fk)
