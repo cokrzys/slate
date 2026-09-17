@@ -97,10 +97,10 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   algae_update_modified_column();
   
 INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
-  ('Byte', 0, 255, 255, 'GDAL range: 0 | 255.', 1);
+  ('Byte', 0, 255, 255, 1, 'GDAL range: 0 | 255.');
   
 INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
-  ('Int16', -32768, 32767, 32767, 2, 'GDAL range: -32,768 | 32,767.', 2);
+  ('Int16', -32768, 32767, 32767, 2, 'GDAL range: -32,768 | 32,767.');
   
 INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('UInt16', 0, 65535, 65535, 2, 'GDAL range: 0 | 65,535.');
@@ -445,7 +445,7 @@ CREATE TABLE sp.study_area
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.study_area_rowid'),
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   shapefile_rowid_fk INTEGER NOT NULL REFERENCES sp.shapefile,
-  resolution_rowid_fk = INTEGER NOT NULL REFERENCES ref.resolution,
+  resolution_rowid_fk INTEGER NOT NULL REFERENCES ref.resolution,
   user_rowid_fk INTEGER NOT NULL REFERENCES core.user,
   srid_fk INTEGER NOT NULL REFERENCES spatial_ref_sys,
   geoprocess_rowid_fk INTEGER REFERENCES sp.geoprocess,
