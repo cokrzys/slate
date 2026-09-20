@@ -90,5 +90,10 @@ sudo vi /opt/rtspatial/config/algae_apps.json
 sudo vi /opt/rtspatial/config/slate.ini
 ```
 
+```
+# base directory for slate projects
+projects_base_folder = '/bs/slate'
+```
+
 
 
