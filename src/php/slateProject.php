@@ -110,38 +110,19 @@ class slateProject extends algaeTblNamedObjectBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $ok = False;
-    $iter = 0;
-    $max_tries = 100;
-    $testdir = $app->getRandomString();
-    while ((! $ok) && ($iter < $max_tries))
+    $project_directory = $app->config->projects_base_folder . $this->folder;
+    echo 'Creating directory ', $project_directory, '<p />';
+    if (mkdir($project_directory))
     {
-      if (! file_exists($app->currentProjectBaseFolder . $testdir))
-      {
-        $ok = True;
-      }
-      else 
-      {
-        $testdir = $app->getRandomString();
-        $iter += 1;
-      }
-    }
-    if ($ok)
-    {
-      echo 'Creating directory ', $app->currentProjectBaseFolder . $testdir, '<p />';
-      if (mkdir($app->currentProjectBaseFolder . $testdir))
-      {
-        $this->folder = $app->currentProjectBaseFolder . $testdir . '/';
-        mkdir($this->folder . 'shp');
-        mkdir($this->folder . 'file');
-        mkdir($this->folder . $app->processedDataSubFolder);
-        $app->successMessage('Project directories successfully created.');
-        return True;
-      }
+      // mkdir($this->folder . 'shp');
+      // mkdir($this->folder . 'file');
+      // mkdir($this->folder . $app->processedDataSubFolder);
+      $app->successMessage('Project directories successfully created.');
+      return True;
     }
     else 
     {
-      $app->errorMessage('Could not make a unique project folder after ' . $max_tries . ' tries.');
+      $app->errorMessage('Unable to create ' . $project_directory . '.');
     }
     return False;
   }
@@ -152,6 +133,7 @@ class slateProject extends algaeTblNamedObjectBase
   protected function showEntryForm()
   // --------------------------------------------------------------------------
   {
+    global $app;
     $f = new algaeForm();
     //
     // ----- get data if editing
@@ -177,7 +159,10 @@ class slateProject extends algaeTblNamedObjectBase
     // ----- 
     //
     algaeTable::writeTwoColumns('Name', algaeForm::inputText($this->get_control_id('name'), $this->name, 50, algaeForm::REQUIRED), False);
-    algaeTable::writeTwoColumns('Abbreviation', algaeForm::inputText($this->get_control_id('abbreviation'), $this->abbreviation, 10, algaeForm::REQUIRED), False);
+    algaeTable::writeTwoColumns('Abbreviation', algaeForm::inputText($this->get_control_id('abbreviation'), $this->abbreviation, 10, algaeForm::REQUIRED) .
+      $app->getDetailString('Lowercase, no spaces or trailing underscore.  This will also be a default prefix for filenames.'), False);
+    algaeTable::writeTwoColumns('Folder', algaeForm::inputText($this->get_control_id('folder'), $this->folder, 20, algaeForm::REQUIRED) . 
+      $app->getDetailString('Lowercase, no spaces.'), False);
     algaeTable::writeTwoColumns('Copyright', algaeForm::inputText($this->get_control_id('copyright'), $this->copyright, 50), False);
     //
     // ----- description
@@ -189,8 +174,7 @@ class slateProject extends algaeTblNamedObjectBase
     //
     // ----- record status
     //
-    algaeTable::writeTwoColumns('Status', algaeForm::selectWithTableAndField('ref.record_status', 'name', 
-      $this->get_control_id('record_status_rowid_fk'), $this->record_status->name), False);
+    algaeTable::writeTwoColumns('Status', $this->record_status->getControl($this), False);
     algaeTable::end();
     echo '<p />';
     $f->endForm('Save', False);
@@ -463,11 +447,15 @@ class slateProject extends algaeTblNamedObjectBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $this->rowid = $app->getCurrentProjectRowid();
+    $this->rowid = $app->getCurrentProjectRowid(False);
     if ($this->rowid > 0)
     {
       $this->read_row_from_database_with_rowid($this->rowid);
       $this->reportDetails();
+    }
+    else 
+    {
+      header("Location: {$this->editpage}");
     }
   }
   

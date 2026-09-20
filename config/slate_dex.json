@@ -1,0 +1,576 @@
+[
+  {
+    "tableName": "ref.data_group",
+    "parentTableName": "algae.reference_base",
+    "comment": "Data groups are a primary data classifier.  Examples include Climatological, Mineral Occurrences, and Structure.",
+    "source": "slate",
+    "phpClass": "refDataGroup",
+    "pythonClass": "refDataGroup",
+    "columns": []
+  },
+  {
+    "tableName": "ref.data_type",
+    "parentTableName": "algae.reference_base",
+    "comment": "Data types are used to define how the data is broadly distributed or occurrs.  Examples include Sequential, Categorical, and Shapefile.",
+    "source": "slate",
+    "phpClass": "refDataType",
+    "pythonClass": "refDataType",
+    "columns": []
+  },
+  {
+    "tableName": "ref.output_type",
+    "parentTableName": "algae.reference_base",
+    "comment": "Output type is typically a raster data type, i.e. Byte or Float32.",
+    "source": "slate",
+    "phpClass": "refOutputType",
+    "pythonClass": "refOutputType",
+    "columns": 
+    [
+      {
+        "name": "min_value",
+        "altReadSQL": "min_value::float",
+        "required": true
+      },
+      {
+        "name": "max_value",
+        "altReadSQL": "max_value::float",
+        "required": true
+      },
+      {
+        "name": "nodata_value",
+        "altReadSQL": "nodata_value::float",
+        "required": true
+      },
+      {
+        "name": "size_bytes"
+      }
+    ]
+  },
+  {
+    "tableName": "ref.geometry_type",
+    "parentTableName": "algae.reference_base",
+    "comment": "Geometry type, typically for vector data only.  Examples include 3DPoint, 3DPolylines, and 3DPolygon.",
+    "source": "slate",
+    "phpClass": "refGeometryType",
+    "pythonClass": "refGeometryType",
+    "columns": []
+  },
+  {
+    "tableName": "ref.units",
+    "parentTableName": "algae.reference_base",
+    "comment": "Support for units and the ref.units table.  Units are used for reporting purposes and conversions in seleted cases.  For example Degrees Celsius to/from Degrees Farenheit.",
+    "source": "slate",
+    "phpClass": "refUnits",
+    "pythonClass": "refUnits",
+    "columns":
+    [
+      {
+        "name": "abbreviation",
+        "required": true,
+        "unique": true
+      }
+    ]
+  },
+  {
+    "tableName": "ref.timeframe",
+    "parentTableName": "algae.reference_base",
+    "comment": "Support for the ref.timeframe table.",
+    "source": "slate",
+    "phpClass": "refTimeframe",
+    "pythonClass": "refTimeframe",
+    "columns":
+    [
+      {
+        "name": "short_name",
+        "required": true,
+        "unique": true
+      }
+    ]
+  },
+  {
+    "tableName": "ref.resolution",
+    "parentTableName": "algae.reference_base",
+    "comment": "Support for resolutions and the ref.resolution table.  Slate can work at multiple resolutions for quick modelling through final products with a high level of detail.",
+    "source": "slate",
+    "phpClass": "refResolution",
+    "pythonClass": "refResolution",
+    "columns":
+    [
+      {
+        "name": "folder",
+        "required": true,
+        "unique": true
+      },
+      {
+        "name": "cell_size_x",
+        "altReadSQL": "cell_size_x::float",
+        "required": true
+      },
+      {
+        "name": "cell_size_y",
+        "altReadSQL": "cell_size_y::float",
+        "required": true
+      }
+    ]
+  },
+  {
+    "tableName": "sp.file",
+    "parentTableName": "algae.base",
+    "comment": "Data and other project files typically uploaded.",
+    "source": "slate",
+    "phpClass": "slateFile",
+    "pythonClass": "slateFile",
+    "columns":
+    [
+      {
+        "name": "filename",
+        "required": true,
+        "unique_key": true,
+        "canUpdate": false
+      },
+      {
+        "name": "project_rowid_fk",
+        "variableName": "project.rowid",
+        "required": true,
+        "unique_key": true,
+        "canUpdate": false
+      },
+      {
+        "name": "data_group_rowid_fk",
+        "variableName": "data_group.rowid",
+        "required": true
+      },
+      {
+        "name": "size_bytes"
+      },
+      {
+        "name": "description"
+      }
+    ]
+  },
+  {
+    "tableName": "sp.project",
+    "parentTableName": "algae.named_object_base",
+    "comment": "Overall project container and support for the sp.project table.",
+    "source": "slate",
+    "phpClass": "slateProject",
+    "pythonClass": "slateProject",
+    "columns":
+    [
+      {
+        "name": "user_rowid_fk",
+        "canUpdate": false,
+        "variableName": "user.rowid",
+        "altWriteSQL": "(SELECT rowid FROM core.user WHERE username = %(user.username)s)"
+      },
+      {
+        "name": "abbreviation",
+        "unique": true
+      },
+      {
+        "name": "folder",
+        "canUpdate": false,
+        "unique": true
+      },
+      {
+        "name": "public",
+        "required": true
+      },
+      {
+        "name": "copyright"
+      }
+    ]
+  },
+  {
+    "tableName": "sp.study_area",
+    "parentTableName": "algae.base",
+    "comment": "Study area and support for the sp.study_area table.",
+    "source": "slate",
+    "phpClass": "slateStudyArea",
+    "pythonClass": "slateStudyArea",
+    "columns":
+    [
+      {
+        "name": "srid_fk"
+      },
+      {
+        "name": "min_x",
+        "altReadSQL": "min_x::float"
+      },
+      {
+        "name": "max_x",
+        "altReadSQL": "max_x::float"
+      },
+      {
+        "name": "min_y",
+        "altReadSQL": "min_y::float"
+      },
+      {
+        "name": "max_y",
+        "altReadSQL": "max_y::float"
+      },
+      {
+        "name": "buffer",
+        "altReadSQL": "buffer::float"
+      },
+      {
+        "name": "project_rowid_fk",
+        "variableName": "project.rowid",
+        "formVariableName": "project.name",
+        "altWriteSQL": "(SELECT rowid FROM sp.project WHERE name = %(project.name)s)",
+        "required": true,
+        "canUpdate": false
+      },
+      {
+        "name": "shapefile_rowid_fk",
+        "variableName": "shapefile.rowid",
+        "formVariableName": "shapefile.name",
+        "altWriteSQL": "(SELECT rowid FROM sp.shapefile WHERE name = %(shapefile.name)s)",
+        "required": true
+      },
+      {
+        "name": "resolution_rowid_fk",
+        "variableName": "resolution.rowid",
+        "formVariableName": "resolution.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.resolution WHERE name = %(resolution.name)s)",
+        "required": true
+      },
+      {
+        "name": "user_rowid_fk",
+        "canUpdate": false,
+        "variableName": "user.rowid",
+        "altWriteSQL": "(SELECT rowid FROM core.user WHERE username = %(user.username)s)"
+      },
+      {
+        "name": "geoprocess_rowid_fk",
+        "variableName": "geoprocess.rowid"
+      },
+      {
+        "name": "place_rowid_fk",
+        "variableName": "place.rowid",
+        "formVariableName": "place.name",
+        "altWriteSQL": "(SELECT rowid FROM sp.place WHERE name = %(place.name)s)"
+      },
+      {
+        "name": "coord_system_name",
+        "canInsert": false,
+        "canUpdate": false,
+        "altReadSQL": "split_part(spatial_ref_sys.srtext, '\"', 2)"
+      }
+    ],
+    "relationships":
+    [
+      {
+        "joinSQL": "INNER JOIN sp.project ON sp.study_area.project_rowid_fk = sp.project.rowid"
+      },
+      {
+        "joinSQL": "INNER JOIN spatial_ref_sys ON sp.study_area.srid_fk = spatial_ref_sys.srid"
+      }
+    ]
+  },
+  {
+    "tableName": "sp.geoprocess",
+    "parentTableName": "algae.base",
+    "comment": "Base class for geoprocesses and support for the sp.geoprocess table.",
+    "source": "slate",
+    "phpClass": "slateGeoprocess",
+    "pythonClass": "slateGeoProcess",
+    "columns":
+    [
+      {
+        "name": "name",
+        "required": true
+      },
+      {
+        "name": "php_class",
+        "required": true
+      },
+      {
+        "name": "command",
+        "required": true
+      },
+      {
+        "name": "sequence",
+        "required": true
+      },
+      {
+        "name": "parameters"
+      },
+      {
+        "name": "batch_parameters"
+      },
+      {
+        "name": "num_decimals"
+      },
+      {
+        "name": "description"
+      },
+      {
+        "name": "project_rowid_fk",
+        "variableName": "project.rowid",
+        "required": true
+      },
+      {
+        "name": "data_type_rowid_fk",
+        "variableName": "data_type.rowid",
+        "formVariableName": "data_type.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.data_type WHERE name = %(data_type.name)s)",
+        "required": true
+      },
+      {
+        "name": "output_type_rowid_fk",
+        "variableName": "output_type.rowid",
+        "formVariableName": "output_type.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.output_type WHERE name = %(output_type.name)s)",
+        "required": true
+      },
+      {
+        "name": "data_group_rowid_fk",
+        "variableName": "data_group.rowid",
+        "formVariableName": "data_group.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.data_group WHERE name = %(data_group.name)s)",
+        "required": true
+      },
+      {
+        "name": "units_rowid_fk",
+        "variableName": "units.rowid",
+        "formVariableName": "units.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.units WHERE name = %(units.name)s)"
+      }
+    ]
+  },
+  {
+    "tableName": "sp.layer",
+    "parentTableName": "algae.base",
+    "comment": "Spatial layer and support for the sp.layer table.",
+    "source": "slate",
+    "phpClass": "slateLayer",
+    "pythonClass": "slateLayer",
+    "columns":
+    [
+      {
+        "name": "filename",
+        "required": true,
+        "unique": true
+      },
+      {
+        "name": "num_cols"
+      },
+      {
+        "name": "num_rows"
+      },
+      {
+        "name": "num_nodata_cells"
+      },
+      {
+        "name": "data_format"
+      },
+      {
+        "name": "data_min",
+        "altReadSQL": "data_min::float"
+      },
+      {
+        "name": "data_max",
+        "altReadSQL": "data_max::float"
+      },
+      {
+        "name": "data_mean",
+        "altReadSQL": "data_mean::float"
+      },
+      {
+        "name": "data_stddev",
+        "altReadSQL": "data_stddev::float"
+      },
+      {
+        "name": "data_q1",
+        "altReadSQL": "data_q1::float"
+      },
+      {
+        "name": "data_median",
+        "altReadSQL": "data_median::float"
+      },
+      {
+        "name": "data_q3",
+        "altReadSQL": "data_q3::float"
+      },
+      {
+        "name": "sig_lower_cutoff",
+        "altReadSQL": "sig_lower_cutoff::float"
+      },
+      {
+        "name": "sig_upper_cutoff",
+        "altReadSQL": "sig_upper_cutoff::float"
+      },
+      {
+        "name": "geoprocess_rowid_fk",
+        "variableName": "geoprocess.rowid",
+        "formVariableName": "geoprocess.name",
+        "uniqueKey": true
+      },
+      {
+        "name": "resolution_rowid_fk",
+        "variableName": "resolution.rowid",
+        "formVariableName": "resolution.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.resolution WHERE name = %(resolution.name)s)",
+        "existsCheckSQL": "(SELECT rowid FROM ref.resolution WHERE name = %(resolution.name)s)",
+        "uniqueKey": true
+      },
+      {
+        "name": "last_updated_utc", 
+        "altReadSQL": "to_char({table_name}.last_updated_utc, 'DD-Mon-YYYY HH24:MI:SS') AS last_updated_utc_str"
+      }
+    ],
+    "relationships":
+    [
+      {
+        "joinSQL": "INNER JOIN sp.geoprocess ON sp.layer.geoprocess_rowid_fk = sp.geoprocess.rowid"
+      },
+      {
+        "joinSQL": "INNER JOIN sp.project ON sp.geoprocess.project_rowid_fk = sp.project.rowid"
+      }
+    ]
+  },
+  {
+    "tableName": "sp.place",
+    "parentTableName": "algae.named_object_base",
+    "comment": "A place and support for the sp.place table.",
+    "source": "slate",
+    "phpClass": "slatePlace",
+    "pythonClass": "slatePlace",
+    "columns":
+    [
+      {
+        "name": "abbreviation",
+        "unique": true
+      },
+      {
+        "name": "latitude",
+        "altReadSQL": "ST_Y({table_name}.location::geometry) AS latitude",
+        "canInsert": false,
+        "canUpdate": false
+      },
+      {
+        "name": "longitude",
+        "altReadSQL": "ST_X({table_name}.location::geometry) AS longitude",
+        "canInsert": false,
+        "canUpdate": false
+      },
+      {
+        "name": "location",
+        "altWriteSQL": "CAST(ST_SetSRID(ST_Point(%(longitude)s, %(latitude)s), 4326) AS geography)",
+        "canRead": false
+      },
+      {
+        "name": "project_rowid_fk",
+        "variableName": "project.rowid",
+        "formVariableName": "project.name",
+        "altWriteSQL": "(SELECT rowid FROM sp.project WHERE name = %(project.name)s)",
+        "canUpdate": false,
+        "required": true
+      }
+    ]
+  },
+  {
+    "tableName": "sp.signature",
+    "parentTableName": "algae.base",
+    "comment": "Signature for a place and layer and support for the sp.signature table.",
+    "source": "slate",
+    "phpClass": "slateSignature",
+    "pythonClass": "slateSignature",
+    "columns":
+    [
+      {
+        "name": "numeric_val",
+        "required": true
+      },
+      {
+        "name": "place_rowid_fk",
+        "variableName": "place.rowid",
+        "required": true,
+        "uniqueKey": true,
+        "canUpdate": false
+      },
+      {
+        "name": "layer_rowid_fk",
+        "variableName": "layer.rowid",
+        "required": true,
+        "uniqueKey": true,
+        "canUpdate": false
+      }
+    ]
+  },
+  {
+    "tableName": "sp.shapefile",
+    "parentTableName": "algae.named_object_base",
+    "comment": "Support for shapefiles and the sp.shapefile table.  TODO: Flush out reading additional fields from extent box.",
+    "source": "slate",
+    "phpClass": "slateShapefile",
+    "pythonClass": "slateShapefile",
+    "columns":
+    [
+      {
+        "name": "project_rowid_fk",
+        "variableName": "project.rowid",
+        "formVariableName": "project.name",
+        "altWriteSQL": "(SELECT rowid FROM sp.project WHERE name = %(project.name)s)",
+        "required": true,
+        "uniqueKey": true,
+        "canUpdate": false
+      },
+      {
+        "name": "source_filename",
+        "required": true,
+        "canUpdate": false
+      },
+      {
+        "name": "srid_fk",
+        "required": true,
+        "canUpdate": false
+      },
+      {
+        "name": "year"
+      },
+      {
+        "name": "source_url"
+      },
+      {
+        "name": "geometry_type_rowid_fk",
+        "variableName": "geometry_type.rowid",
+        "formVariableName": "geometry_type.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.geometry_type WHERE name = %(geometry_type.name)s)",
+        "required": true
+      },
+      {
+        "name": "timeframe_rowid_fk",
+        "variableName": "timeframe.rowid",
+        "formVariableName": "timeframe.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.timeframe WHERE name = %(timeframe.name)s)",
+        "required": true
+      },
+      {
+        "name": "user_rowid_fk",
+        "canUpdate": false,
+        "variableName": "user.rowid",
+        "altWriteSQL": "(SELECT rowid FROM core.user WHERE username = %(user.username)s)"
+      },
+      {
+        "name": "extent",
+        "canRead": false,
+        "canUpdate": false,
+        "altWriteSQL": "ST_SetSRID(ST_MakeBox2D(ST_transform(ST_SetSRID(ST_MakePoint(%(proj_min_x)s, %(proj_min_y)s), %(srid_fk)s), 4326),ST_transform(ST_SetSRID(ST_MakePoint(%(proj_max_x)s, %(proj_max_y)s), %(srid_fk)s), 4326)), 4326)"
+      },
+      {
+        "name": "coord_system_name",
+        "canInsert": false,
+        "canUpdate": false,
+        "altReadSQL": "split_part(spatial_ref_sys.srtext, '\"', 2)"
+      }
+    ],
+    "relationships":
+    [
+      {
+        "joinSQL": "INNER JOIN spatial_ref_sys ON sp.shapefile.srid_fk = spatial_ref_sys.srid"
+      }
+    ]
+  }
+]

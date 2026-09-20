@@ -26,13 +26,18 @@ class slateApp extends algaeApp
   /**
    * Constructor.
    */
-  public function __construct()
+  public function __construct($load_detailed_config = True, $debug = False)
   // --------------------------------------------------------------------------
   {
-    parent::__construct();
-    $this->config->app_folder = 'slate';
+    //
+    // ----- order is important
+    //
+    // __construct(False) | framework app init, config loaded but not detailed
+    // addAppSpecificClasses() | loads slateConfig class
+    // $this->config = new slateConfig(); | read all framework and app config
+    //
+    parent::__construct(False);
     $this->addAppSpecificClasses();
-    $this->config->app_name = 'slate';
     $this->config = new slateConfig();
   }
   

@@ -7,22 +7,31 @@ class slateConfig extends algaeConfig
 {
   
   public $geoprocesses_folder;
-  public $placed_folder;
+  public $places_folder;
   public $model_palette_file;
+  public $projects_base_folder;
   
   /**
    * Constructor.
    */
-  public function __construct($verbose = False, $load_detailed_config = True)
+  public function __construct($load_detailed_config = True, $debug = False)
   // --------------------------------------------------------------------------
   {
-    parent::__construct();
+    //
+    // ----- important to load framework config first
+    //
+    parent::__construct($load_detailed_config, $debug);
+    //
+    // ----- setup main app names and config
+    //
     $this->app_name = 'slate';
     $this->app_database = 'slate';
     $this->app_folder = 'slate';
+    $this->config_path = $this->getAppConfigParameter('slate', 'configPath');
     //
     // -----
     //
+    $this->projects_base_folder = '/opt/slate';
     $this->geoprocesses_folder = 'gp';
     $this->places_folder = 'pl';
     $this->model_palette_file = '/var/www/html/slate/palettes/model_colors.txt';
