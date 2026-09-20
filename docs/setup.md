@@ -77,8 +77,18 @@ sudo vi /opt/rtspatial/config/algae_apps.json
   {
     "name": "slate",
     "abbreviation": "slate",
+    "configPath": "/opt/slate-main/config",
     "phpIncludesPath": "/opt/slate-main/src/php",
     "pythonIncludesPath": "/opt/slate-main/src/python"
   }
 ]
 ```
+
+## Setup a Local slate.ini File
+
+```shell
+sudo vi /opt/rtspatial/config/slate.ini
+```
+
+
+
