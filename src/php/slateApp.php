@@ -49,6 +49,7 @@ class slateApp extends algaeApp
   {
     parent::addAppSpecificClasses();
     require_once 'slateConfig.php';
+    require_once 'refResolution.php';
     require_once 'slateProject.php';
   }
   
@@ -90,7 +91,7 @@ class slateApp extends algaeApp
   public function getCurrentProjectRowid($showErrorMessage = True)
   // --------------------------------------------------------------------------
   {
-    $rowid = algaeTblCoreUserParameter::getParameter(slateApp::CURRENT_PROJECT_ROWID_PARAMETER_NAME);
+    $rowid = algaeTblCoreUserParameter::get_parameter(slateApp::CURRENT_PROJECT_ROWID_PARAMETER_NAME);
     if (($rowid <= 0) || ($rowid == null))
     {
       $this->errorMessage('Current project is not defined.');

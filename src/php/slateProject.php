@@ -17,7 +17,7 @@
 class slateProject extends algaeTblNamedObjectBase
 {
   
-  public $user;
+  public $app_user;
   public $folder;
   public $abbreviation;
   public $public;
@@ -62,8 +62,8 @@ class slateProject extends algaeTblNamedObjectBase
   {
     global $app;
     $html = parent::getActionLinks($openInNewTab);
-    $html .= $app->settings->menuSeparator;
-    $html .= $app->getPageLink($this->editpage, 'Add a New Project', algaeAccess::ROLE_WRITE, $app->settings->appName, '', $openInNewTab);
+    $html .= $app->config->menu_separator;
+    $html .= $app->getPageLink($this->editpage, 'Add a New Project', algaeAccess::ROLE_WRITE, $app->config->app_name, '', $openInNewTab);
     return $html;
   }
   
@@ -91,15 +91,14 @@ class slateProject extends algaeTblNamedObjectBase
   protected function postInsert()
   // --------------------------------------------------------------------------
   {
-    algaeTblCoreUserParameter::saveParameter(slateApp::CURRENT_PROJECT_ROWID_PARAMETER_NAME, $this->rowid);
+    algaeTblCoreUserParameter::save_parameter(slateApp::CURRENT_PROJECT_ROWID_PARAMETER_NAME, $this->rowid);
     return True;
   }
   
   protected function preInsert()
   // --------------------------------------------------------------------------
   {
-    $this->user->rowid = algaeAccess::getUserRowid();
-    echo 'DEBUG: user rowid = ', $this->user->rowid, '<p />';
+    $this->app_user->rowid = algaeTblCoreAppUser::getAppUserRowidForLoggedInUser();
     return $this->setupProjectDirectories();
   }
   
@@ -168,7 +167,7 @@ class slateProject extends algaeTblNamedObjectBase
     //
     algaeTable::writeTwoColumns('Name', algaeForm::inputText($this->get_control_id('name'), $this->name, 50, algaeForm::REQUIRED), False);
     algaeTable::writeTwoColumns('Abbreviation', algaeForm::inputText($this->get_control_id('abbreviation'), $this->abbreviation, 10, algaeForm::REQUIRED) .
-      $app->getDetailString('Lowercase, no spaces or trailing underscore.  This will also be a default prefix for filenames.'), False);
+      $app->getDetailString('Lowercase, no spaces or trailing underscores.  Default for filename prefixes.'), False);
     algaeTable::writeTwoColumns('Folder', algaeForm::inputText($this->get_control_id('folder'), $this->folder, 20, algaeForm::REQUIRED) . 
       $app->getDetailString('Lowercase, no spaces.'), False);
     algaeTable::writeTwoColumns('Copyright', algaeForm::inputText($this->get_control_id('copyright'), $this->copyright, 50), False);
@@ -296,7 +295,7 @@ class slateProject extends algaeTblNamedObjectBase
     algaeTable::start('projectDetailsTable', 'algae_table', 'width:60%');
     algaeTable::writeHeader(array(), False);
     algaeTable::writeTwoColumns('Project', '<b>' . $this->name . '</b>', False);
-    algaeTable::writeTwoColumns('Owner', $this->user->username);
+    algaeTable::writeTwoColumns('Owner', $this->app_user->username);
     algaeTable::writeTwoColumns('Public', $this->public);
     algaeTable::writeTwoColumns('Abbreviation', $this->abbreviation);
     algaeTable::writeTwoColumns('Folder', $this->folder);
@@ -334,21 +333,23 @@ class slateProject extends algaeTblNamedObjectBase
     // ----- study_area_tab
     //
     echo '<div id="study_area_tab">';
+    /*
     $sa = new slateStudyArea();
     $sa->reportDetailsForProject($this->rowid);
+    */
     echo '</div>';
     //
     // ----- file_size_estimates
     //
     echo '<div id="file_size_estimates">';
-    refResolution::reportFileSizeEstimates($sa);
+    // refResolution::reportFileSizeEstimates($sa);
     echo '</div>';
     //
     // ----- bounds_tab
     //
     echo '<div id="bounds_tab">';
-    $sa->readLatLongBounds();
-    $sa->reportLatLongBounds();
+    // $sa->readLatLongBounds();
+    // $sa->reportLatLongBounds();
     echo '</div>';
     //
     // ----- map tab
@@ -486,10 +487,13 @@ class slateProject extends algaeTblNamedObjectBase
   public static function getCurrentProjectStudyArea()
   // --------------------------------------------------------------------------
   {
+    return null;
+    /**
     global $app;
     $sa = new slateStudyArea();
     $sa->readRowFromDatabaseWithProjectRowid($app->getCurrentProjectRowid());
     return $sa;
+    */
   }
   
 }
