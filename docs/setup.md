@@ -54,7 +54,7 @@ psql algae postgres
 ```
 
 ```sql
-algae=# INSERT INTO ref.object (name, description) VALUES 
+INSERT INTO ref.object (name, description) VALUES 
   ('slate', 'The slate application.');
   
 INSERT INTO core.user_right (user_rowid_fk, object_rowid_fk, role_rowid_fk) VALUES
