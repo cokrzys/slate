@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.09.16 | Beta.
+  2026.09.20 | Beta.
 
 */
 
@@ -26,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.09.16' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.09.20' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -37,7 +37,7 @@ CREATE EXTENSION postgis_topology;
 --
 -- add algae user
 --
-INSERT INTO core.user (username) VALUES ('algae');
+INSERT INTO core.app_user (username) VALUES ('algae');
   
 -- ============================================================================
 --  ref - ref schema additions
@@ -327,7 +327,7 @@ CREATE TABLE sp.project
 (
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.project_rowid'),
   record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status, 
-  user_rowid_fk INTEGER NOT NULL REFERENCES core.user, 
+  app_user_rowid_fk INTEGER NOT NULL REFERENCES core.app_user, 
   name VARCHAR NOT NULL UNIQUE,
   abbreviation VARCHAR NOT NULL,
   folder VARCHAR NOT NULL UNIQUE,
@@ -337,12 +337,12 @@ CREATE TABLE sp.project
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  UNIQUE(user_rowid_fk, name)
+  UNIQUE(app_user_rowid_fk, name)
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.project FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();  
-ALTER TABLE sp.project ADD CONSTRAINT sp_project_unique_user_abbreviation UNIQUE (user_rowid_fk, abbreviation);
+ALTER TABLE sp.project ADD CONSTRAINT sp_project_unique_user_abbreviation UNIQUE (app_user_rowid_fk, abbreviation);
 
 
 --
@@ -383,7 +383,7 @@ CREATE TABLE sp.shapefile
   record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(), 
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   srid_fk INTEGER NOT NULL REFERENCES spatial_ref_sys,
-  user_rowid_fk INTEGER NOT NULL REFERENCES core.user, 
+  app_user_rowid_fk INTEGER NOT NULL REFERENCES core.app_user, 
   geometry_type_rowid_fk INTEGER NOT NULL REFERENCES ref.geometry_type,
   timeframe_rowid_fk INTEGER NOT NULL REFERENCES ref.timeframe,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
@@ -446,7 +446,7 @@ CREATE TABLE sp.study_area
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   shapefile_rowid_fk INTEGER NOT NULL REFERENCES sp.shapefile,
   resolution_rowid_fk INTEGER NOT NULL REFERENCES ref.resolution,
-  user_rowid_fk INTEGER NOT NULL REFERENCES core.user,
+  app_user_rowid_fk INTEGER NOT NULL REFERENCES core.app_user,
   srid_fk INTEGER NOT NULL REFERENCES spatial_ref_sys,
   geoprocess_rowid_fk INTEGER REFERENCES sp.geoprocess,
   place_rowid_fk INTEGER REFERENCES sp.place,

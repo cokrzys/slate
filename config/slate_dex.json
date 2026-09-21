@@ -158,10 +158,9 @@
     "columns":
     [
       {
-        "name": "user_rowid_fk",
+        "name": "app_user_rowid_fk",
         "canUpdate": false,
-        "variableName": "user.rowid",
-        "altWriteSQL": "(SELECT rowid FROM core.user WHERE username = %(user.username)s)"
+        "variableName": "app_user.rowid"
       },
       {
         "name": "abbreviation",
@@ -236,10 +235,9 @@
         "required": true
       },
       {
-        "name": "user_rowid_fk",
+        "name": "app_user_rowid_fk",
         "canUpdate": false,
-        "variableName": "user.rowid",
-        "altWriteSQL": "(SELECT rowid FROM core.user WHERE username = %(user.username)s)"
+        "variableName": "app_user.rowid"
       },
       {
         "name": "geoprocess_rowid_fk",
@@ -548,10 +546,9 @@
         "required": true
       },
       {
-        "name": "user_rowid_fk",
+        "name": "app_user_rowid_fk",
         "canUpdate": false,
-        "variableName": "user.rowid",
-        "altWriteSQL": "(SELECT rowid FROM core.user WHERE username = %(user.username)s)"
+        "variableName": "app_user.rowid"
       },
       {
         "name": "extent",

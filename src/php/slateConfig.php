@@ -42,6 +42,10 @@ class slateConfig extends algaeConfig
     $this->annotated_suffix = '_annotated.png';
     $this->overlay_suffix = '_overlay.png';
     $this->run_geoprocesses_app = 'rungeoprocesses.py';
+    $this->source_data_directory = 'source_data';
+    $this->vector_data_sub_directory = 'vector';
+    $this->raster_data_sub_directory = 'raster';
+    $this->other_data_sub_directory = 'other';
     //
     // ----- load detailed configuration files
     //

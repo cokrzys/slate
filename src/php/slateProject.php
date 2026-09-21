@@ -49,7 +49,7 @@ class slateProject extends algaeTblNamedObjectBase
     $this->folder = null;
     $this->public = 'No';
     $this->copyright = null;
-    $this->user = new algaeTblCoreUser();
+    $this->app_user = new algaeTblCoreAppUser();
   }
   
   /**
@@ -98,7 +98,8 @@ class slateProject extends algaeTblNamedObjectBase
   protected function preInsert()
   // --------------------------------------------------------------------------
   {
-    $this->user->username = algaeAccess::getUsername();
+    $this->user->rowid = algaeAccess::getUserRowid();
+    echo 'DEBUG: user rowid = ', $this->user->rowid, '<p />';
     return $this->setupProjectDirectories();
   }
   
@@ -110,21 +111,28 @@ class slateProject extends algaeTblNamedObjectBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $project_directory = $app->config->projects_base_folder . $this->folder;
-    echo 'Creating directory ', $project_directory, '<p />';
-    if (mkdir($project_directory))
+    $project_directory = algaeCore::getFullPath($app->config->projects_base_folder, $this->folder);
+    if (! file_exists($project_directory))
     {
-      // mkdir($this->folder . 'shp');
-      // mkdir($this->folder . 'file');
-      // mkdir($this->folder . $app->processedDataSubFolder);
-      $app->successMessage('Project directories successfully created.');
-      return True;
+      echo 'Creating directory ', $project_directory, '<p />';
+      if (mkdir($project_directory))
+      {
+        $source_data_directory = algaeCore::getFullPath($project_directory . $app->config->source_data_directory);
+        mkdir($source_data_directory);
+        mkdir(algaeCore::getFullPath($source_data_directory, $app->config->vector_data_sub_directory));
+        mkdir(algaeCore::getFullPath($source_data_directory, $app->config->raster_data_sub_directory));
+        mkdir(algaeCore::getFullPath($source_data_directory, $app->config->other_data_sub_directory));
+        $app->successMessage('Project directories successfully created.');
+        return True;
+      }
+      else 
+      {
+        $app->errorMessage('Unable to create ' . $project_directory . '.');
+      }
+      return False;
     }
     else 
-    {
-      $app->errorMessage('Unable to create ' . $project_directory . '.');
-    }
-    return False;
+    return True;
   }
   
   /**
