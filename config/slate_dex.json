@@ -9,21 +9,21 @@
     "columns": []
   },
   {
-    "tableName": "ref.data_type",
+    "tableName": "ref.data_distribution",
     "parentTableName": "algae.reference_base",
-    "comment": "Data types are used to define how the data is broadly distributed or occurrs.  Examples include Sequential, Categorical, and Shapefile.",
+    "comment": "Distribution types are used to define how the data is broadly distributed or occurrs.  Examples include Sequential, Categorical, and Shapefile.",
     "source": "slate",
-    "phpClass": "refDataType",
-    "pythonClass": "refDataType",
+    "phpClass": "refDistributionType",
+    "pythonClass": "refDistributionType",
     "columns": []
   },
   {
-    "tableName": "ref.output_type",
+    "tableName": "ref.data_type",
     "parentTableName": "algae.reference_base",
-    "comment": "Output type is typically a raster data type, i.e. Byte or Float32.",
+    "comment": "Data type is typically a raster data type, i.e. Byte or Float32.",
     "source": "slate",
-    "phpClass": "refOutputType",
-    "pythonClass": "refOutputType",
+    "phpClass": "refDataType",
+    "pythonClass": "refDataType",
     "columns": 
     [
       {
@@ -309,17 +309,17 @@
         "required": true
       },
       {
+        "name": "distribution_type_rowid_fk",
+        "variableName": "distribution_type.rowid",
+        "formVariableName": "distribution_type.name",
+        "altWriteSQL": "(SELECT rowid FROM ref.distribution_type WHERE name = %(distribution_type.name)s)",
+        "required": true
+      },
+      {
         "name": "data_type_rowid_fk",
         "variableName": "data_type.rowid",
         "formVariableName": "data_type.name",
         "altWriteSQL": "(SELECT rowid FROM ref.data_type WHERE name = %(data_type.name)s)",
-        "required": true
-      },
-      {
-        "name": "output_type_rowid_fk",
-        "variableName": "output_type.rowid",
-        "formVariableName": "output_type.name",
-        "altWriteSQL": "(SELECT rowid FROM ref.output_type WHERE name = %(output_type.name)s)",
         "required": true
       },
       {

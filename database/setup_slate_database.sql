@@ -72,14 +72,14 @@ INSERT INTO ref.geometry_type (name, description) VALUES
   ('3DPolygon', 'Polygons.');
   
 --
--- ref.output_type
+-- ref.data_type
 --
-DROP SEQUENCE IF EXISTS ref.output_type_rowid;
-DROP TABLE IF EXISTS ref.output_type;
-CREATE SEQUENCE ref.output_type_rowid START 1;
-CREATE TABLE ref.output_type
+DROP SEQUENCE IF EXISTS ref.data_type_rowid;
+DROP TABLE IF EXISTS ref.data_type;
+CREATE SEQUENCE ref.data_type_rowid START 1;
+CREATE TABLE ref.data_type
 (
-  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.output_type_rowid'),
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.data_type_rowid'),
   record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
   name VARCHAR NOT NULL UNIQUE,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
@@ -93,42 +93,42 @@ CREATE TABLE ref.output_type
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
-  ON ref.output_type FOR EACH ROW EXECUTE PROCEDURE
+  ON ref.data_type FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+INSERT INTO ref.data_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('Byte', 0, 255, 255, 1, 'GDAL range: 0 | 255.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+INSERT INTO ref.data_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('Int16', -32768, 32767, 32767, 2, 'GDAL range: -32,768 | 32,767.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+INSERT INTO ref.data_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('UInt16', 0, 65535, 65535, 2, 'GDAL range: 0 | 65,535.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+INSERT INTO ref.data_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('Int32', -2147483648, 2147483647, 2147483647, 4, 'GDAL range: -2,147,483,648 | -2,147,483,647.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+INSERT INTO ref.data_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('UInt32', 0, 4294967295, 4294967295, 4, 'GDAL range: 0 | 4,294,967,295.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+INSERT INTO ref.data_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('Float32', -3.4e38, 3.4e38, -99999.99, 4, 'GDAL range: -3.4E38 | 3.4E38.');
   
-INSERT INTO ref.output_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
+INSERT INTO ref.data_type (name, min_value, max_value, nodata_value, size_bytes, description) VALUES 
   ('Float64', -1.79e308, 1.79e308, -99999.99, 8, 'GDAL range: -1.79E308 | 1.79E308.');
   
-INSERT INTO ref.output_type (name, description) VALUES 
+INSERT INTO ref.data_type (name, description) VALUES 
   ('Shapefile', 'ESRI shapefile.');
   
 --
--- ref.data_type
+-- ref.data_distribution
 --
-DROP SEQUENCE IF EXISTS ref.data_type_rowid;
-DROP TABLE IF EXISTS ref.data_type;
-CREATE SEQUENCE ref.data_type_rowid START 1;
-CREATE TABLE ref.data_type
+DROP SEQUENCE IF EXISTS ref.data_distribution_rowid;
+DROP TABLE IF EXISTS ref.data_distribution;
+CREATE SEQUENCE ref.data_distribution_rowid START 1;
+CREATE TABLE ref.data_distribution
 (
-  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.data_type_rowid'),
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.data_distribution_rowid'),
   record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
   name VARCHAR NOT NULL UNIQUE,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
@@ -138,19 +138,19 @@ CREATE TABLE ref.data_type
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
-  ON ref.data_type FOR EACH ROW EXECUTE PROCEDURE
+  ON ref.data_distribution FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
-INSERT INTO ref.data_type (name, description) VALUES 
+INSERT INTO ref.data_distribution (name, description) VALUES 
   ('Unknown', 'Generic data, unknown pattern.');
   
-INSERT INTO ref.data_type (name, description) VALUES 
+INSERT INTO ref.data_distribution (name, description) VALUES 
   ('Sequential', 'Ordered data that progress from low to high, see also: https://colorbrewer2.org/learnmore/schemes_full.html.');
   
-INSERT INTO ref.data_type (name, description) VALUES 
+INSERT INTO ref.data_distribution (name, description) VALUES 
   ('Diverging', 'Equal emphasis on mid-range critical values and extremes at both ends of the data range, see also: https://colorbrewer2.org/learnmore/schemes_full.html#diverging.');
   
-INSERT INTO ref.data_type (name, description) VALUES 
+INSERT INTO ref.data_distribution (name, description) VALUES 
   ('Categorical', 'Typically discrete values with no implied relationship between classes, see also: https://colorbrewer2.org/learnmore/schemes_full.html#qualitative.');
 
 --
@@ -174,23 +174,37 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   ON ref.data_group FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
-INSERT INTO ref.data_group (name, description) VALUES 
-  ('Other', 'Doesn''t fit in any other group.');
+-- 12 qualitative colors from https://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12
+-- ['Climatological #a6cee3',
+--  '#1f78b4',
+--  'Socioeconomic #b2df8a',
+--  '#33a02c',
+--  '#fb9a99',
+--  '#e31a1c',
+--  '#fdbf6f',
+--  'Cultural #ff7f00',
+--  '#cab2d6',
+--  '#6a3d9a',
+--  'Mask #ffff99',
+--  'Physical #b15928']
+  
+INSERT INTO ref.data_group (name, html_color, description) VALUES 
+  ('Other', '#bababa', 'Doesn''t fit in any other group.');
 
-INSERT INTO ref.data_group (name, description) VALUES 
-  ('Mask', 'Mask, typically 1 and 0 value, for example a study area mask.');
+INSERT INTO ref.data_group (name, html_color, description) VALUES 
+  ('Mask', '#ffff99', 'Mask, typically 1 and 0 value, for example a study area mask.');
   
-INSERT INTO ref.data_group (name, description) 
-  VALUES ('Physical', 'Physical data such as land type or proximity to water.');
+INSERT INTO ref.data_group (name, html_color, description) 
+  VALUES ('Physical', '#b15928', 'Physical data such as land type or proximity to water.');
   
-INSERT INTO ref.data_group (name, description) 
-  VALUES ('Cultural', 'Cultural data such as country or ethnic division.');
+INSERT INTO ref.data_group (name, html_color, description) 
+  VALUES ('Cultural', '#ff7f00', 'Cultural data such as country or ethnic division.');
   
-INSERT INTO ref.data_group (name, description) 
-  VALUES ('Climatological', 'Climatological data.');
+INSERT INTO ref.data_group (name, html_color, description) 
+  VALUES ('Climatological', '#a6cee3', 'Climatological data.');
   
-INSERT INTO ref.data_group (name, description) 
-  VALUES ('Socioeconomic', 'Socioeconomic data.');
+INSERT INTO ref.data_group (name, html_color, description) 
+  VALUES ('Socioeconomic', '#b2df8a', 'Socioeconomic data.');
   
 --
 -- ref.units
@@ -244,62 +258,11 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   ON ref.resolution FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
---
--- ref.timeframe
---
-CREATE SEQUENCE ref.timeframe_rowid START 1;
-CREATE TABLE ref.timeframe
-(
-  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.timeframe_rowid'),
-  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
-  name VARCHAR NOT NULL UNIQUE,
-  short_name VARCHAR NOT NULL UNIQUE,
-  sort_order INTEGER NOT NULL UNIQUE,
-  html_color VARCHAR NOT NULL default algae_default_color(),
-  description VARCHAR,
-  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
-);
-CREATE TRIGGER update_modified BEFORE UPDATE
-  ON ref.timeframe FOR EACH ROW EXECUTE PROCEDURE
-  algae_update_modified_column();
+INSERT INTO ref.resolution (name, folder, cell_size_x, cell_size_y, description) VALUES 
+  ('100 Meters', 'r100m', 100, 100, '100 meters.');
   
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('Static', 'Static', 100, '#000000', 'Static, does not apply.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('Year', 'Year', 200, '#000000', 'Applies to an entire year, for example a yearly average.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('Quarter1', 'Q1', 301, '#000000', 'Applies to the first quarter, for example the average for the quarter.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('Quarter2', 'Q2', 302, '#000000', 'Applies to the second quarter, for example the average for the quarter.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('Quarter3', 'Q3', 303, '#000000', 'Applies to the third quarter, for example the average for the quarter.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('Quarter4', 'Q4', 304, '#000000', 'Applies to the fourth quarter, for example the average for the quarter.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('January', 'Jan', 1001, '#000000', 'Applies to January, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('February', 'Feb', 1002, '#000000', 'Applies to February, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('March', 'Mar', 1003, '#000000', 'Applies to March, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('April', 'Apr', 1004, '#000000', 'Applies to April, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('May', 'May', 1005, '#000000', 'Applies to May, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('June', 'Jun', 1006, '#000000', 'Applies to June, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('July', 'Jul', 1007, '#000000', 'Applies to July, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('August', 'Aug', 1008, '#000000', 'Applies to August, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('September', 'Sep', 1009, '#000000', 'Applies to September, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('October', 'Oct', 1010, '#000000', 'Applies to October, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('November', 'Nov', 1011, '#000000', 'Applies to November, for example the average for the month.');
-INSERT INTO ref.timeframe (name, short_name, sort_order, html_color, description) 
-  VALUES ('December', 'Dec', 1012, '#000000', 'Applies to December, for example the average for the month.');
+INSERT INTO ref.resolution (name, folder, cell_size_x, cell_size_y, description) VALUES 
+  ('1000 Meters', 'r1km', 1000, 1000, '1000 meters.');
   
 --
 -- drop anything that exists
@@ -331,7 +294,7 @@ CREATE TABLE sp.project
   name VARCHAR NOT NULL UNIQUE,
   abbreviation VARCHAR NOT NULL,
   folder VARCHAR NOT NULL UNIQUE,
-  public VARCHAR NOT NULL CONSTRAINT public_constraint CHECK ( public = 'Yes' OR public = 'No') DEFAULT 'No',
+  public VARCHAR NOT NULL CONSTRAINT public_constraint CHECK ( public = 'Yes' OR public = 'No') DEFAULT 'Yes',
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
   copyright VARCHAR,
   description VARCHAR,
@@ -343,7 +306,6 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.project FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();  
 ALTER TABLE sp.project ADD CONSTRAINT sp_project_unique_user_abbreviation UNIQUE (app_user_rowid_fk, abbreviation);
-
 
 --
 -- sp.place
@@ -385,7 +347,6 @@ CREATE TABLE sp.shapefile
   srid_fk INTEGER NOT NULL REFERENCES spatial_ref_sys,
   app_user_rowid_fk INTEGER NOT NULL REFERENCES core.app_user, 
   geometry_type_rowid_fk INTEGER NOT NULL REFERENCES ref.geometry_type,
-  timeframe_rowid_fk INTEGER NOT NULL REFERENCES ref.timeframe,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
   name VARCHAR NOT NULL UNIQUE,
   extent GEOGRAPHY(Polygon),
@@ -413,8 +374,8 @@ CREATE TABLE sp.geoprocess
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.geoprocess_rowid'),
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   process_rowid_fk INTEGER REFERENCES core.process,
-  output_type_rowid_fk INTEGER NOT NULL REFERENCES ref.output_type,
   data_type_rowid_fk INTEGER NOT NULL REFERENCES ref.data_type,
+  data_distribution_rowid_fk INTEGER NOT NULL REFERENCES ref.data_distribution,
   data_group_rowid_fk INTEGER NOT NULL REFERENCES ref.data_group,
   units_rowid_fk INTEGER REFERENCES ref.units,
   name VARCHAR NOT NULL,

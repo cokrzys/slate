@@ -3,13 +3,11 @@
 /**
 
   slate | Support for resolutions and the ref.resolution table.
-  
-  Slate can work at multiple resolutions for quick modelling through final products with a high level of detail. 
-  
+    
   @author    Brian Krzys (brian.krzys@rtspatial.com)
   @copyright (c) 2026 RTSpatial Ltd.
   @license   SPDX-License-Identifier: MIT
-  @link      https://github.com/cokrzys/algae
+  @link      https://github.com/cokrzys/slate
 
 */
 
@@ -60,9 +58,9 @@ class refResolution extends algaeTblReferenceBase
     algaeTable::writeTwoColumns('Folder', algaeForm::inputText($this->get_control_id('folder'), 
       $this->folder, 20, algaeForm::REQUIRED), False);
     algaeTable::writeTwoColumns('Cell Size X', algaeForm::inputText($this->get_control_id('cell_size_x'),
-      $this->cell_size_x, 20, algaeForm::REQUIRED) . $app->settings->menuSeparator . 'meters', False);
+      $this->cell_size_x, 20, algaeForm::REQUIRED) . $app->getDetailString('meters'), False);
     algaeTable::writeTwoColumns('Cell Size Y', algaeForm::inputText($this->get_control_id('cell_size_y'),
-      $this->cell_size_y, 20, algaeForm::REQUIRED) . $app->settings->menuSeparator . 'meters', False);
+      $this->cell_size_y, 20, algaeForm::REQUIRED) . $app->getDetailString('meters'), False);
   }
   
   /**
