@@ -34,6 +34,7 @@ class slateConfig extends algaeConfig
     $this->projects_base_folder = '/opt/slate';
     $this->geoprocesses_folder = 'gp';
     $this->places_folder = 'pl';
+    $this->source_data_folder = 'sd';
     $this->model_palette_file = '/var/www/html/slate/palettes/model_colors.txt';
     $this->similarity_prefix = 'sim_';
     $this->rowid_directory_levels = 2;
@@ -42,10 +43,9 @@ class slateConfig extends algaeConfig
     $this->annotated_suffix = '_annotated.png';
     $this->overlay_suffix = '_overlay.png';
     $this->run_geoprocesses_app = 'rungeoprocesses.py';
-    $this->source_data_directory = 'source_data';
-    $this->vector_data_sub_directory = 'vector';
-    $this->raster_data_sub_directory = 'raster';
-    $this->other_data_sub_directory = 'other';
+    // $this->vector_data_sub_directory = 'vector';
+    // $this->raster_data_sub_directory = 'raster';
+    // $this->other_data_sub_directory = 'other';
     //
     // ----- load detailed configuration files
     //

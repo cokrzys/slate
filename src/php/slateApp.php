@@ -53,7 +53,9 @@ class slateApp extends algaeApp
     require_once 'refDataGroup.php';
     require_once 'refDataType.php';
     require_once 'refResolution.php';
+    require_once 'refGeometryType.php';
     require_once 'slateProject.php';
+    require_once 'slateShapefile.php';
     require_once 'slateSourceData.php';
   }
   

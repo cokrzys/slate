@@ -17,6 +17,11 @@
 class slateProject extends algaeTblNamedObjectBase
 {
   
+  CONST PROJECT_DIRECTORY = 0;
+  CONST VECTOR_DATA_DIRECTORY = 1;
+  CONST RASTER_DATA_DIRECTORY = 2;
+  CONST OTHER_DATA_DIRECTORY = 3;
+  
   public $app_user;
   public $folder;
   public $abbreviation;
@@ -67,6 +72,35 @@ class slateProject extends algaeTblNamedObjectBase
     return $html;
   }
   
+  public function getDirectory($type)
+  // --------------------------------------------------------------------------
+  {
+    global $app;
+    $project_directory = algaeCore::getFullPath($app->config->projects_base_folder, $this->folder);
+    $source_data_directory = algaeCore::getFullPath($project_directory, $app->config->source_data_directory);
+    if ($type == slateProject::PROJECT_DIRECTORY)
+    {
+      return $project_directory;
+    }
+    elseif ($type == slateProject::RASTER_DATA_DIRECTORY) 
+    {
+      return algaeCore::getFullPath($source_data_directory, $app->config->raster_data_sub_directory);
+    }
+    elseif ($type == slateProject::VECTOR_DATA_DIRECTORY)
+    {
+      return algaeCore::getFullPath($source_data_directory, $app->config->vector_data_sub_directory);
+    }
+    elseif ($type == slateProject::OTHER_DATA_DIRECTORY)
+    {
+      return algaeCore::getFullPath($source_data_directory, $app->config->other_data_sub_directory);
+    }
+    else 
+    {
+      $app->errorMessage('Unsupported project directory type ' . str($type) . '.');
+    }
+    return null;
+  }
+  
   public function getItemDirectory($resolution_folder, $item_folder, $rowid)
   // --------------------------------------------------------------------------
   {
@@ -110,7 +144,7 @@ class slateProject extends algaeTblNamedObjectBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $project_directory = algaeCore::getFullPath($app->config->projects_base_folder, $this->folder);
+    $project_directory = $this->getDirectory(slateProject::PROJECT_DIRECTORY);
     if (! file_exists($project_directory))
     {
       echo 'Creating directory ', $project_directory, '<p />';

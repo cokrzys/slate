@@ -11,7 +11,7 @@
 
 */
 
-class refGeometryType extends algaeTblReferenceBaseV2
+class refGeometryType extends algaeTblReferenceBase
 {
   
   /**
