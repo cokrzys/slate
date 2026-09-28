@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.09.20 | Beta.
+  2026.09.27 | Beta.
 
 */
 
@@ -26,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.09.20' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.09.27' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -263,6 +263,33 @@ INSERT INTO ref.resolution (name, folder, cell_size_x, cell_size_y, description)
   
 INSERT INTO ref.resolution (name, folder, cell_size_x, cell_size_y, description) VALUES 
   ('1000 Meters', 'r1km', 1000, 1000, '1000 meters.');
+
+--
+-- ref.data_location
+--
+DROP SEQUENCE IF EXISTS ref.data_location_rowid;
+DROP TABLE IF EXISTS ref.data_location;
+CREATE SEQUENCE ref.data_location_rowid START 1;
+CREATE TABLE ref.data_location
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.data_location_rowid'),
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
+  name VARCHAR NOT NULL UNIQUE,
+  html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON ref.data_location FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+INSERT INTO ref.data_location (name, description) 
+  VALUES ('Upload', 'Data has been uploaded and is stored in a slate directory structure.');
+  
+INSERT INTO ref.data_location (name, description) 
+  VALUES ('Link', 'Data is accessible on the filesystem outside the slate directory structure.');
   
 --
 -- drop anything that exists
@@ -289,7 +316,7 @@ CREATE SEQUENCE sp.project_rowid START 1;
 CREATE TABLE sp.project
 (
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.project_rowid'),
-  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status, 
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(), 
   app_user_rowid_fk INTEGER NOT NULL REFERENCES core.app_user, 
   name VARCHAR NOT NULL UNIQUE,
   abbreviation VARCHAR NOT NULL,
@@ -308,6 +335,31 @@ CREATE TRIGGER update_modified BEFORE UPDATE
 ALTER TABLE sp.project ADD CONSTRAINT sp_project_unique_user_abbreviation UNIQUE (app_user_rowid_fk, abbreviation);
 
 --
+-- sp.source_data
+--
+DROP TABLE IF EXISTS sp.source_data;
+DROP SEQUENCE IF EXISTS sp.source_data_rowid;
+CREATE SEQUENCE sp.source_data_rowid START 1;
+CREATE TABLE sp.source_data
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.source_data_rowid'),
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
+  project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
+  data_location_rowid_fk INTEGER NOT NULL REFERENCES ref.data_location,
+  data_group_rowid_fk INTEGER NOT NULL REFERENCES ref.data_group,
+  name VARCHAR NOT NULL,
+  folder VARCHAR,
+  url VARCHAR,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(project_rowid_fk, name)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.source_data FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+--
 -- sp.place
 --
 DROP TABLE IF EXISTS sp.place;
@@ -316,7 +368,7 @@ CREATE SEQUENCE sp.place_rowid START 1;
 CREATE TABLE sp.place
 (
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.place_rowid'),
-  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status, 
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(), 
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   name VARCHAR NOT NULL UNIQUE,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),

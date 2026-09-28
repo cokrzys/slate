@@ -1,5 +1,14 @@
 [
   {
+    "tableName": "ref.data_location",
+    "parentTableName": "algae.reference_base",
+    "comment": "Where typically source data is located.  For example uploaded or an existing directory on the filesystem.",
+    "source": "slate",
+    "phpClass": "refDataLocation",
+    "pythonClass": "refDataLocation",
+    "columns": []
+  },
+  {
     "tableName": "ref.data_group",
     "parentTableName": "algae.reference_base",
     "comment": "Data groups are a primary data classifier.  Examples include Climatological, Mineral Occurrences, and Structure.",
@@ -465,6 +474,54 @@
         "altWriteSQL": "(SELECT rowid FROM sp.project WHERE name = %(project.name)s)",
         "canUpdate": false,
         "required": true
+      }
+    ]
+  },
+  {
+    "tableName": "sp.source_data",
+    "parentTableName": "algae.base",
+    "comment": "A source dataset and support for sp.source_data.",
+    "source": "slate",
+    "phpClass": "slateSourceData",
+    "pythonClass": "slateSourceData",
+    "columns":
+    [
+      {
+        "name": "project_rowid_fk",
+        "variableName": "project.rowid",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      },
+      {
+        "name": "name",
+        "required": true,
+        "uniqueKey": true
+      },
+      {
+        "name": "data_location_rowid_fk",
+        "variableName": "data_location.rowid",
+        "required": true,
+        "canUpdate": false
+      },
+      {
+        "name": "data_group_rowid_fk",
+        "variableName": "data_group.rowid",
+        "required": true
+      },
+      {
+        "name": "record_status_rowid_fk",
+        "variableName": "record_status.rowid",
+        "required": true
+      },
+      {
+        "name": "folder"
+      },
+      {
+        "name": "url"
+      },
+      {
+        "name": "description"
       }
     ]
   },

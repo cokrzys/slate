@@ -2,7 +2,7 @@
 
 /**
 
-  slate | Source data support class.
+  slate | Source data and sp.source_data support class.
   
   @author    Brian Krzys (brian.krzys@rtspatial.com)
   @copyright (c) 2026 RTSpatial Ltd.
@@ -11,12 +11,21 @@
 
 */
 
-class slateSourceData
+class slateSourceData extends algaeTblBase
 {
   
   CONST RASTER = 0;
   CONST VECTOR = 1;
   CONST OTHER = 2;
+  
+  public $project;
+  public $name;
+  public $description;
+  public $record_status;
+  public $data_group;
+  public $data_location;
+  public $folder;
+  public $url;
   
   /**
    * Constructor.
@@ -24,30 +33,37 @@ class slateSourceData
   public function __construct()
   // --------------------------------------------------------------------------
   {
+    parent::__construct();
+    $this->init();
   }
   
-  protected function showTab($tab_id, $type)
+  /**
+   * Initial default values.
+   */
+  public function init()
   // --------------------------------------------------------------------------
   {
-    echo '<div id="', $tab_id, '">';
-    if ($type == slateSourceData::RASTER)
-    {
-      echo 'TODO<p />';
-      // $f = new slateFile();
-      // $f->reportRecordsForCurrentProject();
-    }
-    elseif ($type == slateSourceData::VECTOR) 
-    {
-      $s = new slateShapefile();
-      $s->reportRecordsForCurrentProject();
-    }
-    if ($type == slateSourceData::OTHER)
-    {
-      echo 'TODO<p />';
-      // $f = new slateFile();
-      // $f->reportRecordsForCurrentProject();
-    }
-    echo '</div>';
+    parent::init();
+    $this->table_name = 'sp.source_data';
+    $this->homepage = 'source_data.php';
+    $this->editpage = 'edit_source_data.php';
+    $this->browsepage = 'browse_source_data.php';
+    $this->itemName = 'Source Data';
+    $this->project = new slateProject();
+    $this->name = null;
+    $this->folder = null;
+    $this->url = null;
+    $this->description = null;
+    $this->record_status = new algaeTblRecordStatus();
+    $this->data_group = new refDataGroup();
+    $this->data_location = new refDataLocation();
+  }
+  
+  public function getDirectory()
+  # ---------------------------------------------------------------------------
+  {
+    global $app;
+    return $this->project->getItemDirectory(null, $app->config->source_data_folder, $this->rowid, False);
   }
   
   public function selectDataToUploadForm()
@@ -71,6 +87,20 @@ class slateSourceData
     algaeForm::endSingleTab();
   }
   
+  protected function createDataset()
+  // --------------------------------------------------------------------------
+  {
+    $this->name = 'Dataset Uploaded ' . date('d-M-Y G:i:s') . ' UTC';
+    $this->record_status->set_rowid_for_active();
+    $this->data_location->read_row_from_database_with_name('Upload');
+    $this->data_group->read_row_from_database_with_name('Other');
+    if ($this->write())
+    {
+      return True;
+    }
+    return False;
+  }
+  
   public function showUploadProcessor()
   // --------------------------------------------------------------------------
   {
@@ -83,14 +113,17 @@ class slateSourceData
         //
         if (isset($_POST['file_selector']))
         {
-          $u = new algaeFile();
-          // TODO: Better way other than just adding a backslash.
-          $u->target_dir = $this->project->getDirectory(slateProject::VECTOR_DATA_DIRECTORY) . '/';
-          if ($u->uploadMultiple('components') > 0)
+          if ($this->createDataset())
           {
-            if (strlen($this->source_filename) > 0)
+            $u = new algaeFile();
+            $u->target_dir = $this->getDirectory();
+            if ($u->makeFolder($u->target_dir))
             {
-              $this->showForm();
+              # echo 'DEBUG: target_dir = ', $u->target_dir, '<p />';
+              if ($u->uploadMultiple('components', True) > 0)
+              {
+                header("Location: {$this->editpage}?rowid={$this->rowid}");
+              }
             }
           }
         }
@@ -101,23 +134,187 @@ class slateSourceData
   public function showForm()
   // --------------------------------------------------------------------------
   {
-    /*
-    algaeForm::startTabs(array(
-      array('#raster_tab', 'Raster'),
-      array('#vector_tab', 'Vector'),
-      array('#other_tab', 'Other')
-    ));
-    $this->showTab('raster_tab', slateSourceData::RASTER);
-    $this->showTab('vector_tab', slateSourceData::VECTOR);
-    $this->showTab('other_tab', slateSourceData::OTHER);
-    algaeform::endTabs();
-    */
     global $app;
     algaeForm::startSingleTab('Source Data');
     echo $app->getPageLink('select_data_to_upload.php', 'Upload', algaeAccess::ROLE_WRITE, $app->config->app_name);
     echo $app->getPageLink('link_to_data.php', 'Link', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
     echo '<p />';
     algaeForm::endSingleTab();
+  }
+  
+  /**
+   * Process a form that's been submitted.
+   */
+  public function processForm()
+  // --------------------------------------------------------------------------
+  {
+    if (isset($_POST['submit']))
+    {
+      if (algaeForm::validTokens(algaeForm::getDefaultToken($this)))
+      {
+        $this->post_control_data();
+        if (isset($_REQUEST['rowid']))
+        {
+          if ($this->update())
+          {
+            algaeApp::successMessage($this->name . ' successfully updated.');
+            return True;
+          }
+          else
+          {
+            algaeApp::errorMessage('Problem updating ' . $this->name . '.');
+          }
+        }
+        else
+        {
+          if ($this->insert())
+          {
+            algaeApp::successMessage($this->name . ' successfully added.');
+            return True;
+          }
+          else
+          {
+            algaeApp::errorMessage('Problem adding ' . $this->name . '.');
+          }
+        }
+      }
+    }
+    return False;
+  }
+  
+  protected function showOverviewTab($form)
+  // --------------------------------------------------------------------------
+  {
+    echo '<div id="overview_tab">';
+    if ($this->rowid > 0)
+    {
+      echo '<input type="hidden" name="rowid" value="', $this->rowid, '" />';
+    }
+    //
+    // ----- table to keep items aligned
+    //
+    algaeTable::start('formTable', 'algae_form_table', '');
+    algaeTable::writeHeader(array(), False);
+    //
+    // ----- name
+    //
+    algaeTable::writeTwoColumns('Name', algaeForm::inputText($this->get_control_id('name'),
+      $this->name, 50, algaeForm::REQUIRED), False);
+    //
+    // ----- data group
+    //
+    algaeTable::writeTwoColumns('Data Group', 
+      $this->data_group->getControl($this, 'data_group_rowid_fk'), False);
+    //
+    // ----- url
+    //
+    algaeTable::writeTwoColumns('Source URL', algaeForm::inputText($this->get_control_id('url'),
+      $this->url, 75), False);
+    //
+    // ----- description
+    //
+    algaeTable::writeTwoColumns('Description', '', False);
+    echo '<tr><td colspan="2">';
+    echo '<textarea name="' . $this->get_control_id('description') . '" cols="83" rows="7">',
+    algaeCore::toHtml($this->description), '</textarea><p />';
+    echo '</td></tr>';
+    //
+    // ----- record status
+    //
+    algaeTable::writeTwoColumns('Status', $this->record_status->getControl($this), False);
+    algaeTable::end();
+    $form->submitButton('Save', False);
+    echo '</div>';
+  }
+  
+  /**
+   * Report files for the process.
+   */
+  protected function reportFiles()
+  // --------------------------------------------------------------------------
+  {
+    $folder = $this->getDirectory();
+    $files = scandir($folder);
+    if (sizeof($files) > 2)
+    {
+      echo sizeof($files), ' file(s) in ', $folder, '<p />';
+      //
+      // ----- initial the table
+      //
+      $tableId = 'filesTable';
+      algaeTable::initTablesorterJavascript($tableId, '[[0,0]]', True, "headers: {2: {sorter:'milDate'} }");
+      algaeTable::start($tableId, 'tablesorter', 'width:80%;');
+      //
+      // ----- table header
+      //
+      $header_array = array(
+        array('Filename', '40%'),
+        array('Size (bytes)', '20%'),
+        array('Date', '20%'),
+        array('Actions', '20%')
+      );
+      algaeTable::writeHeader($header_array, True);
+      //
+      // ----- loop through the results
+      //
+      foreach ($files as $file)
+      {
+        if ( ($file != '.') && ($file != '..') )
+        {
+          $full_filename = algaeCore::getFullPath($folder, $file);
+          echo '<tr>';
+          algaeTable::writeData($file);
+          algaeTable::writeData(algaeCore::getFormattedNumber(filesize($full_filename), 0));
+          algaeTable::writeData(date("d-M-Y G:i:s", filemtime($full_filename)), 0);
+          // algaeTable::writeData($this->getFileActions($full_filename), False);
+          algaeTable::writeData('-');
+          echo '</tr>';
+        }
+      }
+      algaeTable::end();
+    }
+    else
+    {
+      echo 'No file(s) in ', $folder, '<p />';
+    }
+  }
+  
+  /**
+   * Show form to edit a record.
+   */
+  public function showEditForm()
+  // --------------------------------------------------------------------------
+  {
+    $f = new algaeForm();
+    $f->startForm(algaeForm::getDefaultToken($this));
+    //
+    // ----- get data if editing
+    //
+    if (isset($_REQUEST['rowid']))
+    {
+      $this->read_row_from_database_with_rowid($_REQUEST['rowid']);
+    }
+    algaeForm::startTabs(array(
+      array('#overview_tab', 'Dataset'),
+      array('#files_tab', 'Files ')
+    ));
+    //
+    // ----- overview_tab
+    //
+    $this->showOverviewTab($f);
+    //
+    // ----- files_tab
+    //
+    echo '<div id="files_tab">';
+    $this->reportFiles();
+    echo '</div>';
+    //
+    // ----- end tabs
+    //
+    algaeForm::endTabs('tabs');
+    echo '</form>';
+    echo '<p />';
+    echo '<p /><br />';
   }
   
 }

@@ -51,6 +51,7 @@ class slateApp extends algaeApp
     require_once 'slateConfig.php';
     require_once 'refDataDistribution.php';
     require_once 'refDataGroup.php';
+    require_once 'refDataLocation.php';
     require_once 'refDataType.php';
     require_once 'refResolution.php';
     require_once 'refGeometryType.php';
@@ -126,6 +127,72 @@ class slateApp extends algaeApp
       $this->errorMessage('Current project is not defined.');
     }
     return $rowid;
+  }
+  
+  public function getResolutionParameter($parameter_name)
+  // --------------------------------------------------------------------------
+  {
+    $sql = "SELECT r.rowid
+            FROM sp.study_area sa
+            INNER JOIN ref.resolution r ON sa.resolution_rowid_fk = r.rowid
+            WHERE project_rowid_fk = $1";
+    $rowid = algaeDB::getScalarInteger($sql, array($this->getCurrentProjectRowid()), null);
+    if ($rowid != null)
+    {
+      $res = new refResolution();
+      $res->read_row_from_database_with_rowid($rowid);
+      if ($res->name != null)
+      {
+        if ($parameter_name == slateApp::RESOLUTION_OBJECT) {
+          return $res;
+        }
+        if ($parameter_name == slateApp::RESOLUTION_ROWID) {
+          return $res->rowid;
+        }
+        if ($parameter_name == slateApp::RESOLUTION_NAME) {
+          return $res->name;
+        }
+        elseif ($parameter_name == slateApp::RESOLUTION_FOLDER) {
+          return $res->folder;
+        }
+        elseif ($parameter_name == slateApp::RESOLUTION_X) {
+          return $res->cell_size_x;
+        }
+        elseif ($parameter_name == slateApp::RESOLUTION_Y) {
+          return $res->cell_size_y;
+        }
+        else {
+          algaeApp::errorMessage('Unknown resolution parameter ' . $parameter_name . '.');
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Get the default resolution name.
+   * @return string Typically 'Low' or 'High'.
+   */
+  public function getResolutionName()
+  // --------------------------------------------------------------------------
+  {
+    return $this->getResolutionParameter(slateApp::RESOLUTION_NAME);
+  }
+  
+  public function getResolutionFolder()
+  // --------------------------------------------------------------------------
+  {
+    return $this->getResolutionParameter(slateApp::RESOLUTION_FOLDER);
+  }
+  
+  /**
+   * Get the default resolution.
+   * @return integer|number
+   */
+  public function getResolution()
+  // --------------------------------------------------------------------------
+  {
+    return $this->getResolutionParameter(slateApp::RESOLUTION_X);
   }
   
 }

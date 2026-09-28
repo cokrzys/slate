@@ -18,9 +18,6 @@ class slateProject extends algaeTblNamedObjectBase
 {
   
   CONST PROJECT_DIRECTORY = 0;
-  CONST VECTOR_DATA_DIRECTORY = 1;
-  CONST RASTER_DATA_DIRECTORY = 2;
-  CONST OTHER_DATA_DIRECTORY = 3;
   
   public $app_user;
   public $folder;
@@ -77,22 +74,9 @@ class slateProject extends algaeTblNamedObjectBase
   {
     global $app;
     $project_directory = algaeCore::getFullPath($app->config->projects_base_folder, $this->folder);
-    $source_data_directory = algaeCore::getFullPath($project_directory, $app->config->source_data_directory);
     if ($type == slateProject::PROJECT_DIRECTORY)
     {
       return $project_directory;
-    }
-    elseif ($type == slateProject::RASTER_DATA_DIRECTORY) 
-    {
-      return algaeCore::getFullPath($source_data_directory, $app->config->raster_data_sub_directory);
-    }
-    elseif ($type == slateProject::VECTOR_DATA_DIRECTORY)
-    {
-      return algaeCore::getFullPath($source_data_directory, $app->config->vector_data_sub_directory);
-    }
-    elseif ($type == slateProject::OTHER_DATA_DIRECTORY)
-    {
-      return algaeCore::getFullPath($source_data_directory, $app->config->other_data_sub_directory);
     }
     else 
     {
@@ -101,18 +85,23 @@ class slateProject extends algaeTblNamedObjectBase
     return null;
   }
   
-  public function getItemDirectory($resolution_folder, $item_folder, $rowid)
+  public function getItemDirectory($resolution_folder, $item_folder, $rowid, $require_resolution = True)
   // --------------------------------------------------------------------------
   {
     global $app;
     $d = null;
-    if ($resolution_folder != null)
+    if ( ($resolution_folder != null) || (! $require_resolution) )
     {
-      $d = $this->folder . $resolution_folder . '/' . $item_folder;
-      $newdir = algaeCore::getPathFromRowid($rowid, $app->config->rowid_directory_levels);
-      if (strlen($newdir) > 0)
+      $d = $this->getDirectory(slateProject::PROJECT_DIRECTORY);
+      if ($resolution_folder != null)
       {
-        $d .= '/' . $newdir . '/';
+        $d = algaeCore::getFullPath($d, $resolution_folder);
+      }
+      $d = algaeCore::getFullPath($d, $item_folder);
+      $rowid_dir = algaeCore::getPathFromRowid($rowid, $app->config->rowid_directory_levels);
+      if (strlen($rowid_dir) > 0)
+      {
+        $d = algaeCore::getFullPath($d, $rowid_dir);
       }
     }
     else 
