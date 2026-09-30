@@ -49,6 +49,7 @@ class slateSourceData extends algaeTblBase
     $this->editpage = 'edit_source_data.php';
     $this->browsepage = 'browse_source_data.php';
     $this->itemName = 'Source Data';
+    $this->itemNamePlural = 'Source Data';
     $this->project = new slateProject();
     $this->name = null;
     $this->folder = null;
@@ -131,6 +132,56 @@ class slateSourceData extends algaeTblBase
     }
   }
   
+  protected function report_records($tableId = 'sourceData', $where_clause = null)
+  // --------------------------------------------------------------------------
+  {
+    $sql = $this->get_sql(true);
+    //
+    // ----- read the data
+    //
+    $data = algaeDB::getArray($sql, array());
+    if (count($data) > 0)
+    {
+      //
+      // ----- initial the table
+      //
+      algaeTable::initTablesorterJavascript($tableId, '[[0,0]]');
+      algaeTable::start($tableId, 'tablesorter', 'width:100%;');
+      //
+      // ----- setup associative array with header details
+      //
+      $header_array = array();
+      $header_array[] = array('name'=>'Action', 'width'=>'10%', 'stats'=>False, 'sorter'=>'false');
+      $header_array[] = array('name'=>'Dataset', 'width'=>'30%');
+      $header_array[] = array('name'=>'Data Group', 'width'=>'20%');
+      $header_array[] = array('name'=>'Description', 'width'=>'40%');
+      //
+      // ----- write headers
+      //
+      algaeTable::writeHeaderWithAssociativeArray($header_array);
+      //
+      // ----- loop through the results
+      //
+      $o = new slateSourceData();
+      foreach ($data as $row)
+      {
+        $o->init();
+        $o->read_row_from_database_with_rowid($row[0]);
+        echo '<tr>';
+        algaeTable::writeData($o->getActionLinks(), False);
+        algaeTable::writeData($o->getHomepageLink(), False);
+        algaeTable::writeData($o->data_group->getHomepageLink(), False);
+        algaeTable::writeData(algaeCore::getStringWithLinks($o->description), False);
+        echo '</tr>';
+      }
+      algaeTable::end();
+    }
+    else
+    {
+      echo 'Nothing to report.<p />';
+    }
+  }
+  
   public function showForm()
   // --------------------------------------------------------------------------
   {
@@ -139,6 +190,7 @@ class slateSourceData extends algaeTblBase
     echo $app->getPageLink('select_data_to_upload.php', 'Upload', algaeAccess::ROLE_WRITE, $app->config->app_name);
     echo $app->getPageLink('link_to_data.php', 'Link', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
     echo '<p />';
+    $this->report_records();
     algaeForm::endSingleTab();
   }
   
@@ -302,6 +354,54 @@ class slateSourceData extends algaeTblBase
     // ----- overview_tab
     //
     $this->showOverviewTab($f);
+    //
+    // ----- files_tab
+    //
+    echo '<div id="files_tab">';
+    $this->reportFiles();
+    echo '</div>';
+    //
+    // ----- end tabs
+    //
+    algaeForm::endTabs('tabs');
+    echo '</form>';
+    echo '<p />';
+    echo '<p /><br />';
+  }
+  
+  /**
+   * Report the overall details for the field.
+   */
+  protected function reportOverallDetails()
+  // --------------------------------------------------------------------------
+  {
+    echo $this->getActionLinks(), '<p />';
+    algaeTable::start($this->itemName . 'DetailsTable', 'algae_table', 'width:85%');
+    algaeTable::writeHeader(array(), False);
+    algaeTable::writeTwoColumns('Name', '<b>' . $this->name . '</b>', False);
+    algaeTable::writeTwoColumns('Folder', $this->getDirectory());
+    algaeTable::writeTwoColumns('Data Group', $this->data_group->getHomepageLink(), False);
+    algaeTable::writeTwoColumns('Description', algaeCore::getStringWithLinks($this->description), False);
+    algaeTable::writeTwoColumns('Status', algaeCore::getColorBlock($this->record_status->html_color, True, $this->record_status->name), False);
+    algaeTable::writeTwoColumns('Added', $this->timestamp_loaded_utc);
+    algaeTable::writeTwoColumns('Modified', $this->timestamp_modified_utc);
+    algaeTable::writeTwoColumns('Rowid', $this->rowid);
+    algaeTable::end();
+  }
+  
+  public function reportDetails()
+  // --------------------------------------------------------------------------
+  {
+    algaeForm::startTabs(array(
+      array('#overview_tab', 'Dataset'),
+      array('#files_tab', 'Files ')
+    ));
+    //
+    // ----- overview_tab
+    //
+    echo '<div id="overview_tab">';
+    $this->reportOverallDetails();
+    echo '</div>';
     //
     // ----- files_tab
     //

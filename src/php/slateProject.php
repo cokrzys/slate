@@ -356,10 +356,8 @@ class slateProject extends algaeTblNamedObjectBase
     // ----- study_area_tab
     //
     echo '<div id="study_area_tab">';
-    /*
     $sa = new slateStudyArea();
     $sa->reportDetailsForProject($this->rowid);
-    */
     echo '</div>';
     //
     // ----- file_size_estimates

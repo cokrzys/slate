@@ -14,7 +14,7 @@
 
 */
 
-class refUnits extends algaeTblReferenceBaseV2
+class refUnits extends algaeTblReferenceBase
 {
   
   public $abbreviation;
