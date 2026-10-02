@@ -453,13 +453,12 @@ CREATE TABLE sp.source_file
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.source_file_rowid'),
   source_data_rowid_fk INTEGER NOT NULL REFERENCES sp.source_data,
   file_format_rowid_fk INTEGER REFERENCES ref.file_format,
-  name VARCHAR NOT NULL,
-  folder VARCHAR,
+  filename VARCHAR NOT NULL UNIQUE,
+  delete_flag INTEGER,
   size_bytes BIGINT,
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  UNIQUE(project_rowid_fk, name)
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.source_file FOR EACH ROW EXECUTE PROCEDURE

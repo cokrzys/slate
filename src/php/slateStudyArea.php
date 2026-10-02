@@ -16,7 +16,7 @@ class slateStudyArea extends algaeTblBase
   
   public $project;
   public $resolution;
-  public $shapefile;
+  public $source_file;
   public $min_x;
   public $max_x;
   public $min_y;
@@ -53,7 +53,7 @@ class slateStudyArea extends algaeTblBase
     $this->editpage = 'edit_study_area.php';
     $this->project = new slateProject();
     $this->resolution = new refResolution();
-    $this->shapefile = new slateShapefile();
+    $this->source_file = new slateSourceFile();
     $this->geoprocess = new slateGeoProcess();
     $this->place = new slatePlace();
     $this->user = new algaeTblCoreUser();
@@ -67,35 +67,6 @@ class slateStudyArea extends algaeTblBase
     $this->min_long = null;
     $this->max_lat = null;
     $this->max_long = null;
-  }
-  
-  /**
-   * Get an array with the attributes of an object.  For example used to write to JSON
-   * with json_encode($a, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT).
-   */
-  public function getArray()
-  // --------------------------------------------------------------------------
-  {
-    $this->readLatLongBounds();
-    $a = array();
-    $a['rowid'] = $this->rowid;
-    $a['srid'] = $this->srid_fk;
-    $a['shapefile'] = $this->shapefile->source_filename;
-    $a['minX'] = $this->min_x;
-    $a['maxX'] = $this->max_x;
-    $a['minY'] = $this->min_y;
-    $a['maxY'] = $this->max_y;
-    $a['buffer'] = $this->buffer;
-    $a['minLat'] = $this->min_lat;
-    $a['maxLat'] = $this->max_lat;
-    $a['minLong'] = $this->min_long;
-    $a['maxLong'] = $this->max_long;
-    $thumbSize = $this->getThumbnailSize();
-    $a['thumbX'] = $thumbSize[0];
-    $a['thumbY'] = $thumbSize[1];
-    // $a['maskFilename'] = $this->geoprocess->getLayerFilename();
-    // $a['maskGeoProcess'] = $this->geoprocess->getArray(); # creates an infinte loop
-    return $a;
   }
   
   /**
@@ -233,12 +204,16 @@ class slateStudyArea extends algaeTblBase
       //
       //  -----  shapefile
       //
+      echo 'Shapefile that defines the Study Area&nbsp;&nbsp;', 
+        slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), '', False), '<p />';
+      /*
       $sql = "SELECT name
               FROM sp.shapefile
               WHERE project_rowid_fk = $1 AND geometry_type_rowid_fk = (SELECT rowid FROM ref.geometry_type WHERE name = '3DPolygon')";
       $sql = str_replace('$1', $this->project->rowid, $sql);
       echo 'Shapefile that defines the Study Area&nbsp;&nbsp;', algaeForm::selectWithSQL($sql, 
         $this->get_control_id('shapefile_rowid_fk'), $this->shapefile->name), '<p />';
+      */
       
       echo algaeForm::button('defaults', 'Use Defaults', 'setupDefaults();'), '<p />';
       //

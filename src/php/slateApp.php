@@ -61,6 +61,7 @@ class slateApp extends algaeApp
     require_once 'slateProject.php';
     require_once 'slateShapefile.php';
     require_once 'slateSourceData.php';
+    require_once 'slateSourceFile.php';
     require_once 'slateGeoProcess.php';
     require_once 'slatePlace.php';
     require_once 'slateStudyArea.php';

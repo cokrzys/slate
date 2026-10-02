@@ -14,10 +14,6 @@
 class slateSourceData extends algaeTblBase
 {
   
-  CONST RASTER = 0;
-  CONST VECTOR = 1;
-  CONST OTHER = 2;
-  
   public $project;
   public $name;
   public $description;
@@ -170,7 +166,7 @@ class slateSourceData extends algaeTblBase
         echo '<tr>';
         algaeTable::writeData($o->getActionLinks(), False);
         algaeTable::writeData($o->getHomepageLink(), False);
-        algaeTable::writeData($o->data_group->getHomepageLink(), False);
+        algaeTable::writeData($o->data_group->getHomepageLink($this->name, algaeAccess::ROLE_READ, False, null, True), False);
         algaeTable::writeData(algaeCore::getStringWithLinks($o->description), False);
         echo '</tr>';
       }
@@ -188,7 +184,7 @@ class slateSourceData extends algaeTblBase
     global $app;
     algaeForm::startSingleTab('Source Data');
     echo $app->getPageLink('select_data_to_upload.php', 'Upload', algaeAccess::ROLE_WRITE, $app->config->app_name);
-    echo $app->getPageLink('link_to_data.php', 'Link', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
+    echo $app->getPageLink('link_to_data.php', 'Link (TODO)', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
     echo '<p />';
     $this->report_records();
     algaeForm::endSingleTab();
@@ -359,6 +355,7 @@ class slateSourceData extends algaeTblBase
     //
     echo '<div id="files_tab">';
     $this->reportFiles();
+    $this->refreshFilesList();
     echo '</div>';
     //
     // ----- end tabs
@@ -380,7 +377,7 @@ class slateSourceData extends algaeTblBase
     algaeTable::writeHeader(array(), False);
     algaeTable::writeTwoColumns('Name', '<b>' . $this->name . '</b>', False);
     algaeTable::writeTwoColumns('Folder', $this->getDirectory());
-    algaeTable::writeTwoColumns('Data Group', $this->data_group->getHomepageLink(), False);
+    algaeTable::writeTwoColumns('Data Group', $this->data_group->getHomepageLink($this->data_group->name, algaeAccess::ROLE_READ, False, null, True), False);
     algaeTable::writeTwoColumns('Description', algaeCore::getStringWithLinks($this->description), False);
     algaeTable::writeTwoColumns('Status', algaeCore::getColorBlock($this->record_status->html_color, True, $this->record_status->name), False);
     algaeTable::writeTwoColumns('Added', $this->timestamp_loaded_utc);
@@ -406,7 +403,8 @@ class slateSourceData extends algaeTblBase
     // ----- files_tab
     //
     echo '<div id="files_tab">';
-    $this->reportFiles();
+    // $this->reportFiles();
+    $this->refreshFilesList();
     echo '</div>';
     //
     // ----- end tabs
@@ -415,6 +413,58 @@ class slateSourceData extends algaeTblBase
     echo '</form>';
     echo '<p />';
     echo '<p /><br />';
+  }
+  
+  /**
+   * https://stackoverflow.com/questions/7121479/listing-all-the-folders-subfolders-and-files-in-a-directory-using-php
+   * @param string $dir
+   */
+  protected function scanDirectory($dir)
+  // --------------------------------------------------------------------------
+  {
+    $ffs = scandir($dir);
+    
+    unset($ffs[array_search('.', $ffs, true)]);
+    unset($ffs[array_search('..', $ffs, true)]);
+    
+    // prevent empty ordered elements
+    if (count($ffs) < 1)
+      return;
+      
+    foreach ($ffs as $ff)
+    {
+      if (is_dir($dir.'/'.$ff)) 
+      {
+        listFolderFiles($dir.'/'.$ff);
+      }
+      else 
+      {
+        $full_filename = algaeCore::getFullPath($dir, $ff);
+        echo $full_filename, '<p />';
+        
+        $f = new slateSourceFile();
+        $f->filename = $full_filename;
+        $f->source_data->rowid = $this->rowid;
+        $f->size_bytes = filesize($full_filename);
+        $f->file_format->rowid = $f->file_format->getFormatRowidForFilename($full_filename);
+        $f->write();
+        
+      }
+    }
+    echo '</ol>';
+  }
+  
+  public function refreshFilesList()
+  // --------------------------------------------------------------------------
+  {
+    if ($this->folder != null)
+    {
+      $this->scanDirectory($this->folder);
+    }
+    else 
+    {
+      $this->scanDirectory($this->getDirectory());
+    }
   }
   
 }

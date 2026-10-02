@@ -47,6 +47,14 @@ class refFileFormat extends algaeTblBase
     $this->file_group = new refFileGroup();
   }
   
+  public function read_row_from_database_with_extension($extension)
+  // --------------------------------------------------------------------------
+  {
+    $sql = $this->get_sql();
+    $sql .= " WHERE $this->table_name.extension = $1";
+    return $this->read_row_from_database_with_sql($sql, array($extension));
+  }
+  
   /**
    * Process a form that's been submitted.
    */
@@ -268,6 +276,14 @@ class refFileFormat extends algaeTblBase
     echo '</form>';
     echo '<p />';
     echo '<p /><br />';
+  }
+  
+  public function getFormatRowidForFilename($filename)
+  // --------------------------------------------------------------------------
+  {
+    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    $sql = "SELECT rowid FROM $this->table_name WHERE LOWER(extension) = $1";
+    return algaeDB::getScalarInteger($sql, array($ext), null);
   }
   
 }

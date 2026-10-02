@@ -152,20 +152,23 @@
     "parentTableName": "algae.base",
     "comment": "Data and other project files typically uploaded.",
     "source": "slate",
-    "phpClass": "slateFile",
-    "pythonClass": "slateFile",
+    "phpClass": "slateSourceFile",
+    "pythonClass": "slateSourceFile",
     "columns":
     [
       {
         "name": "filename",
         "required": true,
-        "unique_key": true,
+        "uniqueKey": true,
         "canUpdate": false
       },
       {
-        "name": "data_group_rowid_fk",
-        "variableName": "data_group.rowid",
-        "required": true
+        "name": "source_data_rowid_fk",
+        "variableName": "source_data.rowid"
+      },
+      {
+        "name": "file_format_rowid_fk",
+        "variableName": "file_format.rowid"
       },
       {
         "name": "size_bytes"
@@ -248,10 +251,8 @@
         "canUpdate": false
       },
       {
-        "name": "shapefile_rowid_fk",
-        "variableName": "shapefile.rowid",
-        "formVariableName": "shapefile.name",
-        "altWriteSQL": "(SELECT rowid FROM sp.shapefile WHERE name = %(shapefile.name)s)",
+        "name": "source_file_rowid_fk",
+        "variableName": "source_file.rowid",
         "required": true
       },
       {

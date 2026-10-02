@@ -109,13 +109,14 @@ class slateGeoProcess extends algaeTblBase
   }
   
   /**
+   * SHOULD BE ALL HANDLED IN BASE CLASS.
    * Get a link to the homepage for a record.
    * @param string $label Label for the link, will be the name if not specified.
    * @param integer $role Role constant, algaeAccess::ROLE_READ if not defined.
    * @param boolean $new_page True to open in a new tab, default is False.
    * @return string The link.
    */
-  public function getHomepageLink($label = null, $role = algaeAccess::ROLE_READ, $new_page = False, $title = null)
+  public function getHomepageLinkObsolete($label = null, $role = algaeAccess::ROLE_READ, $new_page = False, $title = null)
   // --------------------------------------------------------------------------
   {
     if ($this->homepage != null)
