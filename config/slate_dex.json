@@ -27,6 +27,47 @@
     "columns": []
   },
   {
+    "tableName": "ref.file_group",
+    "parentTableName": "algae.reference_base",
+    "comment": "File group is a broad classifier for file types.  Examples include Raster, Vector, and Documentation.",
+    "source": "slate",
+    "phpClass": "refFileGroup",
+    "pythonClass": "refFileGroup",
+    "columns": []
+  },
+  {
+    "tableName": "ref.file_format",
+    "parentTableName": "algae.base",
+    "comment": "File format is a format classifier based on the file extension.  Examples include shp, tiff, csv.",
+    "source": "slate",
+    "phpClass": "refFileFormat",
+    "pythonClass": "refFileFormat",
+    "columns": 
+    [
+      {
+        "name": "extension",
+        "required": true,
+        "unique": true
+      },
+      {
+        "name": "name"
+      },
+      {
+        "name": "description"
+      },
+      {
+        "name": "file_group_rowid_fk",
+        "variableName": "file_group.rowid",
+        "required": true
+      },
+      {
+        "name": "record_status_rowid_fk",
+        "variableName": "record_status.rowid",
+        "required": true
+      }
+    ]
+  },
+  {
     "tableName": "ref.data_type",
     "parentTableName": "algae.reference_base",
     "comment": "Data type is typically a raster data type, i.e. Byte or Float32.",
@@ -81,22 +122,6 @@
     ]
   },
   {
-    "tableName": "ref.timeframe",
-    "parentTableName": "algae.reference_base",
-    "comment": "Support for the ref.timeframe table.",
-    "source": "slate",
-    "phpClass": "refTimeframe",
-    "pythonClass": "refTimeframe",
-    "columns":
-    [
-      {
-        "name": "short_name",
-        "required": true,
-        "unique": true
-      }
-    ]
-  },
-  {
     "tableName": "ref.resolution",
     "parentTableName": "algae.reference_base",
     "comment": "Support for resolutions and the ref.resolution table.  Slate can work at multiple resolutions for quick modelling through final products with a high level of detail.",
@@ -123,7 +148,7 @@
     ]
   },
   {
-    "tableName": "sp.file",
+    "tableName": "sp.source_file",
     "parentTableName": "algae.base",
     "comment": "Data and other project files typically uploaded.",
     "source": "slate",
@@ -133,13 +158,6 @@
     [
       {
         "name": "filename",
-        "required": true,
-        "unique_key": true,
-        "canUpdate": false
-      },
-      {
-        "name": "project_rowid_fk",
-        "variableName": "project.rowid",
         "required": true,
         "unique_key": true,
         "canUpdate": false

@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.09.27 | Beta.
+  2026.09.30 | Beta.
 
 */
 
@@ -26,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.09.27' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.09.30' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -292,6 +292,89 @@ INSERT INTO ref.data_location (name, description)
   VALUES ('Link', 'Data is accessible on the filesystem outside the slate directory structure.');
   
 --
+-- ref.file_group
+--
+DROP SEQUENCE IF EXISTS ref.file_group_rowid;
+DROP TABLE IF EXISTS ref.file_group;
+CREATE SEQUENCE ref.file_group_rowid START 1;
+CREATE TABLE ref.file_group
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.file_group_rowid'),
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
+  name VARCHAR NOT NULL UNIQUE,
+  html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON ref.file_group FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+INSERT INTO ref.file_group (name, description) 
+  VALUES ('Raster', 'Raster data file.');
+  
+INSERT INTO ref.file_group (name, description) 
+  VALUES ('Vector', 'Vector data file.');
+  
+INSERT INTO ref.file_group (name, description) 
+  VALUES ('Documentation', 'Documentation.');
+  
+--
+-- ref.file_format
+--
+DROP SEQUENCE IF EXISTS ref.file_format_rowid;
+DROP TABLE IF EXISTS ref.file_format;
+CREATE SEQUENCE ref.file_format_rowid START 1;
+CREATE TABLE ref.file_format
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('ref.file_format_rowid'),
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(),
+  file_group_rowid_fk INTEGER NOT NULL REFERENCES ref.file_group,
+  extension VARCHAR NOT NULL UNIQUE,
+  name VARCHAR,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON ref.file_format FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+INSERT INTO ref.file_format (extension, file_group_rowid_fk, name, description) VALUES 
+(
+  'shp', 
+  (SELECT rowid FROM ref.file_group WHERE name = 'Vector'),
+  'Shapefile', 
+  'The shapefile format is a geospatial vector data format for geographic information system (GIS) software. It is developed and regulated by Esri as a mostly open specification for data interoperability among Esri and other GIS software products. https://en.wikipedia.org/wiki/Shapefile'
+);
+
+INSERT INTO ref.file_format (extension, file_group_rowid_fk, name, description) VALUES 
+(
+  'tiff', 
+  (SELECT rowid FROM ref.file_group WHERE name = 'Raster'),
+  'GeoTIFF', 
+  'GeoTIFF is a public domain metadata standard which allows georeferencing information to be embedded within a TIFF file. https://en.wikipedia.org/wiki/GeoTIFF'
+);
+
+INSERT INTO ref.file_format (extension, file_group_rowid_fk, name, description) VALUES 
+(
+  'tif', 
+  (SELECT rowid FROM ref.file_group WHERE name = 'Raster'),
+  'GeoTIFF', 
+  'GeoTIFF is a public domain metadata standard which allows georeferencing information to be embedded within a TIFF file. https://en.wikipedia.org/wiki/GeoTIFF'
+);
+
+INSERT INTO ref.file_format (extension, file_group_rowid_fk, name, description) VALUES 
+(
+  'PDF', 
+  (SELECT rowid FROM ref.file_group WHERE name = 'Documentation'),
+  'Portable Document Format',
+  'Portable Document Format (PDF), standardized as ISO 32000, is a file format developed by Adobe in 1993 used to present documents, including text formatting and images, in a manner independent of application software, hardware, and operating systems. https://en.wikipedia.org/wiki/PDF'
+);
+  
+--
 -- drop anything that exists
 --
 DROP SCHEMA IF EXISTS sp CASCADE;
@@ -357,6 +440,29 @@ CREATE TABLE sp.source_data
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.source_data FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+--
+-- sp.source_file
+--
+DROP TABLE IF EXISTS sp.source_file;
+DROP SEQUENCE IF EXISTS sp.source_file_rowid;
+CREATE SEQUENCE sp.source_file_rowid START 1;
+CREATE TABLE sp.source_file
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.source_file_rowid'),
+  source_data_rowid_fk INTEGER NOT NULL REFERENCES sp.source_data,
+  file_format_rowid_fk INTEGER REFERENCES ref.file_format,
+  name VARCHAR NOT NULL,
+  folder VARCHAR,
+  size_bytes BIGINT,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(project_rowid_fk, name)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.source_file FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
 --
@@ -553,28 +659,6 @@ CREATE TABLE sp.class
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.class FOR EACH ROW EXECUTE PROCEDURE
-  algae_update_modified_column();
-  
---
--- sp.file, references to uploaded single files
---
-DROP TABLE IF EXISTS sp.file;
-DROP SEQUENCE IF EXISTS sp.file_rowid;
-CREATE SEQUENCE sp.file_rowid START 1;
-CREATE TABLE sp.file
-(
-  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.file_rowid'),
-  project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
-  data_group_rowid_fk INTEGER NOT NULL REFERENCES ref.data_group,
-  filename VARCHAR NOT NULL,
-  size_bytes BIGINT NOT NULL,
-  description VARCHAR,
-  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  UNIQUE(project_rowid_fk, filename)
-);
-CREATE TRIGGER update_modified BEFORE UPDATE
-  ON sp.file FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
 --

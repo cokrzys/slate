@@ -56,10 +56,13 @@ class slateApp extends algaeApp
     require_once 'refResolution.php';
     require_once 'refGeometryType.php';
     require_once 'refUnits.php';
+    require_once 'refFileGroup.php';
+    require_once 'refFileFormat.php';
     require_once 'slateProject.php';
     require_once 'slateShapefile.php';
     require_once 'slateSourceData.php';
     require_once 'slateGeoProcess.php';
+    require_once 'slatePlace.php';
     require_once 'slateStudyArea.php';
   }
   
@@ -108,10 +111,24 @@ class slateApp extends algaeApp
     echo '</ul>';
     echo '<div style="margin-left:1em;">Add or Edit<p /></div>';
     echo '<ul>';
-    echo '<li>', $this->getPageLink('edit_data_distribution.php', 'Data Distributions', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
-    echo '<li>', $this->getPageLink('edit_data_group.php', 'Data Groups', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
-    echo '<li>', $this->getPageLink('edit_data_type.php', 'Data Type', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
-    echo '<li>', $this->getPageLink('edit_resolution.php', 'Resolutions', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
+    echo '<li>', $this->getPageLink('edit_data_distribution.php', 'Data Distributions', algaeAccess::ROLE_WRITE, 
+      $this->config->app_name, ''), $this->getDetailString('Categorical, Sequential'), '</li>';
+    
+    echo '<li>', $this->getPageLink('edit_data_group.php', 'Data Groups', algaeAccess::ROLE_WRITE, 
+      $this->config->app_name, ''), $this->getDetailString('Geology, Geophysics, Cultural'), '</li>';
+    
+    echo '<li>', $this->getPageLink('edit_data_type.php', 'Data Type', algaeAccess::ROLE_WRITE, 
+      $this->config->app_name, ''), $this->getDetailString('Byte, Float32, Shapefile'), '</li>';
+    
+      echo '<li>', $this->getPageLink('edit_file_format.php', 'File Format', algaeAccess::ROLE_WRITE,
+        $this->config->app_name, ''), $this->getDetailString('shp, tiff, csv'), '</li>';
+    
+    echo '<li>', $this->getPageLink('edit_file_group.php', 'File Group', algaeAccess::ROLE_WRITE, 
+      $this->config->app_name, ''), $this->getDetailString('Raster, Vector, Documentation'), '</li>';
+    
+    echo '<li>', $this->getPageLink('edit_resolution.php', 'Resolutions', algaeAccess::ROLE_WRITE, 
+      $this->config->app_name, ''), $this->getDetailString('Cell Size | 50 Meters, 1000 Meters'), '</li>';
+    
     echo '<li>', $this->getPageLink('edit_task.php', '[TODO] Tasks', algaeAccess::ROLE_ADMIN, $this->config->app_name, ''), '</li>';
     echo '<li>', $this->getPageLink('edit_units.php', '[TODO] Units', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
     echo '</ul>';

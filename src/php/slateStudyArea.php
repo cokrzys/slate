@@ -269,12 +269,12 @@ class slateStudyArea extends algaeTblBase
       algaeTable::start('minMaxTable', 'algae_form_table', '');
       algaeTable::writeHeader(array(), False);
       echo '<tr>';
-      algaeTable::writeData('X Min, X Max');
+      algaeTable::writeData('X Min' . $app->config->menu_separator . 'X Max', False);
       algaeTable::writeData(algaeForm::inputText('min_x', $this->min_x), False);
       algaeTable::writeData(algaeForm::inputText('max_x', $this->max_x), False);
       echo '</tr>';
       echo '<tr>';
-      algaeTable::writeData('Y Min, Y Max');
+      algaeTable::writeData('Y Min' . $app->config->menu_separator . 'Y Max', False);
       algaeTable::writeData(algaeForm::inputText('min_y', $this->min_y), False);
       algaeTable::writeData(algaeForm::inputText('max_y', $this->max_y), False);
       echo '</tr>';
@@ -463,7 +463,7 @@ class slateStudyArea extends algaeTblBase
     }
     else 
     {
-      if ($this->getNumValidShapefiles($project_rowid_fk) > 0)
+      if ( ($this->getNumValidShapefiles($project_rowid_fk) > 0) || (True == True) )
       {
         $setup_link = $app->getPageLink($this->editpage . '?project_rowid_fk=' . $project_rowid_fk,
           'Setup the Study Area', algaeAccess::ROLE_WRITE, $app->config->app_name, '') . '<p />';
