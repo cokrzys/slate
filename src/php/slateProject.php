@@ -47,7 +47,6 @@ class slateProject extends algaeTblNamedObjectBase
     $this->editpage = 'edit_project.php';
     // $this->deletepage = 'delete_project.php';  // TODO: Enable this after making cascade deletes
     $this->abbreviation = null;
-    $this->owner = null;
     $this->folder = null;
     $this->public = 'No';
     $this->copyright = null;
@@ -139,11 +138,6 @@ class slateProject extends algaeTblNamedObjectBase
       echo 'Creating directory ', $project_directory, '<p />';
       if (mkdir($project_directory))
       {
-        $source_data_directory = algaeCore::getFullPath($project_directory . $app->config->source_data_directory);
-        mkdir($source_data_directory);
-        mkdir(algaeCore::getFullPath($source_data_directory, $app->config->vector_data_sub_directory));
-        mkdir(algaeCore::getFullPath($source_data_directory, $app->config->raster_data_sub_directory));
-        mkdir(algaeCore::getFullPath($source_data_directory, $app->config->other_data_sub_directory));
         $app->successMessage('Project directories successfully created.');
         return True;
       }
@@ -157,41 +151,22 @@ class slateProject extends algaeTblNamedObjectBase
     return True;
   }
   
-  /**
-   * Show form to edit a record.
-   */
-  protected function showEntryForm()
-  // --------------------------------------------------------------------------
+  protected function showOverviewFormTab($f, $id)
   {
     global $app;
-    $f = new algaeForm();
-    //
-    // ----- get data if editing
-    //
-    if (isset($_REQUEST['rowid']))
-    {
-      $this->read_row_from_database_with_rowid($_REQUEST['rowid']);
-    }
-    //
-    // ----- start the form
-    //
-    $f->startForm(algaeForm::getDefaultToken($this));
-    if ($this->rowid > 0)
-    {
-      echo '<input type="hidden" name="rowid" value="', $this->rowid, '" />';
-    }
+    echo '<div id="', $id, '">';
     //
     // ----- table to keep items aligned
     //
     algaeTable::start('formTable', 'algae_form_table', '');
     algaeTable::writeHeader(array(), False);
     //
-    // ----- 
+    // -----
     //
     algaeTable::writeTwoColumns('Name', algaeForm::inputText($this->get_control_id('name'), $this->name, 50, algaeForm::REQUIRED), False);
     algaeTable::writeTwoColumns('Abbreviation', algaeForm::inputText($this->get_control_id('abbreviation'), $this->abbreviation, 10, algaeForm::REQUIRED) .
       $app->getDetailString('Lowercase, no spaces or trailing underscores.  Default for filename prefixes.'), False);
-    algaeTable::writeTwoColumns('Folder', algaeForm::inputText($this->get_control_id('folder'), $this->folder, 20, algaeForm::REQUIRED) . 
+    algaeTable::writeTwoColumns('Folder', algaeForm::inputText($this->get_control_id('folder'), $this->folder, 20, algaeForm::REQUIRED) .
       $app->getDetailString('Lowercase, no spaces.'), False);
     algaeTable::writeTwoColumns('Copyright', algaeForm::inputText($this->get_control_id('copyright'), $this->copyright, 50), False);
     //
@@ -206,32 +181,78 @@ class slateProject extends algaeTblNamedObjectBase
     //
     algaeTable::writeTwoColumns('Status', $this->record_status->getControl($this), False);
     algaeTable::end();
-    echo '<p />';
-    $f->endForm('Save', False);
-    echo '<p /><br />';
+    $f->submitButton('Save', False);
+    echo '</div>';
+  }
+  
+  protected function showExtentsFormTab($f, $id)
+  // --------------------------------------------------------------------------
+  {
+    global $app;
+    echo '<div id="', $id, '" style="margin-left:10px;margin-top:10px;">';
+  
+    echo 'Study area shapefile &nbsp;&nbsp;',
+    slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), '', False), '<p />';    
+    echo algaeForm::button('defaults', 'Get Defaults', 'setupDefaults();'), '<p />';
+    
+    //
+    // -----
+    //
+    $width = 15;
+    algaeTable::start('minMaxTable', 'algae_form_table', '');
+    algaeTable::writeHeader(array(), False);
+    echo '<tr>';
+    algaeTable::writeData('X Min' . $app->config->menu_separator . 'X Max', False);
+    algaeTable::writeData(algaeForm::inputText('min_x', $this->min_x, $width), False);
+    algaeTable::writeData(algaeForm::inputText('max_x', $this->max_x, $width), False);
+    echo '</tr>';
+    echo '<tr>';
+    algaeTable::writeData('Y Min' . $app->config->menu_separator . 'Y Max', False);
+    algaeTable::writeData(algaeForm::inputText('min_y', $this->min_y, $width), False);
+    algaeTable::writeData(algaeForm::inputText('max_y', $this->max_y, $width), False);
+    echo '</tr>';
+    algaeTable::end();
+  
+    echo '</div>';
   }
   
   /**
-   * Show form to edit a record.
+   * Show form to edit.
    */
   public function showForm()
   // --------------------------------------------------------------------------
   {
-    $this->showEntryForm();
-    /* TODO: Obsolete ?
-    if ($this->added)
+    $f = new algaeForm();
+    $f->startForm(algaeForm::getDefaultToken($this));
+    //
+    // ----- get data if editing
+    //
+    if (isset($_REQUEST['rowid']))
     {
-      echo 'Goto the ', $this->getHomepageLink(), ' homepage.<p />';
+      $this->read_row_from_database_with_rowid($_REQUEST['rowid']);
     }
-    elseif ($this->updated)
+    if ($this->rowid > 0)
     {
-      header("Location: {$this->homepage}?rowid={$this->rowid}");
+      echo '<input type="hidden" name="rowid" value="', $this->rowid, '" />';
     }
-    else 
-    {
-      $this->showEntryForm();
-    }
-    */
+    $overview_tab_id = 'overview_tab';
+    $extents_tab_id = 'extents_tab';
+    algaeForm::startTabs(array(
+      array('#' . $overview_tab_id, 'Overview'),
+      array('#' . $extents_tab_id, 'Details')
+    ));
+    //
+    // ----- tabs
+    //
+    $this->showOverviewFormTab($f, $overview_tab_id);
+    $this->showExtentsFormTab($f, $extents_tab_id);
+    //
+    // ----- end tabs
+    //
+    algaeForm::endTabs('tabs');
+    echo '</form>';
+    echo '<p />';
+    echo '<p /><br />';    
   }
   
   /**
@@ -339,8 +360,8 @@ class slateProject extends algaeTblNamedObjectBase
     algaeForm::startTabs(array(
       array('#overview_tab', 'Overview'),
       // array('#shapefiles_tab', 'Raw Data'),
-      array('#study_area_tab', 'Study Area'),
-      array('#bounds_tab', 'Lat-Long Bounds'),
+      array('#extents_tab', 'Extents'),
+      // array('#bounds_tab', 'Lat-Long Bounds'),
       array('#file_size_estimates', 'File Size Estimates')
       // array('#map_tab', 'Map'),
       // array('#build_tab', 'Processing'),
@@ -353,9 +374,9 @@ class slateProject extends algaeTblNamedObjectBase
     $this->reportOverallDetails();
     echo '</div>';
     //
-    // ----- study_area_tab
+    // ----- extents_tab
     //
-    echo '<div id="study_area_tab">';
+    echo '<div id="extents_tab">';
     // $sa = new slateStudyArea();
     // $sa->reportDetailsForProject($this->rowid);
     echo '</div>';
@@ -372,33 +393,6 @@ class slateProject extends algaeTblNamedObjectBase
     // $sa->readLatLongBounds();
     // $sa->reportLatLongBounds();
     echo '</div>';
-    //
-    // ----- map tab
-    //
-    // echo '<div id="map_tab">';
-    // echo '</div>';
-    //
-    // ----- shapefiles tab
-    //
-//     echo '<div id="shapefiles_tab">';
-//     $s = new slateShapefile();
-//     $s->project->rowid = $this->rowid;
-//     $s->reportRecords('slateShapefilesTable', ' WHERE sp.project.rowid = ' . $this->rowid);
-//     echo '</div>';
-    //
-    // ----- processing tab
-    //
-//     echo '<div id="build_tab">';
-//     $ps = new slateGeoprocess();
-//     $ps->reportForProject($this->rowid);
-//     echo '</div>';
-    //
-    // ----- layers tab
-    //
-//     echo '<div id="layers_tab">';
-//     $l = new slateLayer();
-//     $l->reportForProject($this->rowid);
-//     echo '</div>';
     //
     // ----- end of all tabs div
     //

@@ -258,14 +258,7 @@
       {
         "name": "resolution_rowid_fk",
         "variableName": "resolution.rowid",
-        "formVariableName": "resolution.name",
-        "altWriteSQL": "(SELECT rowid FROM ref.resolution WHERE name = %(resolution.name)s)",
         "required": true
-      },
-      {
-        "name": "app_user_rowid_fk",
-        "canUpdate": false,
-        "variableName": "app_user.rowid"
       },
       {
         "name": "geoprocess_rowid_fk",
@@ -273,9 +266,7 @@
       },
       {
         "name": "place_rowid_fk",
-        "variableName": "place.rowid",
-        "formVariableName": "place.name",
-        "altWriteSQL": "(SELECT rowid FROM sp.place WHERE name = %(place.name)s)"
+        "variableName": "place.rowid"
       },
       {
         "name": "coord_system_name",

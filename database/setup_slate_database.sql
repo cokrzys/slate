@@ -564,7 +564,6 @@ CREATE TABLE sp.study_area
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   shapefile_rowid_fk INTEGER NOT NULL REFERENCES sp.shapefile,
   resolution_rowid_fk INTEGER NOT NULL REFERENCES ref.resolution,
-  app_user_rowid_fk INTEGER NOT NULL REFERENCES core.app_user,
   srid_fk INTEGER NOT NULL REFERENCES spatial_ref_sys,
   geoprocess_rowid_fk INTEGER REFERENCES sp.geoprocess,
   place_rowid_fk INTEGER REFERENCES sp.place,

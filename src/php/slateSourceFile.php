@@ -70,6 +70,64 @@ class slateSourceFile extends algaeTblBase
     return slateSourceFile::selectWithFormat($format->rowid, $id, $default, $required);
   }
   
+  public function getShapefileExtents($filename)
+  // --------------------------------------------------------------------------
+  {
+    global $app;
+    $script = algaeCore::getFullPath($app->config->getAppConfigParameter($app->config->app_name, 'scriptsPath'), 'shp_extents.sh');    
+    $output = array();
+    exec($script . ' ' . $filename, $output);
+    foreach ($output as $key => $line)
+    {
+      if ($key == 0)
+      {
+        $pieces = explode(" ", $line);
+        if (count($pieces) == 4)
+        {
+          return [
+            [floatval($pieces[0]), floatval($pieces[2])],
+            [floatval($pieces[1]), floatval($pieces[3])]
+          ];
+        }
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Get shapefile extents via an AJAX call.
+   */
+  public static function getShapefileExtentsViaAJAX()
+  // --------------------------------------------------------------------------
+  {
+    //
+    // ----- check required parameters
+    //
+    if (isset($_GET['source_file_rowid_fk']))
+    {
+      $s = new slateSourceFile();
+      $s->read_row_from_database_with_rowid($_GET['source_file_rowid_fk']);
+      $extents = $s->getShapefileExtents($s->filename);
+      //
+      // ----- return the result
+      //
+      $results = array();
+      $results['status'] = 'success';
+      $results['min_x'] = $extents[0][0];
+      $results['max_x'] = $extents[1][0];
+      $results['min_y'] = $extents[0][1];
+      $results['max_y'] = $extents[1][1];
+      // error_log('DEBUG: json_encode($results) = ' . json_encode($results), 0);
+      echo json_encode($results);
+      exit;
+    }
+    else
+    {
+      echo json_encode(array('status'=>'fail'));
+      exit;
+    }
+  }
+  
 }
 
 

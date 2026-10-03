@@ -2,7 +2,7 @@
 
   /**
   
-    slate | Edit a project.
+    slate | Get shapefile extents via an ajax call.
     
     @author    Brian Krzys (brian.krzys@rtspatial.com)
     @copyright (c) 2026 RTSpatial Ltd.
@@ -23,23 +23,8 @@
   //
   algaeAccess::isLoggedIn();
   $app->readRoles();
-  $app->isSufficientRights(algaeAccess::ROLE_WRITE, $app->config->app_name);
+  $app->isSufficientRights(algaeAccess::ROLE_READ, $app->config->app_name);
   //
-  // ----- initial the html page
+  // ----- get the extents
   //
-  $title = 'Project';
-  $app->startPage($title, '', False);
-  $app->addJavaScriptLibrary('js/edit_study_area.js');
-  $app->closeHeadSection();
-  $app->showHeader($title);
-  //
-  // ----- page content
-  //
-  $o = new slateProject();  
-  $o->processForm();
-  $o->showForm();
-  //
-  // ----- finish up and close page
-  //
-  $app->showFooter();
-  $app->closePage();
+  slateSourceFile::getShapefileExtentsViaAJAX();
