@@ -1,9 +1,12 @@
 #!/bin/bash
 #
-# Get the extents of a shapefile.
+#  slate | Get shapefile exents using ogrinfo.
 #
-# Usage: ./shp_extents test.shp
-# 
+#  @author    Brian Krzys (brian.krzys@rtspatial.com)
+#  @copyright (c) 2026 RTSpatial Ltd.
+#  @license   SPDX-License-Identifier: MIT
+#  @link      https://github.com/cokrzys/slate
+#
 
 SHPFILE=$1
 BASE=`basename $SHPFILE .shp`

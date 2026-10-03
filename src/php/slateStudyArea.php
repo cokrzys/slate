@@ -204,18 +204,9 @@ class slateStudyArea extends algaeTblBase
       //
       //  -----  shapefile
       //
-      echo 'Shapefile that defines the Study Area&nbsp;&nbsp;', 
-        slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), '', False), '<p />';
-      /*
-      $sql = "SELECT name
-              FROM sp.shapefile
-              WHERE project_rowid_fk = $1 AND geometry_type_rowid_fk = (SELECT rowid FROM ref.geometry_type WHERE name = '3DPolygon')";
-      $sql = str_replace('$1', $this->project->rowid, $sql);
-      echo 'Shapefile that defines the Study Area&nbsp;&nbsp;', algaeForm::selectWithSQL($sql, 
-        $this->get_control_id('shapefile_rowid_fk'), $this->shapefile->name), '<p />';
-      */
-      
-      echo algaeForm::button('defaults', 'Use Defaults', 'setupDefaults();'), '<p />';
+      echo 'Study area shapefile &nbsp;&nbsp;',
+      slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), '', False), '<p />';
+      echo algaeForm::button('defaults', 'Get Defaults', 'setupDefaults();'), '<p />';
       //
       // ----- table to keep items aligned
       //
@@ -231,6 +222,7 @@ class slateStudyArea extends algaeTblBase
       //
       // ----- reference place
       //
+      /*
       $sql = "SELECT name
               FROM sp.place
               WHERE project_rowid_fk = $1";
@@ -238,20 +230,22 @@ class slateStudyArea extends algaeTblBase
       algaeTable::writeTwoColumns('Reference Place', algaeForm::selectWithSQL($sql, 
         $this->get_control_id('place_rowid_fk'), $this->place->name), False);
       algaeTable::end();
+      */
       //
       // ----- 
       //
+      $width = 15;
       algaeTable::start('minMaxTable', 'algae_form_table', '');
       algaeTable::writeHeader(array(), False);
       echo '<tr>';
       algaeTable::writeData('X Min' . $app->config->menu_separator . 'X Max', False);
-      algaeTable::writeData(algaeForm::inputText('min_x', $this->min_x), False);
-      algaeTable::writeData(algaeForm::inputText('max_x', $this->max_x), False);
+      algaeTable::writeData(algaeForm::inputText('min_x', $this->min_x, $width), False);
+      algaeTable::writeData(algaeForm::inputText('max_x', $this->max_x, $width), False);
       echo '</tr>';
       echo '<tr>';
       algaeTable::writeData('Y Min' . $app->config->menu_separator . 'Y Max', False);
-      algaeTable::writeData(algaeForm::inputText('min_y', $this->min_y), False);
-      algaeTable::writeData(algaeForm::inputText('max_y', $this->max_y), False);
+      algaeTable::writeData(algaeForm::inputText('min_y', $this->min_y, $width), False);
+      algaeTable::writeData(algaeForm::inputText('max_y', $this->max_y, $width), False);
       echo '</tr>';
       algaeTable::end();
       //
@@ -260,7 +254,7 @@ class slateStudyArea extends algaeTblBase
       algaeTable::start('advancedTable', 'algae_form_table', '');
       algaeTable::writeHeader(array(), False);
       
-      algaeTable::writeTwoColumns('Resolution', algaeForm::selectWithTableAndField('ref.resolution', 'name',
+      algaeTable::writeTwoColumns('Resolution', algaeForm::selectWithTableAndFieldWithRowid('ref.resolution', 'name',
         $this->get_control_id('resolution_rowid_fk'), $this->resolution->name, True), False);
       
       algaeTable::writeTwoColumns('Buffer', algaeForm::inputText('buffer', $this->buffer), False);

@@ -94,6 +94,28 @@ class slateSourceFile extends algaeTblBase
     return null;
   }
   
+  public function getShapefileEPSG($filename)
+  // --------------------------------------------------------------------------
+  {
+    global $app;
+    $script = algaeCore::getFullPath($app->config->getAppConfigParameter($app->config->app_name, 'scriptsPath'), 'shp_epsg.sh');
+    $output = array();
+    exec($script . ' ' . $filename, $output);
+    foreach ($output as $key => $line)
+    {
+      if ($key == 0)
+      {
+        // ID["EPSG",26911]]
+        $pieces = explode(",", $line);
+        if (count($pieces) == 2)
+        {
+          return trim($pieces[1], ']');
+        }
+      }
+    }
+    return null;
+  }
+  
   /**
    * Get shapefile extents via an AJAX call.
    */
@@ -108,6 +130,7 @@ class slateSourceFile extends algaeTblBase
       $s = new slateSourceFile();
       $s->read_row_from_database_with_rowid($_GET['source_file_rowid_fk']);
       $extents = $s->getShapefileExtents($s->filename);
+      $epsg = $s->getShapefileEPSG($s->filename);
       //
       // ----- return the result
       //
@@ -117,6 +140,7 @@ class slateSourceFile extends algaeTblBase
       $results['max_x'] = $extents[1][0];
       $results['min_y'] = $extents[0][1];
       $results['max_y'] = $extents[1][1];
+      $results['epsg'] = $epsg;;
       // error_log('DEBUG: json_encode($results) = ' . json_encode($results), 0);
       echo json_encode($results);
       exit;

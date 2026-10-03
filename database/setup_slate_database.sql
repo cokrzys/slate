@@ -562,7 +562,7 @@ CREATE TABLE sp.study_area
 (
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.study_area_rowid'),
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
-  shapefile_rowid_fk INTEGER NOT NULL REFERENCES sp.shapefile,
+  source_file_rowid_fk INTEGER NOT NULL REFERENCES sp.source_file,
   resolution_rowid_fk INTEGER NOT NULL REFERENCES ref.resolution,
   srid_fk INTEGER NOT NULL REFERENCES spatial_ref_sys,
   geoprocess_rowid_fk INTEGER REFERENCES sp.geoprocess,

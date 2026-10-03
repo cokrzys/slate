@@ -19,6 +19,7 @@ function getDefaults(source_file_rowid_fk) {
       	$("#max_x").val(JSON.parse(data.max_x));
       	$("#min_y").val(JSON.parse(data.min_y));
       	$("#max_y").val(JSON.parse(data.max_y));
+      	$("#srid_fk").val(JSON.parse(data.epsg));
       }
     }
   });
@@ -29,9 +30,9 @@ function setupDefaults() {
 //--------------------------------------------------------------------------
 	console.log('DEBUG: In setupDefaults().');
 	
-	var source_file_rowid_fk = $("#source_file_rowid_fk").val();
+	var source_file_rowid_fk = $("#source_file_dex_dot_rowid").val();
 	
-	console.log('DEBUG: source_file_rowid_fk = ' + source_file_rowid_fk);
+	console.log('DEBUG: source_file_dex_dot_rowid = ' + source_file_rowid_fk);
 	
 	if (source_file_rowid_fk.length > 0) {
 		console.log('DEBUG: Have everything we need.');

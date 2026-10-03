@@ -360,7 +360,7 @@ class slateProject extends algaeTblNamedObjectBase
     algaeForm::startTabs(array(
       array('#overview_tab', 'Overview'),
       // array('#shapefiles_tab', 'Raw Data'),
-      array('#extents_tab', 'Extents'),
+      array('#study_area_tab', 'Study Area'),
       // array('#bounds_tab', 'Lat-Long Bounds'),
       array('#file_size_estimates', 'File Size Estimates')
       // array('#map_tab', 'Map'),
@@ -374,11 +374,11 @@ class slateProject extends algaeTblNamedObjectBase
     $this->reportOverallDetails();
     echo '</div>';
     //
-    // ----- extents_tab
+    // ----- study_area_tab
     //
-    echo '<div id="extents_tab">';
-    // $sa = new slateStudyArea();
-    // $sa->reportDetailsForProject($this->rowid);
+    echo '<div id="study_area_tab">';
+    $sa = new slateStudyArea();
+    $sa->reportDetailsForProject($this->rowid);
     echo '</div>';
     //
     // ----- file_size_estimates

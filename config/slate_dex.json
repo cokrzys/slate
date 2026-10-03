@@ -245,8 +245,6 @@
       {
         "name": "project_rowid_fk",
         "variableName": "project.rowid",
-        "formVariableName": "project.name",
-        "altWriteSQL": "(SELECT rowid FROM sp.project WHERE name = %(project.name)s)",
         "required": true,
         "canUpdate": false
       },
