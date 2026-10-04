@@ -194,7 +194,7 @@ class slateStudyArea extends algaeTblBase
       //  -----  shapefile
       //
       echo 'Study area shapefile &nbsp;&nbsp;',
-      slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), '', False), '<p />';
+        slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), '', False), '<p />';
       echo algaeForm::button('defaults', 'Get Defaults', 'setupDefaults();'), '<p />';
       //
       // ----- table to keep items aligned
@@ -420,17 +420,9 @@ class slateStudyArea extends algaeTblBase
     }
     else 
     {
-      if ( ($this->getNumValidShapefiles($project_rowid_fk) > 0) || (True == True) )
-      {
-        $setup_link = $app->getPageLink($this->editpage . '?project_rowid_fk=' . $project_rowid_fk,
-          'Setup the Study Area', algaeAccess::ROLE_WRITE, $app->config->app_name, '') . '<p />';
-        echo $setup_link;
-      }
-      else 
-      {
-        $s = new slateShapefile();
-        echo '<a href="', $s->selectpage, '?project_rowid_fk=', $project_rowid_fk, '">Upload a Shapefile</a> containing the Study Area then continue the Study Area Setup.<p />';
-      }
+      $setup_link = $app->getPageLink($this->editpage . '?project_rowid_fk=' . $project_rowid_fk,
+        'Setup the Study Area', algaeAccess::ROLE_WRITE, $app->config->app_name, '') . '<p />';
+      echo $setup_link;
     }
   }
   

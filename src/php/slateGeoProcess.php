@@ -85,12 +85,12 @@ class slateGeoProcess extends algaeTblBase
     $this->available_geoprocesses = array();
     $this->available_geoprocesses[] = array('Categorical Layer', 'edit_categorical.php');
     $this->available_geoprocesses[] = array('Create a Mask', 'edit_mask.php');
-    $this->available_geoprocesses[] = array('Proximity Raster', 'edit_proximity.php');
     $this->available_geoprocesses[] = array('Import Raster', 'edit_reproject_raster.php');
+    $this->available_geoprocesses[] = array('Overlay Raster', 'edit_overlay.php');
+    $this->available_geoprocesses[] = array('Proximity Raster', 'edit_proximity.php');
     // $this->available_geoprocesses[] = array('Re-Project Shapefile', 'edit_reproject_shapefile.php');
     // $this->available_geoprocesses[] = array('Similarity Model', 'edit_similarity_model.php');
     $this->available_geoprocesses[] = array('Subset Shapefile', 'edit_subset_shapefile.php');
-    $this->available_geoprocesses[] = array('Overlay Raster', 'edit_overlay.php');
   }
   
   /**
@@ -109,26 +109,6 @@ class slateGeoProcess extends algaeTblBase
   }
   
   /**
-   * SHOULD BE ALL HANDLED IN BASE CLASS.
-   * Get a link to the homepage for a record.
-   * @param string $label Label for the link, will be the name if not specified.
-   * @param integer $role Role constant, algaeAccess::ROLE_READ if not defined.
-   * @param boolean $new_page True to open in a new tab, default is False.
-   * @return string The link.
-   */
-  public function getHomepageLinkObsolete($label = null, $role = algaeAccess::ROLE_READ, $new_page = False, $title = null)
-  // --------------------------------------------------------------------------
-  {
-    if ($this->homepage != null)
-    {
-      global $app;
-      if ($label == null) $label = $this->name;
-      return $app->getPageLink($this->homepage . '?rowid=' . $this->rowid, $label, $role, $app->settings->appName, '', $new_page);
-    }
-    return '';
-  }
-  
-  /**
    * Decode parameters stored in $this->parameters.  Implemented in a derived
    * class if needed.
    */
@@ -142,8 +122,8 @@ class slateGeoProcess extends algaeTblBase
   {
     global $app;
     $html = '';
-    if ($addMenuSeparator) { $html .= $app->settings->menuSeparator; }
-    $html .= $app->getPageLink('run_geoprocess.php?rowid=' . $this->rowid, 'Run', algaeAccess::ROLE_WRITE, $app->settings->appName, '');
+    if ($addMenuSeparator) { $html .= $app->config->menu_separator; }
+    $html .= $app->getPageLink('run_geoprocess.php?rowid=' . $this->rowid, 'Run', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
     return $html;
   }
   
@@ -242,8 +222,8 @@ class slateGeoProcess extends algaeTblBase
     $html = algaeFile::getDownloadLink($filename, 'Download', False);
     if ($this->isTextFile($filename))
     {
-      $html .= $app->settings->menuSeparator;
-      $html .= $app->getPageLink('view_text_file.php?filename=' . urlencode($filename), 'View', algaeAccess::ROLE_READ, $app->settings->appName, '', True);
+      $html .= $app->config->menu_separator;
+      $html .= $app->getPageLink('view_text_file.php?filename=' . urlencode($filename), 'View', algaeAccess::ROLE_READ, $app->config->app_name, '', True);
     }
     return $html;
   }
@@ -370,7 +350,7 @@ class slateGeoProcess extends algaeTblBase
   {
     global $app;
     $add_link = $app->getPageLink($this->select_geoprocess_page,
-      'Add a GeoProcess', algaeAccess::ROLE_WRITE, $app->settings->appName, '') . '<p />';
+      'Add a GeoProcess', algaeAccess::ROLE_WRITE, $app->config->app_name, '') . '<p />';
     $sql = $this->get_sql(True);
     $sql .= $whereClause;
     if ($this->showAddLink) { echo $add_link; }
@@ -617,7 +597,7 @@ class slateGeoProcess extends algaeTblBase
       if (algaeDB::deleteFromTable($this->table_name, 'rowid', $this->rowid))
       {
         $app->successMessage('GeoProcess ' . $this->name . ' deleted from ' . $this->table_name . '.');
-        echo 'Goto the ', $app->getPageLink($this->browsepage, 'GeoProcesses', algaeAccess::ROLE_READ, $app->settings->appName, ''), ' page.<p />';
+        echo 'Goto the ', $app->getPageLink($this->browsepage, 'GeoProcesses', algaeAccess::ROLE_READ, $app->config->app_name, ''), ' page.<p />';
       }
       else
       {
@@ -681,10 +661,11 @@ class slateGeoProcess extends algaeTblBase
       // ----- start the form
       //
       $f->startForm(algaeForm::getDefaultToken($this));
-      echo '<input type="hidden" name="study_area_rowid_fk" value="', $this->study_area->rowid, '" />';
-      // echo algaeForm::selectWithArray('geoprocess', '', array('Fry Analysis', 'Proximity to Lines'));
-      // TODO: Kludge make a better default
-      echo algaeForm::selectWithArray('geoprocess', 'Proximity Raster', array_column($this->available_geoprocesses, 0));
+      // TODO: Hidden input no longer needed?
+      // echo 'DEBUG: ', $this->study_area->rowid, '<p />';
+      // echo '<input type="hidden" name="study_area_rowid_fk" value="', $this->study_area->rowid, '" />';
+      echo algaeForm::selectWithArray('geoprocess', 'Proximity Raster', 
+        array_column($this->available_geoprocesses, 0), algaeForm::REQUIRED);
       //
       // ----- end form
       //
@@ -756,19 +737,19 @@ class slateGeoProcess extends algaeTblBase
       // ----- data group and type
       //
       algaeTable::writeTwoColumns('Data Group', 
-        algaeForm::selectWithTableAndField($this->data_group->table_name, 'name', 
+        algaeForm::selectWithTableAndFieldWithRowid($this->data_group->table_name, 'name', 
           $this->get_control_id('data_group_rowid_fk'), $this->data_group->name, True, [], null, True), False);
       algaeTable::writeTwoColumns('Data Distribution',
-        algaeForm::selectWithTableAndField($this->data_distribution->table_name, 'name', 
+        algaeForm::selectWithTableAndFieldWithRowid($this->data_distribution->table_name, 'name', 
           $this->get_control_id('data_distribution_rowid_fk'), $this->data_distribution->name, True, [], null, True), False);
       algaeTable::writeTwoColumns('Data Type',
-        algaeForm::selectWithTableAndField($this->data_type->table_name, 'name', 
+        algaeForm::selectWithTableAndFieldWithRowid($this->data_type->table_name, 'name', 
           $this->get_control_id('data_type_rowid_fk'), $this->data_type->name, True, [], null, True), False);
       //
       //
       //
       algaeTable::writeTwoColumns('Units',
-        algaeForm::selectWithTableAndField($this->units->table_name, 'name', 
+        algaeForm::selectWithTableAndFieldWithRowid($this->units->table_name, 'name', 
           $this->get_control_id('units_rowid_fk'), $this->units->name, False), False);
       algaeTable::writeTwoColumns('Num Decimals', algaeForm::inputText('num_decimals', $this->num_decimals, 10), False);
       algaeTable::writeTwoColumns('Sequence', algaeForm::inputText('sequence', $this->sequence, 10), False);

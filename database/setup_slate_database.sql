@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.09.30 | Beta.
+  2026.10.03 | Beta.
 
 */
 
@@ -26,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.09.30' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.10.03' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -542,7 +542,6 @@ CREATE TABLE sp.geoprocess
   data_group_rowid_fk INTEGER NOT NULL REFERENCES ref.data_group,
   units_rowid_fk INTEGER REFERENCES ref.units,
   name VARCHAR NOT NULL,
-  relative_folder VARCHAR NOT NULL,
   php_class VARCHAR NOT NULL,
   command VARCHAR NOT NULL,
   sequence INTEGER NOT NULL DEFAULT 100,
