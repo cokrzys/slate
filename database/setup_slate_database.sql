@@ -229,10 +229,16 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   algae_update_modified_column();
   
 INSERT INTO ref.units (name, abbreviation, description) 
-  VALUES ('millimeters', 'mm', '1/1000 of a meter.');
+  VALUES ('Millimeters', 'mm', '1/1000 of a meter.');
   
 INSERT INTO ref.units (name, abbreviation, description) 
-  VALUES ('meters', 'm', 'A meter.');
+  VALUES ('Meters', 'm', 'A meter.');
+  
+INSERT INTO ref.units (name, abbreviation, description) 
+  VALUES ('Kilometers', 'km', '1000 meters.');
+  
+INSERT INTO ref.units (name, abbreviation, description) 
+  VALUES ('Degrees Celsius', '°C', 'Degrees celsius.');
   
 --
 -- ref.resolution

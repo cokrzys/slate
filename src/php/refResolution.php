@@ -148,7 +148,7 @@ class refResolution extends algaeTblReferenceBase
       //
       $tableId = 'resolutionFilesizeEstimatesTable';
       algaeTable::initTablesorterJavascript($tableId, '[[0,0]]');
-      algaeTable::start($tableId, 'tablesorter', 'width:100%;');
+      algaeTable::start($tableId, 'tablesorter', 'width:80%;');
       //
       // ----- setup associative array with header details
       //
@@ -182,7 +182,7 @@ class refResolution extends algaeTblReferenceBase
           if ($output_type_bytes != null)
           {
             $size_bytes = $num_cells * $output_type_bytes;
-            algaeTable::writeData(algaeFile::getHumanFilesize($size_bytes, 2) . 
+            algaeTable::writeData(algaeFile::getHumanFilesize($size_bytes, 3) . 
               $app->getDetailString(algaeFile::getHumanFilesize($size_bytes * $num_files, 0)), False);
           }
           else

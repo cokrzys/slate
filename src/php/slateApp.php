@@ -129,8 +129,8 @@ class slateApp extends algaeApp
     echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_resolution.php', 'Resolutions', algaeAccess::ROLE_WRITE, 
       $this->config->app_name, ''), $this->getDetailString('Cell Size | 50 Meters, 1000 Meters'), '</li>';
   
-    echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_task.php', '[TODO] Tasks', algaeAccess::ROLE_ADMIN, $this->config->app_name, ''), '</li>';
-    echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_units.php', '[TODO] Units', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
+    echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_units.php', 'Units', algaeAccess::ROLE_WRITE, 
+      $this->config->app_name, ''), $this->getDetailString('Meters | Kilometers'), '</li>';
     echo '</ul>';
   }
   
