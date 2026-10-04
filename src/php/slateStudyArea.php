@@ -23,7 +23,6 @@ class slateStudyArea extends algaeTblBase
   public $max_y;
   public $buffer;
   public $srid_fk;
-  public $user;
   public $min_lat;
   public $min_long;
   public $max_lat;
@@ -56,7 +55,6 @@ class slateStudyArea extends algaeTblBase
     $this->source_file = new slateSourceFile();
     $this->geoprocess = new slateGeoProcess();
     $this->place = new slatePlace();
-    $this->user = new algaeTblCoreUser();
     $this->min_x = null;
     $this->max_x = null;
     $this->min_y = null;
@@ -105,15 +103,6 @@ class slateStudyArea extends algaeTblBase
     return $this->read_row_from_database_with_sql($sql, array($project_rowid_fk));
   }
   
-  protected function getNumValidShapefiles($project_rowid_fk)
-  // --------------------------------------------------------------------------
-  {
-    $sql = "SELECT COUNT(*) AS num
-            FROM sp.shapefile
-            WHERE project_rowid_fk = $1 AND geometry_type_rowid_fk = (SELECT rowid FROM ref.geometry_type WHERE name = '3DPolygon')";
-    return algaeDB::getScalarInteger($sql, array($project_rowid_fk), 0);
-  }
-  
   /**
    * Process a form that's been submitted.
    */
@@ -157,7 +146,7 @@ class slateStudyArea extends algaeTblBase
             {
               $app->successMessage('Study area successfully added.');
               $this->added = True;
-              $this->project->readRowFromDatabaseWithRowid($this->project->rowid);
+              $this->project->read_row_from_database_with_rowid($this->project->rowid);
               echo 'Goto the ', $this->project->getHomepageLink(), ' homepage.<p />';
               return True;
             }
@@ -380,11 +369,10 @@ class slateStudyArea extends algaeTblBase
     algaeTable::start('studyAreaDetailsTable', 'algae_table', 'width:60%');
     algaeTable::writeHeader(array(), False);
     algaeTable::writeTwoColumns('Project', $this->project->name);
-    algaeTable::writeTwoColumns('Owner', $this->user->username);
     algaeTable::writeTwoColumns('EPSG Code', $this->srid_fk . '&nbsp;&nbsp;' .
       $app->getPageLink('browse_coordinate_systems.php', 'Coordinate Systems', algaeAccess::ROLE_READ, $app->config->app_name, '', True), False);
     algaeTable::writeTwoColumns('Coordinate System', $this->coord_system_name);
-    algaeTable::writeTwoColumns('Shapefile', $this->shapefile->getHomepageLink(), False);
+    algaeTable::writeTwoColumns('Shapefile', $this->source_file->getHomepageLink(), False);
     algaeTable::writeTwoColumns('Mask', $this->geoprocess->getHomepageLink(), False);
     algaeTable::writeTwoColumns('Reference Place', $this->place->getHomepageLink(), False);
     algaeTable::writeTwoColumns('X Min | Max', algaeCore::getFormattedNumber($this->min_x, 0) . ' | ' . algaeCore::getFormattedNumber($this->max_x, 0));
@@ -419,7 +407,7 @@ class slateStudyArea extends algaeTblBase
     // $this->readLatLongBounds();
     // $this->reportLatLongBounds();
     // $this->reportApproximateFileSizes();
-    $this->getThumbnailSize();
+    // $this->getThumbnailSize();
   }
   
   public function reportDetailsForProject($project_rowid_fk)
@@ -447,52 +435,13 @@ class slateStudyArea extends algaeTblBase
   }
   
   /**
-   * Get study area  defaults typically via an AJAX call.
-   */
-  public static function getStudyAreaDefaults()
-  // --------------------------------------------------------------------------
-  {
-    //
-    // ----- check required parameters
-    //
-    if (isset($_GET['shapefile_rowid_fk']))
-    {
-      $s = new slateShapefile();
-      $s->readRowFromDatabaseWithRowid($_GET['shapefile_rowid_fk']);
-      $defaults = $s->setupDefaults(False);
-      // error_log('DEBUG: $defaults[0] = ' . $defaults[0], 0);
-      //
-      // ----- return the result
-      //
-      $results = array();
-      $results['status'] = 'success';
-      $results['srid_fk'] = $s->srid_fk;
-      $results['min_x'] = $defaults[0];
-      $results['max_x'] = $defaults[1];
-      $results['min_y'] = $defaults[2];
-      $results['max_y'] = $defaults[3];
-      $results['high_resolution'] = $defaults[4];
-      $results['medium_resolution'] = $defaults[5];
-      $results['low_resolution'] = $defaults[6];
-      // error_log('DEBUG: json_encode($results) = ' . json_encode($results), 0);
-      echo json_encode($results);
-      exit;
-    }
-    else
-    {
-      echo json_encode(array('status'=>'fail'));
-      exit;
-    }
-  }
-  
-  /**
    * Write study area information to a JSON file.
    */
   public function writeToJSON()
   // --------------------------------------------------------------------------
   {
-    $this->readRowFromDatabaseWithRowid($this->rowid);
-    $this->shapefile->readRowFromDatabaseWithRowid($this->shapefile->rowid);
+    $this->read_row_from_database_with_rowid($this->rowid);
+    $this->shapefile->read_row_from_database_with_rowid($this->shapefile->rowid);
     $study_area = array();
     $study_area['project_rowid_fk'] = $this->project->rowid;
     $study_area['project_name'] = $this->project->name;

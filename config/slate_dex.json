@@ -326,31 +326,23 @@
         "required": true
       },
       {
-        "name": "distribution_type_rowid_fk",
-        "variableName": "distribution_type.rowid",
-        "formVariableName": "distribution_type.name",
-        "altWriteSQL": "(SELECT rowid FROM ref.distribution_type WHERE name = %(distribution_type.name)s)",
+        "name": "data_distribution_rowid_fk",
+        "variableName": "data_distribution.rowid",
         "required": true
       },
       {
         "name": "data_type_rowid_fk",
         "variableName": "data_type.rowid",
-        "formVariableName": "data_type.name",
-        "altWriteSQL": "(SELECT rowid FROM ref.data_type WHERE name = %(data_type.name)s)",
         "required": true
       },
       {
         "name": "data_group_rowid_fk",
         "variableName": "data_group.rowid",
-        "formVariableName": "data_group.name",
-        "altWriteSQL": "(SELECT rowid FROM ref.data_group WHERE name = %(data_group.name)s)",
         "required": true
       },
       {
         "name": "units_rowid_fk",
-        "variableName": "units.rowid",
-        "formVariableName": "units.name",
-        "altWriteSQL": "(SELECT rowid FROM ref.units WHERE name = %(units.name)s)"
+        "variableName": "units.rowid"
       }
     ]
   },

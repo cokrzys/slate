@@ -110,14 +110,14 @@ class refResolution extends algaeTblReferenceBase
     algaeTable::writeData($this->record_status->name);
   }
   
-  protected function getOutputTypeBytes($output_types_array, $name)
+  protected function getDataTypeBytes($data_types_array, $name)
   // --------------------------------------------------------------------------
   {
-    foreach ($output_types_array as $ot)
+    foreach ($data_types_array as $o)
     {
-      if ($ot->name == $name)
+      if ($o->name == $name)
       {
-        return $ot->size_bytes;
+        return $o->size_bytes;
       }
     }
     return null;
@@ -138,11 +138,11 @@ class refResolution extends algaeTblReferenceBase
     $data = algaeDB::getArray($sql, array());
     if (count($data) > 0)
     {
-      echo 'Estimated GeoTIFF file sizes for different resolutions and data types.<p />';
+      echo 'Estimated GeoTIFF file sizes by resolution and data type.<p />';
       //
       //
       //
-      $output_types_array = refOutputType::getArrayOfObjects();
+      $data_types_array = refDataType::getArrayOfObjects();
       //
       // ----- initial the table
       //
@@ -178,12 +178,12 @@ class refResolution extends algaeTblReferenceBase
         
         foreach ($data_types_to_estimate as $item)
         {
-          $output_type_bytes = $resolution->getOutputTypeBytes($output_types_array, $item);
+          $output_type_bytes = $resolution->getDataTypeBytes($data_types_array, $item);
           if ($output_type_bytes != null)
           {
             $size_bytes = $num_cells * $output_type_bytes;
-            algaeTable::writeData(algaeFile::getHumanFilesize($size_bytes, 2) . $app->settings->menuSeparator . 
-              algaeFile::getHumanFilesize($size_bytes * $num_files, 0), False);
+            algaeTable::writeData(algaeFile::getHumanFilesize($size_bytes, 2) . 
+              $app->getDetailString(algaeFile::getHumanFilesize($size_bytes * $num_files, 0)), False);
           }
           else
           {
@@ -196,7 +196,7 @@ class refResolution extends algaeTblReferenceBase
       algaeTable::end();
       echo '<div class="footnote">';
       echo 'Estimated Size = Num Cells * Data Type Bytes<p />';
-      echo 'One File ', $app->settings->menuSeparator, $num_files, ' Files<p />';
+      echo 'One File ', $app->config->menu_separator, $num_files, ' Files<p />';
       echo '</div>';
     }
     else

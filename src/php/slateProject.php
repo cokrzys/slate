@@ -384,7 +384,7 @@ class slateProject extends algaeTblNamedObjectBase
     // ----- file_size_estimates
     //
     echo '<div id="file_size_estimates">';
-    // refResolution::reportFileSizeEstimates($sa);
+    refResolution::reportFileSizeEstimates($sa);
     echo '</div>';
     //
     // ----- bounds_tab
