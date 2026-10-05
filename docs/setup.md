@@ -80,7 +80,8 @@ sudo vi /opt/rtspatial/config/algae_apps.json
     "configPath": "/opt/slate-main/config",
     "phpIncludesPath": "/opt/slate-main/src/php",
     "pythonIncludesPath": "/opt/slate-main/src/python",
-    "scriptsPath": "/opt/slate-main/src/scripts"
+    "scriptsPath": "/opt/slate-main/src/scripts",
+    "pythonAppsPath": "/opt/slate-main/src/python"
   }
 ]
 ```
