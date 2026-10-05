@@ -81,7 +81,7 @@ class slateGeoProcess extends algaeTblBase
     $this->num_dependencies = 0;
     $this->num_decimals = 2;
     $this->sequence = 100;
-    $this->set_vars_script = algaeCore::getFullPath($app->config->getAppConfigParameter($app->config->app_name, 'scriptsPath'), 'set_common_vars.sh');
+    $this->set_vars_script = $app->getScriptsPath('set_common_vars.sh');
     $this->available_geoprocesses = array();
     $this->available_geoprocesses[] = array('Categorical Layer', 'edit_categorical.php');
     $this->available_geoprocesses[] = array('Create a Mask', 'edit_mask.php');
@@ -503,7 +503,7 @@ class slateGeoProcess extends algaeTblBase
       $this->process->logfile_root = $this->getDirectory();
       $this->process->starting_url = 'run_geoprocess.php?rowid=' . $this->rowid;
       $this->process->result_url = $this->homepage . '?rowid=' . $this->rowid;
-      $this->process->parmsfile = $this->getDirectory() . 'parameters.json';
+      $this->process->parmsfile = algaeCore::getFullPath($this->getDirectory(), 'parameters.json');
       if ($this->process->createProcess())
       {
         $this->updateProcessRowid();
@@ -528,7 +528,9 @@ class slateGeoProcess extends algaeTblBase
           //
           # $command = $app->scriptsFolder . $this->command . ' ' . $this->process->parmsfile . ' ' . $app->getResolution();
           
-          $command = $app->settings->pythonAppsFolder . 'rungeoprocesses.py' . 
+          
+          
+          $command = $app->getPythonAppsPath('rungeoprocesses.py') . 
             ' --geoprocess_rowid_fk ' . strval($this->rowid) . 
             ' --resolution_rowid_fk ' . strval($app->getResolutionParameter(slateApp::RESOLUTION_ROWID));
           

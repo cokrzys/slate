@@ -74,7 +74,8 @@ class slateSourceFile extends algaeTblBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $script = algaeCore::getFullPath($app->config->getAppConfigParameter($app->config->app_name, 'scriptsPath'), 'shp_extents.sh');    
+    $script = $app->getScriptsPath('shp_extents.sh');
+    // $script = algaeCore::getFullPath($app->config->getAppConfigParameter($app->config->app_name, 'scriptsPath'), 'shp_extents.sh');    
     $output = array();
     exec($script . ' ' . $filename, $output);
     foreach ($output as $key => $line)
@@ -98,7 +99,8 @@ class slateSourceFile extends algaeTblBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $script = algaeCore::getFullPath($app->config->getAppConfigParameter($app->config->app_name, 'scriptsPath'), 'shp_epsg.sh');
+    $script = $app->getScriptsPath('shp_epsg.sh');
+    // $script = algaeCore::getFullPath($app->config->getAppConfigParameter($app->config->app_name, 'scriptsPath'), 'shp_epsg.sh');
     $output = array();
     exec($script . ' ' . $filename, $output);
     foreach ($output as $key => $line)
