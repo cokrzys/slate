@@ -216,6 +216,20 @@ class slateApp extends algaeApp
     return $this->getResolutionParameter(slateApp::RESOLUTION_X);
   }
   
+  public function getFilenameTemplate()
+  // --------------------------------------------------------------------------
+  {
+    $project_rowid_fk = $this->getCurrentProjectRowid(False);
+    if ($project_rowid_fk != null)
+    {
+      $sql = "SELECT p.abbreviation || '_data_description_rs_' || sa.srid_fk
+              FROM sp.study_area sa
+              INNER JOIN sp.project p ON sa.project_rowid_fk = p.rowid
+              WHERE project_rowid_fk = $1";
+      return algaeDB::getScalarString($sql, array($project_rowid_fk));
+    }
+  }
+  
 }
 
 

@@ -711,10 +711,15 @@ class slateGeoProcess extends algaeTblBase
       //
       // ----- get data if editing
       //
+      /*
       if (isset($_REQUEST['rowid']))
       {
+        echo 'DEBUG A2<p />';
+        $this->debug = True;
         $this->read_row_from_database_with_rowid($_REQUEST['rowid']);
       }
+      echo 'DEBUG B<p />';
+      */
       //
       // ----- 
       //
@@ -805,7 +810,15 @@ class slateGeoProcess extends algaeTblBase
     $batchParametersId = 'batch_parameters_tab';
     $existingRecordsId = 'existing_records_tab';
     
-    $this->decodeParameters();
+    if (isset($_REQUEST['rowid']))
+    {
+      // echo 'DEBUG A2<p />';
+      // $this->debug = True;
+      $this->read_row_from_database_with_rowid($_REQUEST['rowid']);
+      $this->decodeParameters();
+    }
+    
+    // $this->decodeParameters();
     //
     // ----- setup tabs
     //
@@ -819,6 +832,7 @@ class slateGeoProcess extends algaeTblBase
     $f->startForm(algaeForm::getDefaultToken($this));
     
     algaeForm::startTabs($tabs_array);
+    
     //
     //
     //

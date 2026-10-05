@@ -288,7 +288,7 @@
     "parentTableName": "algae.base",
     "comment": "Base class for geoprocesses and support for the sp.geoprocess table.",
     "source": "slate",
-    "phpClass": "slateGeoprocess",
+    "phpClass": "slateGeoProcess",
     "pythonClass": "slateGeoProcess",
     "columns":
     [

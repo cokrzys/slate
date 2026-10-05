@@ -61,7 +61,10 @@ class slateGeoProcMask extends slateGeoprocess
       if (array_key_exists('source_file_rowid_fk', $a))
       {
         $this->source_file->rowid = $a['source_file_rowid_fk'];
-        $this->source_file->read_row_from_database_with_rowid($this->source_file->rowid);
+        if (intval($this->source_file->rowid) > 0)
+        {
+          $this->source_file->read_row_from_database_with_rowid($this->source_file->rowid);
+        }
       }
       $this->output_prefix = $a['output_prefix'];
       $this->invert = algaeCore::getBoolean($a['invert']);
@@ -76,17 +79,13 @@ class slateGeoProcMask extends slateGeoprocess
   protected function addDerivedFieldsToForm()
   // --------------------------------------------------------------------------
   {
+    global $app;
     parent::addDerivedFieldsToForm();
-    /*
-    echo '<p />';
-    echo 'Shapefile &nbsp;&nbsp;',
-      slateSourceFile::selectShapefile('source_file_rowid_fk', '', False), '<p />';
-    */
-    
-    algaeTable::writeTwoColumns('Shapefile', slateSourceFile::selectShapefile('source_file_rowid_fk', '', False), False);
-      
+    algaeTable::writeTwoColumns('Shapefile', slateSourceFile::selectShapefile('source_file_rowid_fk', 
+      $this->source_file->filename, False), False);
     $this->output_prefix = $this->project->getDefaultPrefix($this->output_prefix);
-    algaeTable::writeTwoColumns('Output Prefix', algaeForm::inputText('output_prefix', $this->output_prefix, 50, algaeForm::REQUIRED), False);
+    algaeTable::writeTwoColumns('Output Prefix', algaeForm::inputText('output_prefix', $this->output_prefix, 40, algaeForm::REQUIRED) .
+      $app->getDetailString($app->getFilenameTemplate()), False);
     algaeTable::writeTwoColumns('Invert', algaeForm::checkbox('invert', 'invert', array(), $this->invert), False);
   }
   
