@@ -193,8 +193,8 @@ class slateStudyArea extends algaeTblBase
       //
       //  -----  shapefile
       //
-      echo 'Study area shapefile &nbsp;&nbsp;',
-        slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), '', False), '<p />';
+      echo 'Shapefile &nbsp;&nbsp;',
+        slateSourceFile::selectShapefile($this->get_control_id('source_file_rowid_fk'), $this->source_file->filename, False), '<p />';
       echo algaeForm::button('defaults', 'Get Defaults', 'setupDefaults();'), '<p />';
       //
       // ----- table to keep items aligned
