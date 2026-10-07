@@ -1,8 +1,12 @@
 """
-TODO
 
-@author    Brian Krzys (cokrzys@gmail.com)
-@copyright 2021 RTSpatial Ltd.
+ slate | App config base class.
+
+ @author    Brian Krzys (brian.krzys@rtspatial.com)
+ @copyright (c) 2026 RTSpatial Ltd.
+ @license   SPDX-License-Identifier: MIT
+ @link      https://github.com/cokrzys/slate
+
 """
 
 import sys

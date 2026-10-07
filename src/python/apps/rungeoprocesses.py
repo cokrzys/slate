@@ -25,7 +25,7 @@ from algaedb import algaeDB
 sys.path.append('../modules')
 
 from slateapp import slateApp
-# from slaterungeoprocesses import slateRunGeoprocesses
+from slaterungeoprocesses import slateRunGeoprocesses
 
 #
 # ----- setup command line arguments
@@ -58,8 +58,8 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
     #
     # ----- run
     #
-    # w = slateRunGeoprocesses(db, args)
-    # w.run()
+    w = slateRunGeoprocesses(db, args)
+    w.run()
     #
     # ----- close database
     #
