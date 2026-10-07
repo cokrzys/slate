@@ -11,23 +11,21 @@
 
 """
 
-from osgeo import gdal
 import sys
-# import re  # to split on command but not within quoted strings
 import json
 import builtins
+import math
+import argparse
+from osgeo import gdal
 
 from algaecore import algaeCore
 from algaeapp import algaeApp
 from algaedb import algaeDB
 
-sys.path.append(sys.path[0] + '/classes')
+sys.path.append('../modules')
 
 from slateapp import slateApp
-from slaterungeoprocesses import slateRunGeoprocesses
-
-import math
-import argparse
+# from slaterungeoprocesses import slateRunGeoprocesses
 
 #
 # ----- setup command line arguments
@@ -50,24 +48,22 @@ args = parser.parse_args()
 app = slateApp()
 builtins.app = app # add app to builtins for true globl access
 
-if app.have_db_connection_parms():
-    if args.verbose: app.settings.show()
-    db = algaeDB()
+#
+# ----- open database
+#
+db = algaeDB()
+if db.open(app.config.app_database, app.config.database_port, app.config.database_username,
+           app.config.database_password):
+    print('Database ' + app.config.app_database + ' opened.')
     #
-    # ----- open database
+    # ----- run
     #
-    if db.open(app.settings.app_database, app.settings.database_port, app.settings.database_username,
-               app.settings.database_password):
-        print('Database opened.')
-        #
-        # ----- run
-        #
-        w = slateRunGeoprocesses(db, args)
-        w.run()
-        #
-        # ----- close database
-        #
-        db.close()
+    # w = slateRunGeoprocesses(db, args)
+    # w.run()
+    #
+    # ----- close database
+    #
+    db.close()
 
 
 

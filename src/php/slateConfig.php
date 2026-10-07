@@ -27,7 +27,7 @@ class slateConfig extends algaeConfig
     $this->app_name = 'slate';
     $this->app_database = 'slate';
     $this->app_folder = 'slate';
-    $this->config_path = $this->getAppConfigParameter('slate', 'configPath');
+    $this->config_path = $this->getAppConfigParameter($this->app_name, 'configPath');
     $this->show_query_link = True;
     //
     // -----
