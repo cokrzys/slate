@@ -4,9 +4,6 @@
 
   slate | Support for file group classifications and the ref.file_group table.
   
-  Data groups are a primary data classifier.  
-  Examples include Climatological, Mineral Occurrences, and Structure.
-  
   @author    Brian Krzys (brian.krzys@rtspatial.com)
   @copyright (c) 2026 RTSpatial Ltd.
   @license   SPDX-License-Identifier: MIT

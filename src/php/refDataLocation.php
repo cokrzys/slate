@@ -4,9 +4,6 @@
 
   slate | Where typically source data is stored and the ref.data_location table.
   
-  Data groups are a primary data classifier.  
-  Examples include Climatological, Mineral Occurrences, and Structure.
-  
   @author    Brian Krzys (brian.krzys@rtspatial.com)
   @copyright (c) 2026 RTSpatial Ltd.
   @license   SPDX-License-Identifier: MIT

@@ -18,14 +18,13 @@ import json
 from algaeapp import algaeApp
 from algaedb import algaeDB
 from algaetblbase import algaeTblBase
-from algaetblcoreappuser import algaeTblCoreAppUser
 
+from refdatadistribution import refDataDistribution
 from refdatatype import refDataType
-from refoutputtype import refOutputType
 from refdatagroup import refDataGroup
 from refunits import refUnits
 from slateproject import slateProject
-from slateshapefile import slateShapefile
+from slatesourcefile import slateSourceFile
 
 class slateGeoProcess(algaeTblBase):
 
@@ -43,8 +42,8 @@ class slateGeoProcess(algaeTblBase):
         self.batch_parameters = None
         self.num_decimals = 2
         self.description = None
+        self.data_distribution = refDataDistribution()
         self.data_type = refDataType()
-        self.output_type = refOutputType()
         self.data_group = refDataGroup()
         self.units = refUnits()
         self.project = slateProject()
@@ -87,11 +86,11 @@ class slateGeoProcess(algaeTblBase):
                 #
                 #
                 #
-                if key == 'shapefile_rowid_fk':
-                    shp = slateShapefile()
-                    shp.read_row_from_database_with_rowid(db, value, True)
-                    if shp.rowid != None:
-                        parms['shapefile'] = shp.source_filename
+                if key == 'source_file_rowid_fk':
+                    sf = slateSourceFile()
+                    sf.read_row_from_database_with_rowid(db, value, True)
+                    if sf.rowid != None:
+                        parms['shapefile'] = sf.filename
                         # setattr(self, 'shapefile', shp)
             #
             # ----- load extra data typically in a derived class

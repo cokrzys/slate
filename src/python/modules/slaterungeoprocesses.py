@@ -94,13 +94,12 @@ class slateRunGeoprocesses:
                     if (gp.require_mask_layer and mask_layer.file_exists()) or not gp.require_mask_layer:
                         
                         parms = {}
-                        parms['scriptsFolder'] = app.config.scripts_folder
-                        parms['pythonAppsFolder'] = app.config.python_apps_folder
-                        parms['palettesFolder'] = app.config.palettes_folder
-                        parms['workingFolder'] = gp.get_directory(self.resolution.folder)
+                        parms['scriptsFolder'] = os.path.join(app.config.scripts_folder, '')
+                        parms['pythonAppsFolder'] = os.path.join(app.config.python_apps_folder, '')
+                        parms['palettesFolder'] = os.path.join(app.config.palettes_folder, '')
+                        parms['workingFolder'] = os.path.join(gp.get_directory(self.resolution.folder), '')
                         parms['outputDataType'] = gp.data_type.name
-                        parms['outputType'] = gp.output_type.name
-                        parms['outputNoDataValue'] = gp.output_type.nodata_value
+                        parms['outputNoDataValue'] = gp.data_type.nodata_value
                         parms['noDataByte'] = app.config.nodata_byte
                         parms['noDataFloat32'] = app.config.nodata_float32
                         parms['resolutionName'] = self.resolution.name
@@ -123,7 +122,7 @@ class slateRunGeoprocesses:
                         parms['projectRowid'] = gp.project.rowid
                         parms['projectName'] = gp.project.name
                         parms['projectAbbreviation'] = gp.project.abbreviation
-                        parms['userRowid'] = gp.project.user.rowid
+                        parms['userRowid'] = gp.project.app_user.rowid
                         #
                         #
                         #
@@ -190,7 +189,7 @@ class slateRunGeoprocesses:
                         with open(parms_filename, 'w', encoding='utf-8') as f:
                             json.dump(parms, f, ensure_ascii=False, indent=2)
                         
-                        command = app.config.scripts_folder + gp.command
+                        command = os.path.join(app.config.scripts_folder, gp.command)
                             
                         process = subprocess.Popen([command, parms_filename], text=True, stdout=subprocess.PIPE)
                         

@@ -38,12 +38,12 @@ class slateConfig(algaeConfig):
         self.low_resolution_folder = 'r01'
         self.medium_resolution_folder = 'r02'
         self.high_resolution_folder = 'r03'
-        self.palettes_folder = '/var/www/html/sladah/palettes/'
-        self.model_palette_file = '/var/www/html/sladah/palettes/qgis_spectral_5_color.txt'
+        self.palettes_folder = '/var/www/html/slate/palettes/'
+        self.model_palette_file = '/var/www/html/slate/palettes/qgis_spectral_5_color.txt'
         self.similarity_prefix = 'sim_'
         self.rowid_directory_levels = 2
-        self.scripts_folder = '/home/bkrzys/scripts/slate/'
-        self.python_apps_folder = '/home/bkrzys/python/slate/'
+        self.scripts_folder = self.getAppConfigParameter(self.app_name, 'scriptsPath')
+        self.python_apps_folder = self.getAppConfigParameter(self.app_name, 'pythonAppsPath')
         self.thumbnail_best_width = 700
         self.thumbnail_best_height = 200
         self.colored_suffix = '_colored'
