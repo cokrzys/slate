@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+"""
+
+ slate | Python configuration tester.
+ 
+ Adapted from the algae version.
+
+ @author    Brian Krzys (brian.krzys@rtspatial.com)
+ @copyright (c) 2026 RTSpatial Ltd.
+ @license   SPDX-License-Identifier: MIT
+ @link      https://github.com/cokrzys/slate
+
+"""
+
+import sys
+import json
+import builtins
+
+from algaecore import algaeCore
+from algaeconfig import algaeConfig
+from algaeapp import algaeApp
+from algaedb import algaeDB
+
+sys.path.append('../modules')
+
+from slateapp import slateApp
+
+print(u"\nSearch path for modules:")
+for path in sys.path:
+    print(path)
+
+app = slateApp(True, True)
+
+builtins.app = app # add app to builtins for true globl access
+
+#
+# ----- open database
+#
+db = algaeDB()
+if db.open(app.config.admin_database, app.config.database_port, app.config.database_username,
+           app.config.database_password):
+    print('OK: Database ' + app.config.admin_database + ' opened.')
+    db.close()
+
+
+
