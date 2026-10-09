@@ -16,7 +16,7 @@ import sys
 from algaedb import algaeDB
 from algaetblbase import algaeTblBase
 
-# from slatelayer import slateLayer
+from slatelayer import slateLayer
 
 class slateClass(algaeTblBase):
 
@@ -27,12 +27,32 @@ class slateClass(algaeTblBase):
         """
         super().__init__()
         self.table_name = 'sp.class'
-        # self.layer = slateLayer()
+        self.layer = slateLayer()
         self.raster_value = None
         self.num_values = None
         self.code = None
         self.html_color = None
         self.description = None
+        
+    def delete_classes(self, db, layer_rowid_fk):
+    #------------------------------------------------------------------------------
+        """
+        """
+        sc = slateClass()
+        sql = u"DELETE FROM {table} WHERE layer_rowid_fk = %(layer_rowid_fk)s".format(table=sc.table_name)
+        parameters = {}
+        parameters['layer_rowid_fk'] = layer_rowid_fk
+        return db.execute_query(sql, parameters)
+    
+    def get_num_classes(self, db, layer_rowid_fk):
+    #------------------------------------------------------------------------------
+        """
+        """
+        sc = slateClass()
+        sql = u"SELECT COUNT(rowid) FROM {table} WHERE layer_rowid_fk = %(layer_rowid_fk)s".format(table=sc.table_name)
+        parameters = {}
+        parameters['layer_rowid_fk'] = layer_rowid_fk
+        return db.get_scalar_integer(sql, parameters)
     
     
     

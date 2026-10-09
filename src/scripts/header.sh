@@ -1,6 +1,11 @@
 #!/bin/bash
 #
-# Consistent header message that shows when a script started.
+#  slate | Consistent header message that shows when a script started.
+#
+#  @author    Brian Krzys (brian.krzys@rtspatial.com)
+#  @copyright (c) 2026 RTSpatial Ltd.
+#  @license   SPDX-License-Identifier: MIT
+#  @link      https://github.com/cokrzys/slate
 #
 
 MESSAGE=$1

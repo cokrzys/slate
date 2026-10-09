@@ -24,7 +24,6 @@ from algaetblbase import algaeTblBase
 
 from slateapp import slateApp
 from refresolution import refResolution
-from slateclass import slateClass
 from slategeoprocess import slateGeoProcess
 
 class slateLayer(algaeTblBase):
@@ -228,26 +227,6 @@ class slateLayer(algaeTblBase):
         rowid = db.get_scalar_integer(sql, {'geoprocess_rowid_fk': self.geoprocess_rowid_fk, 'filename':self.filename})
         if rowid != None and rowid > 0: return True
         return False
-    
-    def delete_classes(self, db, layer_rowid_fk):
-    #------------------------------------------------------------------------------
-        """
-        """
-        sc = slateClass()
-        sql = u"DELETE FROM {table} WHERE layer_rowid_fk = %(layer_rowid_fk)s".format(table=sc.table_name)
-        parameters = {}
-        parameters['layer_rowid_fk'] = layer_rowid_fk
-        return db.execute_query(sql, parameters)
-    
-    def get_num_classes(self, db, layer_rowid_fk):
-    #------------------------------------------------------------------------------
-        """
-        """
-        sc = slateClass()
-        sql = u"SELECT COUNT(rowid) FROM {table} WHERE layer_rowid_fk = %(layer_rowid_fk)s".format(table=sc.table_name)
-        parameters = {}
-        parameters['layer_rowid_fk'] = layer_rowid_fk
-        return db.get_scalar_integer(sql, parameters)
     
     def get_layers_for_project(self, db, project_rowid_fk, resolution_rowid_fk):
     #------------------------------------------------------------------------------
