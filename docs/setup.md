@@ -1,6 +1,12 @@
 # slate Setup
 Benchmark system setup on Ubuntu Server 26.04 LTS.
 
+## Prerequisites
+```shell
+# ImageMagick
+sudo apt-get install imagemagick
+```
+
 ## Get slate
 
 ```shell
