@@ -20,7 +20,8 @@ import builtins
 from algaeapp import algaeApp
 from algaedb import algaeDB
 
-sys.path.append('../modules')
+app = algaeApp(False, False)
+sys.path.append(app.config.getAppConfigParameter('slate', 'pythonModulesPath'))
 
 from slateapp import slateApp
 from slatelayer import slateLayer
@@ -279,7 +280,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
             if args.legend_rowid > 0:
                 # print('DEBUG: Before update_descriptions().')
                 sl = slateLegend()
-                sl.debug = True
+                # sl.debug = True
                 sl.update_descriptions(db, args.layer_rowid_fk, args.legend_rowid)
         
         output = None

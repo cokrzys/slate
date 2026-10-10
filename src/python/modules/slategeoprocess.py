@@ -68,7 +68,6 @@ class slateGeoProcess(algaeTblBase):
     # ------------------------------------------------------------------------------
         """
         """
-        self.project.debug = True
         return self.project.create_item_directory(resolution_folder, app.config.geoprocesses_folder, self.rowid)
     
     def add_extra_data(self, db, parms):

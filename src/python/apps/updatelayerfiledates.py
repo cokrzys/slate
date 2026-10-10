@@ -23,7 +23,8 @@ from algaecore import algaeCore
 from algaeapp import algaeApp
 from algaedb import algaeDB
 
-sys.path.append('../modules')
+app = algaeApp(False, False)
+sys.path.append(app.config.getAppConfigParameter('slate', 'pythonModulesPath'))
 
 from slateapp import slateApp
 from slatelayer import slateLayer
