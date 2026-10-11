@@ -18,6 +18,7 @@
   algaeApp::addAppIncludesPath('slate');
   require_once 'slateApp.php';
   $app = new slateApp();
+  require_once 'slateHomepage.php';
   //
   // ----- check login and rights
   //
@@ -33,9 +34,8 @@
   //
   // ----- page content
   //
-  algaeForm::startSingleTab($title);
-  echo 'Hello from slate.', PHP_EOL;
-  algaeForm::endSingleTab();
+  $o = new slateHomepage();
+  $o->show();
   //
   // ----- finish up and close page
   //

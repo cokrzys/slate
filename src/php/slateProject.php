@@ -68,11 +68,12 @@ class slateProject extends algaeTblNamedObjectBase
     return $html;
   }
   
-  public function getDirectory($type)
+  public function getDirectory($type = null)
   // --------------------------------------------------------------------------
   {
     global $app;
     $project_directory = algaeCore::getFullPath($app->config->projects_base_folder, $this->folder);
+    if ($type == null) { $type = slateProject::PROJECT_DIRECTORY; }
     if ($type == slateProject::PROJECT_DIRECTORY)
     {
       return $project_directory;
