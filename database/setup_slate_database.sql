@@ -13,7 +13,7 @@
   
   Notes specific to this file, may or may not coincide with git comments when added.
   
-  2026.10.03 | Beta.
+  2026.10.10 | Beta.
 
 */
 
@@ -26,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.10.03' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.10.10' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -610,7 +610,6 @@ CREATE TABLE sp.layer
   data_q3 NUMERIC,
   sig_lower_cutoff NUMERIC,
   sig_upper_cutoff NUMERIC,
-  last_updated_utc TIMESTAMP,
   calc_begin_utc TIMESTAMP,
   calc_end_utc TIMESTAMP,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,

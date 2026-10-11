@@ -30,7 +30,8 @@ class slateLayer extends algaeTblBase
   public $data_q3;
   public $sig_lower_cutoff;
   public $sig_upper_cutoff;
-  public $last_updated_utc;
+  public $calc_begin_utc;
+  public $calc_end_utc;
   
   /**
    * Constructor.
@@ -67,7 +68,8 @@ class slateLayer extends algaeTblBase
     $this->data_q3 = null;
     $this->sig_lower_cutoff = null;
     $this->sig_upper_cutoff = null;
-    $this->last_updated_utc = null;
+    $this->calc_begin_utc = null;
+    $this->calc_end_utc = null;
   }
  
   /**
@@ -223,7 +225,7 @@ class slateLayer extends algaeTblBase
         algaeTable::writeData(algaeCore::getColorBlock($l->geoprocess->data_group->html_color, True, $l->geoprocess->data_group->name), False);
         algaeTable::writeData($l->geoprocess->getHomepageLink(), False);
         algaeTable::writeData($l->resolution->name);
-        algaeTable::writeData($l->last_updated_utc);
+        algaeTable::writeData($l->calc_end_utc);
         echo '</tr>';
       }
       algaeTable::end();
@@ -302,7 +304,8 @@ class slateLayer extends algaeTblBase
     $this->writeFileDownloadPair('Thumbnail', $this->getFullyPathedThumbnailFilename());
     $this->writeFileDownloadPair('Colored', $this->getFullyPathedColoredFilename());
     $this->writeFileDownloadPair('Overlay', $this->getFullyPathedOverlayFilename());
-    algaeTable::writeTwoColumns('Last Updated', $this->last_updated_utc);
+    algaeTable::writeTwoColumns('Calc Begin (UTC)', $this->calc_begin_utc);
+    algaeTable::writeTwoColumns('Calc End (UTC)', $this->calc_end_utc);
     #
     #
     #

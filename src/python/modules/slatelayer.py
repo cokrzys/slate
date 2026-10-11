@@ -49,6 +49,8 @@ class slateLayer(algaeTblBase):
         self.data_q3 = None
         self.sig_lower_cutoff = None
         self.sig_upper_cutoff = None
+        self.calc_begin_utc = None
+        self.calc_end_utc = None
         self.geoprocess = slateGeoProcess()
         self.resolution = refResolution()
         #

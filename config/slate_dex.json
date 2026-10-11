@@ -423,8 +423,12 @@
         "uniqueKey": true
       },
       {
-        "name": "last_updated_utc", 
-        "altReadSQL": "to_char({table_name}.last_updated_utc, 'DD-Mon-YYYY HH24:MI:SS') AS last_updated_utc_str"
+        "name": "calc_begin_utc", 
+        "altReadSQL": "to_char({table_name}.calc_begin_utc, 'DD-Mon-YYYY HH24:MI:SS') AS calc_begin_utc_str"
+      },
+      {
+        "name": "calc_end_utc", 
+        "altReadSQL": "to_char({table_name}.calc_end_utc, 'DD-Mon-YYYY HH24:MI:SS') AS calc_end_utc_str"
       }
     ],
     "relationships":
