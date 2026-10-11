@@ -514,7 +514,8 @@
         "name": "project_rowid_fk",
         "variableName": "project.rowid",
         "canUpdate": false,
-        "required": true
+        "required": true,
+        "uniqueKey": true
       }
     ]
   },

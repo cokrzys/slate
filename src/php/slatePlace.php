@@ -72,9 +72,11 @@ class slatePlace extends algaeTblNamedObjectBase
   protected function processDerivedVariables()
   // --------------------------------------------------------------------------
   {
-    $this->abbreviation = algaeForm::cleanInput($_POST['abbreviation']);
-    $this->latitude = algaeForm::cleanInput($_POST['latitude']);
-    $this->longitude = algaeForm::cleanInput($_POST['longitude']);
+    global $app;
+    if ( (! isset($this->project->rowid)) || ($this->project->rowid <= 0) )
+    {
+      $this->project->rowid = $app->getCurrentProjectRowid();
+    }
   }
   
   /**
