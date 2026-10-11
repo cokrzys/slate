@@ -483,7 +483,7 @@ CREATE TABLE sp.place
   project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
   name VARCHAR NOT NULL UNIQUE,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
-  abbreviation VARCHAR NOT NULL UNIQUE,
+  abbreviation VARCHAR,
   location GEOGRAPHY(Point, 4326),
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,

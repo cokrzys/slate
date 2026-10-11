@@ -23,7 +23,7 @@
   //
   algaeAccess::isLoggedIn();
   $app->readRoles();
-  $app->isSufficientRights(algaeAccess::ROLE_WRITE, $app->settings->appName);
+  $app->isSufficientRights(algaeAccess::ROLE_WRITE, $app->config->app_name);
   //
   // ----- initial the html page
   //

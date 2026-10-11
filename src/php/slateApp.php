@@ -77,14 +77,13 @@ class slateApp extends algaeApp
     echo $this->getPageLink($this->getURLBase() . 'home.php', 'slate', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'project.php', 'Project', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'browse_source_data.php', 'Data', algaeAccess::ROLE_READ, $this->config->app_name);
-    
+    echo $this->getPageLink($this->getURLBase() . 'browse_places.php', 'Places', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'browse_geoprocesses.php', 'GeoProcesses', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'browse_layers.php', 'Layers', algaeAccess::ROLE_READ, $this->config->app_name);
     
     echo $this->getPageLink($this->getURLBase() . 'utilities.php', 'Utilities', algaeAccess::ROLE_READ, $this->config->app_name, '');
     
     /*
-    echo $this->getPageLink('browse_places.php', 'Places', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink('browse_maps.php', 'Maps', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink('reports.php', 'Reports', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink('edit_setup.php', 'Setup', algaeAccess::ROLE_READ, $this->config->app_name, '');
