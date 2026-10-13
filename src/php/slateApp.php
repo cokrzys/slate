@@ -121,6 +121,9 @@ class slateApp extends algaeApp
   
     echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_data_type.php', 'Data Type', algaeAccess::ROLE_WRITE, 
       $this->config->app_name, ''), $this->getDetailString('Byte, Float32, Shapefile'), '</li>';
+    
+      echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_field.php', 'Fields', algaeAccess::ROLE_WRITE,
+        $this->config->app_name, ''), $this->getDetailString('Custom Data Fields'), '</li>';
   
     echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_file_format.php', 'File Format', algaeAccess::ROLE_WRITE,
       $this->config->app_name, ''), $this->getDetailString('shp, tiff, csv'), '</li>';
