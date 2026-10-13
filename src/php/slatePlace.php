@@ -51,7 +51,7 @@ class slatePlace extends algaeTblNamedObjectBase
   # ---------------------------------------------------------------------------
   {
     global $app;
-    return $this->project->getItemDirectory($app->getResolutionName(), $app->config->places_folder, $this->rowid);
+    return $this->project->getItemDirectory($app->getResolutionFolder(), $app->config->places_folder, $this->rowid);
   }
   
   /**
@@ -131,57 +131,6 @@ class slatePlace extends algaeTblNamedObjectBase
   }
   
   /**
-   * Report files for the process.
-   */
-  protected function reportFiles()
-  // --------------------------------------------------------------------------
-  {
-    $folder = $this->getDirectory();
-    $files = scandir($folder);
-    if (sizeof($files) > 2)
-    {
-      echo sizeof($files), ' file(s) in ', $folder, '<p />';
-      //
-      // ----- initial the table
-      //
-      $tableId = 'filesTable';
-      algaeTable::initTablesorterJavascript($tableId, '[[0,0]]', True, "headers: {2: {sorter:'milDate'} }");
-      algaeTable::start($tableId, 'tablesorter', 'width:80%;');
-      //
-      // ----- table header
-      //
-      $header_array = array(
-        array('Filename', '40%'),
-        array('Size (bytes)', '20%'),
-        array('Date', '20%'),
-        array('Actions', '20%')
-      );
-      algaeTable::writeHeader($header_array, True);
-      //
-      // ----- loop through the results
-      //
-      foreach ($files as $file)
-      {
-        if ( ($file != '.') && ($file != '..') )
-        {
-          $full_filename = $folder . $file;
-          echo '<tr>';
-          algaeTable::writeData($file);
-          algaeTable::writeData(algaeCore::getFormattedNumber(filesize($full_filename), 0));
-          algaeTable::writeData(date("d-M-Y G:i:s", filemtime($full_filename)), 0);
-          algaeTable::writeData($this->getFileActions($full_filename), False);
-          echo '</tr>';
-        }
-      }
-      algaeTable::end();
-    }
-    else 
-    {
-      echo 'No file(s) in ', $folder, '<p />';
-    }
-  }
-  
-  /**
    * Report details for the object.
    * {@inheritDoc}
    * @see algaeTblBase::reportDetails()
@@ -190,7 +139,7 @@ class slatePlace extends algaeTblNamedObjectBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $map = new algaeMap();
+    // $map = new algaeMap();
     //
     // ----- initial tabs setup
     //
@@ -225,14 +174,14 @@ class slatePlace extends algaeTblNamedObjectBase
     // ----- signature_tab
     //
     echo '<div id="signature_tab">';
-    $s = new slateSignature();
-    $s->reportPlaceSignature($this);
+    // $s = new slateSignature();
+    // $s->reportPlaceSignature($this);
     echo '</div>';
     //
     // ----- files_tab
     //
     echo '<div id="files_tab">';
-    $this->reportFiles();
+    slateFolder::reportFiles($this->getDirectory());
     echo '</div>';
     //
     // ----- end tabs
