@@ -70,8 +70,11 @@ class slateHomepage
     algaeTable::writeTwoColumns('Folder', $p->getDirectory(), False);
     algaeTable::writeTwoColumns('Size on Disk', algaeFile::getHumanFilesize($size, 2), False);
     
+    $datamodel_version = algaeDB::getScalarString('SELECT * FROM algae_app_database_version()', array());
+    algaeTable::writeTwoColumns('Base Data Model', $datamodel_version, False);
+    
     $datamodel_version = algaeDB::getScalarString('SELECT * FROM slate_database_version()', array());
-    algaeTable::writeTwoColumns('Data Model', $datamodel_version, False);
+    algaeTable::writeTwoColumns('Slate Data Model', $datamodel_version, False);
     
     algaeTable::end();
   }

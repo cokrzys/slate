@@ -2,7 +2,7 @@
 
   /**
   
-  slate | Browse places.
+    slate | Browse places.
   
     @author    Brian Krzys (brian.krzys@rtspatial.com)
     @copyright (c) 2026 RTSpatial Ltd.
@@ -18,6 +18,7 @@
   algaeApp::addAppIncludesPath('slate');
   require_once 'slateApp.php';
   $app = new slateApp();
+  require_once 'slatePlaceReport.php';
   //
   // ----- check login and rights
   //
@@ -33,10 +34,14 @@
   //
   // ----- page content
   //
+  /*
   algaeForm::startSingleTab($title);
   $o = new slatePlace();
   $o->reportRecordsForCurrentProject();
   algaeform::endSingleTab();
+  */
+  $o = new slatePlaceReport();
+  $o->showReport();
   //
   // ----- finish up and close page
   //
