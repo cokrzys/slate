@@ -10,10 +10,8 @@
   @link      https://github.com/cokrzys/slate
   
   Versions
-  
-  Notes specific to this file, may or may not coincide with git comments when added.
-  
-  2026.10.10 | Beta.
+    
+  2026.10.13 | Started version tracking.
 
 */
 
@@ -26,7 +24,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.10.10' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.10.13' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -495,6 +493,30 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   algae_update_modified_column();
   
 ALTER TABLE sp.place ADD CONSTRAINT unique_abbreviation UNIQUE (project_rowid_fk, abbreviation);
+
+--
+-- sp.place_data
+--
+DROP TABLE IF EXISTS sp.place_data;
+DROP SEQUENCE IF EXISTS sp.place_data_rowid;
+CREATE SEQUENCE sp.place_data_rowid START 1;
+CREATE TABLE sp.place_data
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.place_data_rowid'),
+  place_rowid_fk INTEGER NOT NULL REFERENCES sp.place,
+  field_rowid_fk INTEGER NOT NULL REFERENCES ref.field,
+  text_val VARCHAR,
+  numeric_val NUMERIC,
+  integer_val BIGINT,
+  datetime_val TIMESTAMP,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(place_rowid_fk, field_rowid_fk)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.place_data FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
     
 --
 -- sp.shapefile

@@ -40,6 +40,7 @@ class slatePlace extends algaeTblNamedObjectBase
     $this->homepage = 'place.php';
     $this->editpage = 'edit_place.php';
     $this->browsepage = 'browse_places.php';
+    $this->deletepage = 'delete_place.php';
     $this->itemName = 'Place';
     $this->project = new slateProject();
     $this->latitude = null;
