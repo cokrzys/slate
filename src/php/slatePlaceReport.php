@@ -34,6 +34,7 @@ class slatePlaceReport extends algaeReport
     $this->master_class = 'slatePlace';
     $this->results_tab_name = 'Places';
     $this->first_column_name = 'Place';
+    $this->name = 'PlacesReport';
   }
   
 }

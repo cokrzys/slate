@@ -41,7 +41,7 @@
   algaeform::endSingleTab();
   */
   $o = new slatePlaceReport();
-  $o->showReport();
+  $o->show();
   //
   // ----- finish up and close page
   //
