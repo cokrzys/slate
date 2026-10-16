@@ -31,10 +31,12 @@ class slatePlaceReport extends algaeReport
   // --------------------------------------------------------------------------
   {
     parent::init();
+    $this->name = 'PlacesReport';
     $this->master_class = 'slatePlace';
+    $this->data_class = 'slatePlaceData';
+    $this->parent_rowid_field = 'place_rowid_fk';
     $this->results_tab_name = 'Places';
     $this->first_column_name = 'Place';
-    $this->name = 'PlacesReport';
   }
   
 }
