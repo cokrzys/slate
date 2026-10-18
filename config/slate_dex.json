@@ -520,6 +520,31 @@
     ]
   },
   {
+    "tableName": "sp.place_data",
+    "parentTableName": "algae.data_value_base",
+    "comment": "Data values associated with a place.",
+    "source": "slate",
+    "phpClass": "slatePlaceData",
+    "pythonClass": "slatePlaceData",
+    "columns":
+    [
+      {
+        "name": "place_rowid_fk",
+        "variableName": "place.rowid",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      },
+      {
+        "name": "field_rowid_fk",
+        "variableName": "field.rowid",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      }
+    ]
+  },
+  {
     "tableName": "sp.source_data",
     "parentTableName": "algae.base",
     "comment": "A source dataset and support for sp.source_data.",

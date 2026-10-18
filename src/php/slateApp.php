@@ -67,6 +67,7 @@ class slateApp extends algaeApp
     require_once 'slateGeoProcMask.php';
     require_once 'slateLayer.php';
     require_once 'slatePlace.php';
+    require_once 'slatePlaceData.php';
   }
   
   /**
