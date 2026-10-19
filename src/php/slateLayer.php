@@ -264,7 +264,7 @@ class slateLayer extends algaeTblBase
   {
     $outputFile = $this->getFullyPathedFilename() . '.gdalinfo';
     exec('gdalinfo -noct ' . $this->getFullyPathedFilename() . ' > ' . $outputFile);
-    algaeFile::showTextFile($outputFile, 'Metadata from gdalinfo:');
+    algaeFile::showTextFile($outputFile, 'Metadata from gdalinfo');
   }
   
   protected function writeFileDownloadPair($label, $filename)
@@ -320,7 +320,11 @@ class slateLayer extends algaeTblBase
     algaeTable::writeTwoColumns('GeoProcess', $this->geoprocess->getHomepageLink() . $this->geoprocess->getRunLink(), False);
     algaeTable::writeTwoColumns('Data Group', algaeCore::getColorBlock($this->geoprocess->data_group->html_color, True, $this->geoprocess->data_group->name), False);
     algaeTable::writeTwoColumns('Resolution', $this->resolution->name);
-    algaeTable::writeTwoColumns('Map File', $map->getMapFilename() . $app->config->menu_separator . $app->getPageLink('view_text_file.php?filename=' . urlencode($map->getMapFilename()), 'View', algaeAccess::ROLE_READ, $app->config->app_name, '', True), False);
+    
+    $page = algaeCore::getFullPath($app->config->algae_root_url, 'view_text_file.php');
+    algaeTable::writeTwoColumns('Map File', $map->getMapFilename() . $app->config->menu_separator . 
+      $app->getPageLink($page . '?filename=' . urlencode($map->getMapFilename()), 'View', algaeAccess::ROLE_READ, $app->config->app_name, '', True), False);
+    
     algaeTable::writeTwoColumns('Created', $this->timestamp_loaded_utc);
     algaeTable::writeTwoColumns('Modified', $this->timestamp_modified_utc);
     algaeTable::writeTwoColumns('Rowid', $this->rowid);
@@ -401,7 +405,6 @@ class slateLayer extends algaeTblBase
     echo '<div id="map_tab">';
     
     echo algaeForm::button('invalidate', 'Invalidate', 'map.invalidateSize(true);'), '<p />';
-    
     $study_area = new slateStudyArea();
     $study_area->readRowFromDatabaseWithProjectRowid($app->getCurrentProjectRowid());
     $study_area->setMapBounds($map);
@@ -421,14 +424,14 @@ class slateLayer extends algaeTblBase
     // ----- classes_tab
     //
     echo '<div id="classes_tab">';
-    $c = new slateClass();
-    $c->reportRecordsForLayer($this->rowid);
+    // $c = new slateClass();
+    // $c->reportRecordsForLayer($this->rowid);
     echo '</div>';
     //
     // ----- signatures_tab
     //
     echo '<div id="signatures_tab">';
-    slateSignature::reportSignaturesForLayer($this->rowid);
+    // slateSignature::reportSignaturesForLayer($this->rowid);
     echo '</div>';
     //
     // ----- info_tab
