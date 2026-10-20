@@ -404,7 +404,7 @@ class slateLayer extends algaeTblBase
     //
     echo '<div id="map_tab">';
     
-    echo algaeForm::button('invalidate', 'Invalidate', 'map.invalidateSize(true);'), '<p />';
+    // echo algaeForm::button('invalidate', 'Invalidate', 'map.invalidateSize(true);'), '<p />';
     $study_area = new slateStudyArea();
     $study_area->readRowFromDatabaseWithProjectRowid($app->getCurrentProjectRowid());
     $study_area->setMapBounds($map);
