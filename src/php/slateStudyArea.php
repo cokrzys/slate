@@ -680,8 +680,12 @@ class slateStudyArea extends algaeTblBase
     {
       $map->bounds_min_long = $this->min_long;
       $map->bounds_max_long = $this->max_long;
-      $map->bounds_min_lat = $this->min_lat;
-      $map->bounds_max_lat = $this->max_lat;
+      #
+      # ----- manually shift map to resolve a vertical centering issue
+      #
+      $lat_shift = ($this->max_lat - $this->min_lat) * 0.25;
+      $map->bounds_min_lat = $this->min_lat - $lat_shift;
+      $map->bounds_max_lat = $this->max_lat - $lat_shift;
       $map->zoomToBounds = True;
     }
     else
