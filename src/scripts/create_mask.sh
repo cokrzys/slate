@@ -75,6 +75,15 @@ else
 fi
 
 #
+# ----- raster stats
+#
+"$SLATE_PYTHON_APPS_FOLDER"rasterstats.py \
+-c \
+-lrowid $(jq -r '.layerRowid' $PARMS) \
+-ws \
+$WORKING_FOLDER"_t1.tiff"
+
+#
 # ----- make the legend
 #
 echo -e "\nMaking the legend."

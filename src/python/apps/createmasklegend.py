@@ -23,7 +23,6 @@ app = algaeApp(False, False)
 sys.path.append(app.config.getAppConfigParameter('slate', 'pythonModulesPath'))
 
 from slateapp import slateApp
-
 from qgisstyle import qgisStyle
 
 #

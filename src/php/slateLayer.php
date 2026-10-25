@@ -424,8 +424,8 @@ class slateLayer extends algaeTblBase
     // ----- classes_tab
     //
     echo '<div id="classes_tab">';
-    // $c = new slateClass();
-    // $c->reportRecordsForLayer($this->rowid);
+    $c = new slateClass();
+    $c->reportRecordsForLayer($this->rowid);
     echo '</div>';
     //
     // ----- signatures_tab
