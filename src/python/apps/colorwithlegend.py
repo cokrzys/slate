@@ -126,6 +126,7 @@ def create_legend(bin_counts):
 
 app = slateApp()
 builtins.app = app # add app to builtins for true globl access
+gdal.DontUseExceptions() # prevents warning re: future exceptions use by default
 
 #
 # ----- open database
