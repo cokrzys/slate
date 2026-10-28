@@ -141,7 +141,7 @@ class slateSourceData extends algaeTblBase
       //
       // ----- initial the table
       //
-      algaeTable::initTablesorterJavascript($tableId, '[[0,0]]');
+      algaeTable::initTablesorterJavascript($tableId, '[[1,0]]');
       algaeTable::start($tableId, 'tablesorter', 'width:100%;');
       //
       // ----- setup associative array with header details

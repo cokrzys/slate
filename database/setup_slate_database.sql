@@ -12,6 +12,7 @@
   Versions
     
   2026.10.13 | Started version tracking.
+  2026.10.27 | Added sp.legend and sp.legend_item.
 
 */
 
@@ -24,7 +25,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.10.13' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.10.27' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -733,6 +734,46 @@ CREATE TABLE sp.map_layer
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.map_layer FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+--
+-- sp.legend
+--
+DROP TABLE IF EXISTS sp.legend;
+DROP SEQUENCE IF EXISTS sp.legend_rowid;
+CREATE SEQUENCE sp.legend_rowid START 1;
+CREATE TABLE sp.legend
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.legend_rowid'),
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(), 
+  name VARCHAR NOT NULL UNIQUE,
+  html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.legend FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+DROP TABLE IF EXISTS sp.legend_item;
+DROP SEQUENCE IF EXISTS sp.legend_item_rowid;
+CREATE SEQUENCE sp.legend_item_rowid START 1;
+CREATE TABLE sp.legend_item
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.legend_item_rowid'),
+  legend_rowid_fk INTEGER NOT NULL REFERENCES sp.legend,
+  code VARCHAR NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
+  name VARCHAR,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(legend_rowid_fk, code)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.legend_item FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
 -- ============================================================================

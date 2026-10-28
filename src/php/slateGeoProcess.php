@@ -85,7 +85,7 @@ class slateGeoProcess extends algaeTblBase
     $this->available_geoprocesses = array();
     $this->available_geoprocesses[] = array('Categorical Layer', 'edit_categorical.php');
     $this->available_geoprocesses[] = array('Create a Mask', 'edit_mask.php');
-    $this->available_geoprocesses[] = array('Import Raster', 'edit_reproject_raster.php');
+    $this->available_geoprocesses[] = array('Import Raster', 'edit_import_raster.php');
     $this->available_geoprocesses[] = array('Overlay Raster', 'edit_overlay.php');
     $this->available_geoprocesses[] = array('Proximity Raster', 'edit_proximity.php');
     // $this->available_geoprocesses[] = array('Re-Project Shapefile', 'edit_reproject_shapefile.php');

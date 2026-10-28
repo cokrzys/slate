@@ -70,6 +70,31 @@ class slateSourceFile extends algaeTblBase
     return slateSourceFile::selectWithFormat($format->rowid, $id, $default, $required);
   }
   
+  public static function selectByFileGroup($file_group_name, $id, $default, $required = False)
+  // --------------------------------------------------------------------------
+  {
+    $sf = new slateSourceFile();
+    $sql = "SELECT filename, sf.rowid
+            FROM $sf->table_name sf
+            INNER JOIN ref.file_format ff ON sf.file_format_rowid_fk = ff.rowid
+              AND ff.file_group_rowid_fk = (SELECT rowid FROM ref.file_group WHERE name = '$9') 
+            ORDER BY 1";
+    $sql = str_replace('$1', $file_group_name, $sql);
+    return algaeForm::selectWithSQL($sql, $id, $default, $required, [], 600);
+  }
+  
+  public static function selectRaster($id, $default, $required = False)
+  // --------------------------------------------------------------------------
+  {
+    return slateSourceFile::selectByFileGroup('Raster', $id, $default, $required);
+  }
+  
+  public static function selectVector($id, $default, $required = False)
+  // --------------------------------------------------------------------------
+  {
+    return slateSourceFile::selectByFileGroup('Vector', $id, $default, $required);
+  }
+  
   public function getShapefileExtents($filename)
   // --------------------------------------------------------------------------
   {
