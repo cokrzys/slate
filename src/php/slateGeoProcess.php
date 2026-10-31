@@ -87,12 +87,13 @@ class slateGeoProcess extends algaeTblBase
     $this->available_geoprocesses[] = array('Create a Mask', 'edit_mask.php');
     $this->available_geoprocesses[] = array('Import Raster', 'edit_import_raster.php');
     $this->available_geoprocesses[] = array('Overlay Raster', 'edit_overlay.php');
-    $this->available_geoprocesses[] = array('Proximity Raster', 'edit_proximity.php');
+    $this->available_geoprocesses[] = array('Proximity from Vector', 'edit_proximity_from_vector.php');
+    $this->available_geoprocesses[] = array('Proximity from Raster', 'edit_proximity_from_raster.php');
     // $this->available_geoprocesses[] = array('Re-Project Shapefile', 'edit_reproject_shapefile.php');
     // $this->available_geoprocesses[] = array('Similarity Model', 'edit_similarity_model.php');
     $this->available_geoprocesses[] = array('Subset Shapefile', 'edit_subset_shapefile.php');
   }
-  
+    
   /**
    * 
    * @return NULL|string
@@ -586,7 +587,7 @@ class slateGeoProcess extends algaeTblBase
       // TODO: Hidden input no longer needed?
       // echo 'DEBUG: ', $this->study_area->rowid, '<p />';
       // echo '<input type="hidden" name="study_area_rowid_fk" value="', $this->study_area->rowid, '" />';
-      echo algaeForm::selectWithArray('geoprocess', 'Proximity Raster', 
+      echo algaeForm::selectWithArray('geoprocess', '', 
         array_column($this->available_geoprocesses, 0), algaeForm::REQUIRED);
       //
       // ----- end form
