@@ -104,6 +104,10 @@ projects_base_folder = '/opt/slate-projects'
 
 # folder for temporary MapServer .map files
 session_maps_folder = '/opt/slate-projects/smaps'
+
+# make sure Apache user has access
+sudo chown -R root:www-data /opt/slate-projects
+sudo chmod 774 /opt/slate-projects
 ```
 
 
