@@ -25,12 +25,47 @@ class slateFolder
   {
   }
   
+  protected function isTextFile($filename)
+  // --------------------------------------------------------------------------
+  {
+    $text_extensions = array('log', 'json', 'xml', 'leg', 'prj', 'txt', 'csv', 'gdalinfo');
+    $file_extension = pathinfo($filename, PATHINFO_EXTENSION);
+    foreach ($text_extensions as $ext)
+    {
+      if (strcasecmp($file_extension, $ext) == 0)
+      {
+        return True;
+      }
+    }
+    return False;
+  }
+  
+  /**
+   * Get menu options for a file.  Actions depend on the file type.
+   * @param string $filename Filename to get actions for.
+   */
+  protected function getFileActions($filename)
+  // --------------------------------------------------------------------------
+  {
+    global $app;
+    $html = '';
+    $html = algaeFile::getDownloadLink($filename, 'Download', False);
+    if ($this->isTextFile($filename))
+    {
+      $html .= $app->config->menu_separator;
+      $page = algaeCore::getFullPath($app->config->algae_root_url, 'view_text_file.php');
+      $html .= $app->getPageLink($page . '?filename=' . urlencode($filename), 'View', algaeAccess::ROLE_READ, $app->config->app_name, '', True);
+    }
+    return $html;
+  }
+  
   /**
    * Report files for the process.
    */
   public static function reportFiles($folder)
   // --------------------------------------------------------------------------
   {
+    $fc = new slateFolder();
     if (file_exists($folder))
     {
       $files = scandir($folder);
@@ -60,13 +95,12 @@ class slateFolder
         {
           if ( ($file != '.') && ($file != '..') )
           {
-            $full_filename = $folder . $file;
+            $full_filename = algaeCore::getFullPath($folder, $file);
             echo '<tr>';
             algaeTable::writeData($file);
             algaeTable::writeData(algaeCore::getFormattedNumber(filesize($full_filename), 0));
             algaeTable::writeData(date("d-M-Y G:i:s", filemtime($full_filename)), 0);
-            algaeTable::writeData('-');
-            // algaeTable::writeData($this->getFileActions($full_filename), False);
+            algaeTable::writeData($fc->getFileActions($full_filename), False);
             echo '</tr>';
           }
         }

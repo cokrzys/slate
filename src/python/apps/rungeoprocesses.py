@@ -60,6 +60,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
     # ----- run
     #
     w = slateRunGeoprocesses(db, args)
+    # w.debug = True
     w.run()
     #
     # ----- close database

@@ -77,9 +77,9 @@ class slateSourceFile extends algaeTblBase
     $sql = "SELECT filename, sf.rowid
             FROM $sf->table_name sf
             INNER JOIN ref.file_format ff ON sf.file_format_rowid_fk = ff.rowid
-              AND ff.file_group_rowid_fk = (SELECT rowid FROM ref.file_group WHERE name = '$9') 
+              AND ff.file_group_rowid_fk = (SELECT rowid FROM ref.file_group WHERE name = '$99') 
             ORDER BY 1";
-    $sql = str_replace('$1', $file_group_name, $sql);
+    $sql = str_replace('$99', $file_group_name, $sql);
     return algaeForm::selectWithSQL($sql, $id, $default, $required, [], 600);
   }
   

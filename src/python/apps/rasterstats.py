@@ -113,9 +113,12 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
              print("NoData value = %r" % band.GetNoDataValue())
              num_nodata_values = (data == band.GetNoDataValue()).sum()
              print("Num NoData values = %r" % num_nodata_values)
-             if num_nodata_values > 0 and (data.dtype == 'float32' or data.dtype == 'float64'):
-                 data[(data == band.GetNoDataValue())] = np.NaN
-             # num_nodata_values = (data == np.NaN).sum() this does not work !!
+             if num_nodata_values > 0:
+                 if data.dtype == 'float32' or data.dtype == 'float64':
+                     data[(data == band.GetNoDataValue())] = np.nan
+                 else:
+                     data = data[(data != band.GetNoDataValue())]
+             # num_nodata_values = (data == np.nan).sum() this does not work !!
              num_valid_cells = (band.XSize * band.YSize) - num_nodata_values
              print("Num valid data cells = %r" % (num_valid_cells))
              if num_nodata_values > 0:
@@ -131,7 +134,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
      #         num_missing_information_values = (data == ProspBase.MISSING_DATA_FLOAT).sum()
      #         print('Num {} values = {}'.format(ProspBase.MISSING_DATA_DESC, num_missing_information_values))
      #         if num_missing_information_values > 0:
-     #             data[(data == ProspBase.MISSING_DATA_FLOAT)] = np.NaN
+     #             data[(data == ProspBase.MISSING_DATA_FLOAT)] = np.nan
          #
          # ----- not present values
          #
@@ -268,7 +271,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
          #
          # ----- count the number of unique values if applicable
          #
-         if args.count_unique_values:
+         if args.count_unique_values or data.dtype == 'int16':
              bin_count_list = slateApp.get_bin_counts(valid_data, args.count_scalar)
              slateApp.report_bin_counts(bin_count_list, args.count_scalar )
          #
@@ -290,16 +293,16 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
 #                     cbf.write(qstr + ' 166 54 3\n')
 
 # 5-class GnBu
-                 qstr = '{:.{num_decimals}f} '.format(min, num_decimals = 3)
-                 cbf.write(qstr + ' 240,249,232\n')
-                 qstr = '{:.{num_decimals}f} '.format(q[0], num_decimals = 3)
-                 cbf.write(qstr + ' 186,228,188\n')
-                 qstr = '{:.{num_decimals}f} '.format(q[1], num_decimals = 3)
-                 cbf.write(qstr + ' 123,204,196\n')
-                 qstr = '{:.{num_decimals}f} '.format(q[2], num_decimals = 3)
-                 cbf.write(qstr + ' 67,162,202\n')
-                 qstr = '{:.{num_decimals}f} '.format(max, num_decimals = 3)
-                 cbf.write(qstr + ' 8,104,172\n')
+#                  qstr = '{:.{num_decimals}f} '.format(min, num_decimals = 3)
+#                  cbf.write(qstr + ' 240,249,232\n')
+#                  qstr = '{:.{num_decimals}f} '.format(q[0], num_decimals = 3)
+#                  cbf.write(qstr + ' 186,228,188\n')
+#                  qstr = '{:.{num_decimals}f} '.format(q[1], num_decimals = 3)
+#                  cbf.write(qstr + ' 123,204,196\n')
+#                  qstr = '{:.{num_decimals}f} '.format(q[2], num_decimals = 3)
+#                  cbf.write(qstr + ' 67,162,202\n')
+#                  qstr = '{:.{num_decimals}f} '.format(max, num_decimals = 3)
+#                  cbf.write(qstr + ' 8,104,172\n')
 
 # 5-class OrRd
 #                     qstr = '{:.{num_decimals}f} '.format(min, num_decimals = 3)
@@ -314,16 +317,16 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
 #                     cbf.write(qstr + ' 179,0,0\n')
 
 # 5-class YlGnBu good, subdued
-#                     qstr = '{:.{num_decimals}f} '.format(min, num_decimals = 3)
-#                     cbf.write(qstr + ' 255,255,204\n')
-#                     qstr = '{:.{num_decimals}f} '.format(q[0], num_decimals = 3)
-#                     cbf.write(qstr + ' 161,218,180\n')
-#                     qstr = '{:.{num_decimals}f} '.format(q[1], num_decimals = 3)
-#                     cbf.write(qstr + ' 65,182,196\n')
-#                     qstr = '{:.{num_decimals}f} '.format(q[2], num_decimals = 3)
-#                     cbf.write(qstr + ' 44,127,184\n')
-#                     qstr = '{:.{num_decimals}f} '.format(max, num_decimals = 3)
-#                     cbf.write(qstr + ' 37,52,148\n')
+                    qstr = '{:.{num_decimals}f} '.format(min, num_decimals = 3)
+                    cbf.write(qstr + ' 255,255,204\n')
+                    qstr = '{:.{num_decimals}f} '.format(q[0], num_decimals = 3)
+                    cbf.write(qstr + ' 161,218,180\n')
+                    qstr = '{:.{num_decimals}f} '.format(q[1], num_decimals = 3)
+                    cbf.write(qstr + ' 65,182,196\n')
+                    qstr = '{:.{num_decimals}f} '.format(q[2], num_decimals = 3)
+                    cbf.write(qstr + ' 44,127,184\n')
+                    qstr = '{:.{num_decimals}f} '.format(max, num_decimals = 3)
+                    cbf.write(qstr + ' 37,52,148\n')
                  
 # 5-class YlOrRd good, bright
 #                     qstr = '{:.{num_decimals}f} '.format(min, num_decimals = 3)
@@ -337,7 +340,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
 #                     qstr = '{:.{num_decimals}f} '.format(max, num_decimals = 3)
 #                     cbf.write(qstr + ' 189 0 38\n')
                  
-                 cbf.write('nv 0 0 0 0\n') # to make NoData values transparent, must also use -alpha flag with gdaldem
+                    cbf.write('nv 0 0 0 0\n') # to make NoData values transparent, must also use -alpha flag with gdaldem
          #
          # ----- close the grid
          #

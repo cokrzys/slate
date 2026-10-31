@@ -43,6 +43,7 @@ class slateRunGeoprocesses:
         self.args = args
         self.core_process = None # an instance of algaeTblCoreProcess if it's used
         self.resolution = refResolution()
+        self.debug = False
         
     def run_one(self, rowid):
     #------------------------------------------------------------------------------
@@ -64,9 +65,9 @@ class slateRunGeoprocesses:
             if self.core_process != None:
                 self.core_process.update_message(self.db, msg)
             
-            if gp.php_class == 'slateGeoProcReProjectRaster':
+            if gp.php_class == 'slateGeoProcImportRaster':
                 gp = slateGeoProcImportRaster()
-                gp.read_row_from_database_with_rowid(self.db, rowid)
+                gp.read_row_from_database_with_rowid(self.db, rowid, True)
         
             #
             # ----- layers that don't require a mask
@@ -74,12 +75,19 @@ class slateRunGeoprocesses:
             if gp.php_class == 'slateGeoProcMask':
                 gp.require_mask_layer = False
                 
+            if self.debug: print('DEBUG: self.resolution.folder = ' + self.resolution.folder)
+                
             if gp.create_directory(self.resolution.folder):
                 #
                 # ----- read study area if we don't already have it
                 #
                 if study_area.rowid == None:
                     study_area.read_row_from_database_with_project_rowid(self.db, gp.project.rowid, True)
+                    
+                if study_area.rowid != None and study_area.rowid > 0:
+                    if study_area.geoprocess.rowid == None and gp.require_mask_layer:
+                        algaeApp.error_message('Mask layer not setup for the study area.')
+                        return
                 #
                 # ----- read mask layer if we don't already have it
                 #

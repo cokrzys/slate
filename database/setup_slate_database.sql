@@ -763,14 +763,14 @@ CREATE TABLE sp.legend_item
 (
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.legend_item_rowid'),
   legend_rowid_fk INTEGER NOT NULL REFERENCES sp.legend,
-  code VARCHAR NOT NULL,
+  int_code INTEGER NOT NULL,
+  text_code VARCHAR,
   sort_order INTEGER NOT NULL DEFAULT 0,
   html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
-  name VARCHAR,
   description VARCHAR,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  UNIQUE(legend_rowid_fk, code)
+  UNIQUE(legend_rowid_fk, int_code)
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.legend_item FOR EACH ROW EXECUTE PROCEDURE

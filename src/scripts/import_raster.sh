@@ -43,11 +43,13 @@ echo "Output filename = "$DEST
 --layer_rowid_fk $(jq -r '.layerRowid' $PARMS) \
 --column begin
 
+# rm $WORKING_FOLDER*
+
 #
 #
 #
 OUTPUT_NODATA=$(jq -r '.outputNoDataValue' $PARMS)
-echo 'Output type is '$(jq -r '.outputType' $PARMS)' with a NoData value = '$OUTPUT_NODATA
+echo 'Output type is '$(jq -r '.outputDataType' $PARMS)' with a NoData value = '$OUTPUT_NODATA
 
 #
 # ----- re-project raster
@@ -57,7 +59,7 @@ gdalwarp \
 -t_srs 'EPSG:'$SRID \
 -te $XMIN $YMIN $XMAX $YMAX \
 -tr $RESOLUTION $RESOLUTION \
--ot $(jq -r '.outputType' $PARMS) \
+-ot $(jq -r '.outputDataType' $PARMS) \
 -dstnodata $OUTPUT_NODATA \
 -overwrite \
 -r $(jq -r '.resampling_method' $PARMS) \

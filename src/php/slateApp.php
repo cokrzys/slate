@@ -58,6 +58,7 @@ class slateApp extends algaeApp
     require_once 'refUnits.php';
     require_once 'refFileGroup.php';
     require_once 'refFileFormat.php';
+    require_once 'slateLegend.php';
     require_once 'slateFolder.php';
     require_once 'slateProject.php';
     require_once 'slateSourceData.php';

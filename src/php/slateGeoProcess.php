@@ -195,86 +195,6 @@ class slateGeoProcess extends algaeTblBase
     algaeTable::end();
   }
   
-  protected function isTextFile($filename)
-  // --------------------------------------------------------------------------
-  {
-    $text_extensions = array('log', 'json', 'xml', 'leg', 'prj');
-    $file_extension = pathinfo($filename, PATHINFO_EXTENSION);
-    foreach ($text_extensions as $ext)
-    {
-      if (strcasecmp($file_extension, $ext) == 0)
-      {
-        return True;
-      }
-    }
-    return False;
-  }
-  
-  /**
-   * Get menu options for a file.  Actions depend on the file type.
-   * @param string $filename Filename to get actions for.
-   */
-  protected function getFileActions($filename)
-  // --------------------------------------------------------------------------
-  {
-    global $app;
-    $html = '';
-    $html = algaeFile::getDownloadLink($filename, 'Download', False);
-    if ($this->isTextFile($filename))
-    {
-      $html .= $app->config->menu_separator;
-      $html .= $app->getPageLink('view_text_file.php?filename=' . urlencode($filename), 'View', algaeAccess::ROLE_READ, $app->config->app_name, '', True);
-    }
-    return $html;
-  }
-  
-  /**
-   * Report files for the process.
-   */
-  protected function reportFiles()
-  // --------------------------------------------------------------------------
-  {
-    $folder = $this->getDirectory();
-    if (is_dir($folder) === true)
-    {
-      $files = scandir($folder);
-      echo sizeof($files), ' file(s) in ', $folder, '<p />';
-      //
-      // ----- initial the table
-      //
-      $tableId = 'filesTable';
-      algaeTable::initTablesorterJavascript($tableId, '[[0,0]]', True, "headers: {2: {sorter:'milDate'} }");
-      algaeTable::start($tableId, 'tablesorter', 'width:80%;');
-      //
-      // ----- table header
-      //
-      $header_array = array(
-        array('Filename', '40%'),
-        array('Size (bytes)', '20%'),
-        array('Date', '20%'),
-        array('Actions', '20%')
-      );
-      algaeTable::writeHeader($header_array, True);
-      //
-      // ----- loop through the results
-      //
-      foreach ($files as $file)
-      {
-        if ( ($file != '.') && ($file != '..') )
-        {
-          $full_filename = $this->getDirectory() . $file;
-          echo '<tr>';
-          algaeTable::writeData($file);
-          algaeTable::writeData(algaeCore::getFormattedNumber(filesize($full_filename), 0));
-          algaeTable::writeData(date("d-M-Y G:i:s", filemtime($full_filename)), 0);
-          algaeTable::writeData($this->getFileActions($full_filename), False);
-          echo '</tr>';
-        }
-      }
-      algaeTable::end();
-    }
-  }
-  
   /**
    * Report details for the object.
    * {@inheritDoc}
@@ -332,7 +252,7 @@ class slateGeoProcess extends algaeTblBase
     // ----- files_tab
     //
     echo '<div id="files_tab">';
-    $this->reportFiles();
+    slateFolder::reportFiles($this->getDirectory());
     echo '</div>';
     //
     // ----- end of all tabs div

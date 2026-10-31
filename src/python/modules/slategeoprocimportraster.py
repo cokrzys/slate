@@ -53,13 +53,6 @@ class slateGeoProcImportRaster(slateGeoProcess):
         
         """
         self.filename_to_parms(db, parms, 'raster_file_rowid_fk', 'rasterFilename')
-        self.filename_to_parms(db, parms, 'legend_file_rowid_fk', 'legendFilename')
-        
-        tag = 'legend_from_database'
-        if tag in parms:
-            parms['legendRowid'] = parms[tag]
-        else:
-            parms['legendRowid'] = 0
         
         
         

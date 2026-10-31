@@ -179,6 +179,16 @@
     ]
   },
   {
+    "tableName": "sp.legend",
+    "parentTableName": "algae.named_object_base",
+    "comment": "Legends that connect raster integer values to character codes and style attributes.",
+    "source": "slate",
+    "phpClass": "slateLegend",
+    "pythonClass": "slateLegend",
+    "columns":
+    []
+  },
+  {
     "tableName": "sp.project",
     "parentTableName": "algae.named_object_base",
     "comment": "Overall project container and support for the sp.project table.",
