@@ -101,6 +101,8 @@ sudo vi /opt/rtspatial/config/slate.ini
 ```ini
 # base directory for slate projects
 projects_base_folder = '/opt/slate-projects'
+
+# folder for temporary MapServer .map files
 session_maps_folder = '/opt/slate-projects/smaps'
 ```
 
