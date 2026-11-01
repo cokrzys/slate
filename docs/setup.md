@@ -100,7 +100,16 @@ sudo vi /opt/rtspatial/config/slate.ini
 
 ```ini
 # base directory for slate projects
-projects_base_folder = '/bs/slate'
+projects_base_folder = '/opt/slate-projects'
+
+# folder for temporary MapServer .map files
+session_maps_folder = '/opt/slate-projects/smaps'
+```
+
+```shell
+# make sure Apache user has access
+sudo chown -R root:www-data /opt/slate-projects
+sudo chmod 774 /opt/slate-projects
 ```
 
 
