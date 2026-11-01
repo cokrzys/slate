@@ -403,8 +403,7 @@ class slateSourceData extends algaeTblBase
     // ----- files_tab
     //
     echo '<div id="files_tab">';
-    // $this->reportFiles();
-    $this->refreshFilesList();
+    slateFolder::reportFiles($this->getDirectory());
     echo '</div>';
     //
     // ----- end tabs

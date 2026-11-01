@@ -65,10 +65,14 @@ class slateHomepage
     algaeTable::start('formTable', 'algae_form_table', '');
     algaeTable::writeHeader(array(), False);
     
-    algaeTable::writeTwoColumns('Current Project', $p->getHomepageLink(), False);
-    algaeTable::writeTwoColumns('Resolution', $resolution_name, False);
-    algaeTable::writeTwoColumns('Folder', $p->getDirectory(), False);
-    algaeTable::writeTwoColumns('Size on Disk', algaeFile::getHumanFilesize($size, 2), False);
+    $rowid = $app->getCurrentProjectRowid(false);
+    if (isset($rowid) && ($rowid > 0))
+    {
+      algaeTable::writeTwoColumns('Current Project', $p->getHomepageLink(), False);
+      algaeTable::writeTwoColumns('Resolution', $resolution_name, False);
+      algaeTable::writeTwoColumns('Folder', $p->getDirectory(), False);
+      algaeTable::writeTwoColumns('Size on Disk', algaeFile::getHumanFilesize($size, 2), False);
+    }
     
     $datamodel_version = algaeDB::getScalarString('SELECT * FROM algae_app_database_version()', array());
     algaeTable::writeTwoColumns('Base Data Model', $datamodel_version, False);
