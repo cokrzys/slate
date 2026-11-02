@@ -182,7 +182,9 @@ class slateGeoProcess extends algaeTblBase
     algaeTable::writeTwoColumns('Command', $this->command, False);
     algaeTable::writeTwoColumns('Project', $this->project->getHomepageLink(), False);
     algaeTable::writeTwoColumns('Status', $this->process->getStatusMessage(), False);
-    algaeTable::writeTwoColumns('Process', $this->process->getHomepageLink(), False);
+    algaeTable::writeTwoColumns('Process', $this->process->getHomepageLink(
+      'Process ' . strval($this->process->rowid)), False);
+    algaeTable::writeTwoColumns('Process Homepage', $this->process->homepage, False);
     algaeTable::writeTwoColumns('Sequence', $this->sequence, False);
     // algaeTable::writeTwoColumns('Results', $this->process->getResultsLink(), False);
     // algaeTable::writeTwoColumns('Parameters', $this->parameters);
@@ -207,10 +209,12 @@ class slateGeoProcess extends algaeTblBase
     //
     // ----- read process details if they exist
     //
+    /*
     if ($this->process->rowid > 0)
     {
-      $this->process->readRowFromDatabaseWithRowid($this->process->rowid);
+      $this->process->read_row_from_database_with_rowid($this->process->rowid);
     }
+    */
     //
     // ----- initial tabs setup
     //
@@ -230,7 +234,7 @@ class slateGeoProcess extends algaeTblBase
     // ----- parameters_tab
     //
     echo '<div id="parameters_tab">';
-    $parms_file = $this->getDirectory() . 'parameters.json';
+    $parms_file = algaeCore::getFullPath($this->getDirectory(), 'parameters.json');
     if (file_exists($parms_file))
     {
       algaeFile::showTextFile($parms_file);

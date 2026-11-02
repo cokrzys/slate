@@ -70,68 +70,37 @@ if [ $(jq '.invert' $PARMS) == '"True"' ]; then
   ARRAY_OPTIONAL_PARAMETERS+=( -i )
 fi
 
-# echo Optional parameters array length = "${#ARRAY_OPTIONAL_PARAMETERS[@]}"
-# echo "${ARRAY_OPTIONAL_PARAMETERS[*]}"
+#
+# ----- max distance
+#
+if [ "$(jq -r '.max_distance' $PARMS)" ]; then
+  ARRAY_OPTIONAL_PARAMETERS+=( -maxdist $(jq -r '.max_distance' $PARMS) )
+fi
 
-#
-# ----- project to study area coordinate system
-#
-echo -e "\nRe-projecting."
-  ogr2ogr \
-  -t_srs 'EPSG:'$SRID \
-  -overwrite \
-  -f 'ESRI Shapefile' $WORKING_FOLDER"_t0.shp" \
-  "$SOURCE"
-
-#
-# ----- convert vector to raster
-# 
-echo -e "\nConverting shapefile to raster."
-  gdal_rasterize \
-  -burn 1 \
-  -ot Byte \
-  -a_nodata $NODATA_BYTE \
-  -init $NODATA_BYTE \
-  -a_srs 'EPSG:'$SRID \
-  -te $XMIN $YMIN $XMAX $YMAX \
-  -tr $RESOLUTION $RESOLUTION \
-  -l "_t0" \
-  "${ARRAY_OPTIONAL_PARAMETERS[@]}" \
-  $WORKING_FOLDER"_t0.shp" \
-  $WORKING_FOLDER"_t1.tiff"
+echo Optional parameters array length = "${#ARRAY_OPTIONAL_PARAMETERS[@]}"
+echo "${ARRAY_OPTIONAL_PARAMETERS[*]}"
 
 #
 # ----- remove temporary file if it exists
 #       if it exists gdal_proximity will try and use it and give an error if not the same resolution
 #
-if test -e $WORKING_FOLDER"_t2.tiff"; then
-  rm $WORKING_FOLDER"_t2.tiff"
+if test -e $WORKING_FOLDER"_t1.tiff"; then
+  rm $WORKING_FOLDER"_t1.tiff"
 fi
 
+rm $WORKING_FOLDER"_t*"
+
 #
-# ----- proximity raster, two versions with and without max distance
+# ----- proximity raster
 #
-if [ -z "$(jq -r '.max_distance' $PARMS)" ]
-then
-  echo -e "\nCalculating proximity raster."
-  gdal_proximity.py \
-  $WORKING_FOLDER"_t1.tiff" \
-  $WORKING_FOLDER"_t2.tiff" \
-  -values 1 \
-  -distunits GEO \
-  -nodata $NODATA_FLOAT32 \
-  -of GTiff
-else
-  echo -e "\nCalculating proximity raster with max distance."
-  gdal_proximity.py \
-  $WORKING_FOLDER"_t1.tiff" \
-  $WORKING_FOLDER"_t2.tiff" \
-  -values 1 \
-  -distunits GEO \
-  -nodata $NODATA_FLOAT32 \
-  -maxdist $(jq -r '.max_distance' $PARMS) \
-  -of GTiff
-fi
+echo -e "\nCalculating proximity raster."
+gdal_proximity.py \
+"$SOURCE" \
+$WORKING_FOLDER"_t1.tiff" \
+-distunits GEO \
+-nodata $NODATA_FLOAT32 \
+"${ARRAY_OPTIONAL_PARAMETERS[@]}" \
+-of GTiff
 
 #
 # ----- replace 0 (on the feature values)
@@ -140,9 +109,28 @@ echo -e "\nReplacing 0 values (on the feature) with 0.01."
 gdal_calc.py \
 --overwrite \
 --quiet \
--A $WORKING_FOLDER"/_t2.tiff" \
---outfile=$WORKING_FOLDER"/_t3.tiff" \
+-A $WORKING_FOLDER"/_t1.tiff" \
+--outfile=$WORKING_FOLDER"/_t2.tiff" \
 --calc="where(A>0,A,0.01)"
+
+if test -e $WORKING_FOLDER"_t3.tiff"; then
+  rm $WORKING_FOLDER"_t3.tiff"
+fi
+
+#
+# ----- re-project raster
+# 
+echo -e "\nRe-projecting."
+gdalwarp \
+-t_srs 'EPSG:'$SRID \
+-te $XMIN $YMIN $XMAX $YMAX \
+-tr $RESOLUTION $RESOLUTION \
+-ot $(jq -r '.outputDataType' $PARMS) \
+-dstnodata $NODATA_FLOAT32 \
+-overwrite \
+-r min \
+$WORKING_FOLDER"_t2.tiff" \
+$WORKING_FOLDER"_t3.tiff"
 
 #
 # ----- apply study area mask

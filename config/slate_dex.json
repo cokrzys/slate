@@ -336,6 +336,10 @@
         "required": true
       },
       {
+        "name": "process_rowid_fk",
+        "variableName": "process.rowid"
+      },
+      {
         "name": "data_distribution_rowid_fk",
         "variableName": "data_distribution.rowid",
         "required": true
