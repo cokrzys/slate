@@ -614,7 +614,7 @@ class slateGeoProcess extends algaeTblBase
   {
     global $app;
     echo 'Deleting GeoProcess ', $this->getHomepageLink();
-    echo ' from project ', $this->project->getHomepageLink(), '.<p />';
+    echo ' from ', $this->project->getHomepageLink(), '.<p />';
     $num_layers = algaeDB::getScalarInteger("SELECT COUNT(rowid) FROM sp.layer WHERE geoprocess_rowid_fk = $1", array($this->rowid), 0);
     if ($num_layers > 0)
     {
