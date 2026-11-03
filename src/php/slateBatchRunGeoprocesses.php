@@ -158,7 +158,7 @@ class slateBatchRunGeoprocesses
     {
       $process = new algaeTblCoreProcess();
       $process->application = algaeFile::removeExtension($app->config->run_geoprocesses_app);
-      $process->logfile_root = algaeCore::getFullPath($p->folder, 'batch/');
+      $process->logfile_root = algaeCore::getFullPath($p->getDirectory(), 'batch');
       $process->starting_url = 'edit_geoprocesses_batch.php';
       $process->result_url = $app->config->process_status_page;
       if ($process->createProcess())

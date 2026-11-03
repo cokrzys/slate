@@ -87,24 +87,25 @@ class slateApp extends algaeApp
     echo $this->getPageLink($this->getURLBase() . 'browse_geoprocesses.php', 'GeoProcesses', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'browse_layers.php', 'Layers', algaeAccess::ROLE_READ, $this->config->app_name);
     
+    echo $this->getPageLink($this->getURLBase() . 'reports.php', 'Reports', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'utilities.php', 'Utilities', algaeAccess::ROLE_READ, $this->config->app_name, '');
     
     /*
     echo $this->getPageLink('browse_maps.php', 'Maps', algaeAccess::ROLE_READ, $this->config->app_name);
-    echo $this->getPageLink('reports.php', 'Reports', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink('edit_setup.php', 'Setup', algaeAccess::ROLE_READ, $this->config->app_name, '');
     */
-    /*
-     echo '<span class="align_right">';
-     $current_project = $this->getCurrentProjectName();
-     if (strlen($current_project) > 0)
-     {
-     echo 'Current project: ', $current_project, $this->settings->menuSeparator;
-     echo $this->getPageLink('edit_setup.php', 'Change', algaeAccess::ROLE_READ, $this->config->app_name, '');
-     }
-     echo '</span>';
-     */
     echo '<p />';
+  }
+  
+  /**
+   * Reports menu.
+   */
+  public function reportsMenu()
+  // --------------------------------------------------------------------------
+  {
+    echo '<ul>';
+    echo '<li>', $this->getPageLink($this->getURLBase() . 'report_processes.php', 'Processes', algaeAccess::ROLE_READ, $this->config->app_name, ''), '</li>';
+    echo '</ul>';
   }
   
   /**
