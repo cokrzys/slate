@@ -372,7 +372,7 @@ class slateStudyArea extends algaeTblBase
     algaeTable::writeTwoColumns('EPSG Code', $this->srid_fk . '&nbsp;&nbsp;' .
       $app->getPageLink('browse_coordinate_systems.php', 'Coordinate Systems', algaeAccess::ROLE_READ, $app->config->app_name, '', True), False);
     algaeTable::writeTwoColumns('Coordinate System', $this->coord_system_name);
-    algaeTable::writeTwoColumns('Shapefile', $this->source_file->getHomepageLink(), False);
+    algaeTable::writeTwoColumns('Shapefile', $this->source_file->getHomepageLink($this->source_file->filename), False);
     algaeTable::writeTwoColumns('Mask', $this->geoprocess->getHomepageLink(), False);
     algaeTable::writeTwoColumns('Reference Place', $this->place->getHomepageLink(), False);
     algaeTable::writeTwoColumns('X Min | Max', algaeCore::getFormattedNumber($this->min_x, 0) . ' | ' . algaeCore::getFormattedNumber($this->max_x, 0));

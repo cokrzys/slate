@@ -18,6 +18,7 @@ import json
 from algaeapp import algaeApp
 from algaedb import algaeDB
 from algaetblbase import algaeTblBase
+from algaetblcoreprocess import algaeTblCoreProcess
 
 from refdatadistribution import refDataDistribution
 from refdatatype import refDataType
@@ -47,6 +48,7 @@ class slateGeoProcess(algaeTblBase):
         self.data_group = refDataGroup()
         self.units = refUnits()
         self.project = slateProject()
+        self.process = algaeTblCoreProcess()
         self.require_mask_layer = True  # useful to not process when changing resolutions and the mask hasn't been made yet
     
     def read_row_from_database_with_project_rowid_does_not_work(self, db, project_rowid_fk, deep_read = True):

@@ -114,7 +114,7 @@ class slateApp extends algaeApp
   // --------------------------------------------------------------------------
   {
     echo '<ul>';
-    echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_geoprocesses_batch.php', '[TODO] Setup and Run a Batch of GeoProcesses', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
+    echo '<li>', $this->getPageLink($this->getURLBase() . 'edit_geoprocesses_batch.php', 'Setup and Run a Batch of GeoProcesses', algaeAccess::ROLE_WRITE, $this->config->app_name, ''), '</li>';
     echo '</ul>';
     echo '<div style="margin-left:1em;">Add or Edit<p /></div>';
     echo '<ul>';
@@ -157,6 +157,19 @@ class slateApp extends algaeApp
       $this->errorMessage('Current project is not defined.');
     }
     return $rowid;
+  }
+  
+  public function getCurrentProjectName()
+  // --------------------------------------------------------------------------
+  {
+    $rowid = algaeTblCoreUserParameter::get_parameter(slateApp::CURRENT_PROJECT_ROWID_PARAMETER_NAME);
+    if (isset($rowid))
+    {
+      $o = new slateProject();
+      $o->read_row_from_database_with_rowid($rowid);
+      return $o->name;
+    }
+    return null;
   }
   
   public function getResolutionParameter($parameter_name)
