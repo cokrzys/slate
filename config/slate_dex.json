@@ -78,18 +78,15 @@
     [
       {
         "name": "min_value",
-        "altReadSQL": "min_value::float",
-        "required": true
+        "altReadSQL": "min_value::float"
       },
       {
         "name": "max_value",
-        "altReadSQL": "max_value::float",
-        "required": true
+        "altReadSQL": "max_value::float"
       },
       {
         "name": "nodata_value",
-        "altReadSQL": "nodata_value::float",
-        "required": true
+        "altReadSQL": "nodata_value::float"
       },
       {
         "name": "size_bytes"

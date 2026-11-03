@@ -18,7 +18,7 @@ PARMS=$1
 #       note . $SETVARS makes them accessible to this environment
 #
 SETVARS=$(jq -r '.scriptsFolder' $PARMS)'set_common_vars.sh'
-echo $SETVARS
+# echo $SETVARS
 . $SETVARS $PARMS
 
 echo ''

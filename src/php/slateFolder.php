@@ -28,7 +28,7 @@ class slateFolder
   protected function isTextFile($filename)
   // --------------------------------------------------------------------------
   {
-    $text_extensions = array('log', 'json', 'xml', 'leg', 'prj', 'txt', 'csv', 'gdalinfo');
+    $text_extensions = array('log', 'json', 'xml', 'leg', 'prj', 'txt', 'csv', 'gdalinfo', 'ogrinfo');
     $file_extension = pathinfo($filename, PATHINFO_EXTENSION);
     foreach ($text_extensions as $ext)
     {

@@ -83,15 +83,16 @@ class slateGeoProcess extends algaeTblBase
     $this->sequence = 100;
     $this->set_vars_script = $app->getScriptsPath('set_common_vars.sh');
     $this->available_geoprocesses = array();
-    $this->available_geoprocesses[] = array('Categorical Layer', 'edit_categorical.php');
+    // $this->available_geoprocesses[] = array('Categorical Layer', 'edit_categorical.php');
     $this->available_geoprocesses[] = array('Create a Mask', 'edit_mask.php');
+    $this->available_geoprocesses[] = array('Create Signatures', 'edit_create_signatures.php');
     $this->available_geoprocesses[] = array('Import Raster', 'edit_import_raster.php');
-    $this->available_geoprocesses[] = array('Overlay Raster', 'edit_overlay.php');
+    // $this->available_geoprocesses[] = array('Overlay Raster', 'edit_overlay.php');
     $this->available_geoprocesses[] = array('Proximity from Vector', 'edit_proximity_from_vector.php');
     $this->available_geoprocesses[] = array('Proximity from Raster', 'edit_proximity_from_raster.php');
     // $this->available_geoprocesses[] = array('Re-Project Shapefile', 'edit_reproject_shapefile.php');
     // $this->available_geoprocesses[] = array('Similarity Model', 'edit_similarity_model.php');
-    $this->available_geoprocesses[] = array('Subset Shapefile', 'edit_subset_shapefile.php');
+    // $this->available_geoprocesses[] = array('Subset Shapefile', 'edit_subset_shapefile.php');
   }
     
   /**

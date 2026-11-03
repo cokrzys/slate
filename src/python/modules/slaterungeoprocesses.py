@@ -110,6 +110,7 @@ class slateRunGeoprocesses:
                         parms['outputNoDataValue'] = gp.data_type.nodata_value
                         parms['noDataByte'] = app.config.nodata_byte
                         parms['noDataFloat32'] = app.config.nodata_float32
+                        parms['resolutionRowid'] = self.resolution.rowid
                         parms['resolutionName'] = self.resolution.name
                         parms['resolutionFolder'] = self.resolution.folder
                         parms['resolution'] = self.resolution.cell_size_x
@@ -174,8 +175,11 @@ class slateRunGeoprocesses:
                                     print('Layer ' + layer.filename + ' added to the database.')
                                 else:
                                     algaeApp.error_message('Unable to add the layer to the database.')
-                            else:
-                                algaeApp.error_message(output_prefix_attribute_name + ' not found in parms dictionary.')
+                            #
+                            # ----- doesn't always apply, i.e. creating signatures
+                            #
+                            # else:
+                                # algaeApp.error_message(output_prefix_attribute_name + ' not found in parms dictionary.')
                                     
                         parms['layerFilename'] = layer.filename
                         parms['layerRowid'] = layer.rowid
