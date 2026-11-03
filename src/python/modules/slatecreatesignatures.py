@@ -45,6 +45,10 @@ class slateCreateSignatures:
         self.cell_coords = None
         self.num_model_layers = 0
         
+        self.core_process = None # an instance of algaeTblCoreProcess if it's used
+        self.resolution = refResolution()
+        self.debug = False
+        
     def get_colored_filename(self, source_filename):
     #------------------------------------------------------------------------------
         """
@@ -373,7 +377,7 @@ class slateCreateSignatures:
             #
             #
             #
-            self.create_signature_raster(sig, layer, resolution)
+            # self.create_signature_raster(sig, layer, resolution)
             
         
     def loop_through_layers(self, resolution):
@@ -397,14 +401,14 @@ class slateCreateSignatures:
                         l.read_data() # all data
                         self.create_signature(l, resolution)
                         num_used += 1
-                    if num_used >= self.args.testing_max_layers:
-                        break
+                    #if num_used >= self.args.testing_max_layers:
+                    #    break
                     
-    def create(self):
+    def create(self, place_rowid_fk):
     #------------------------------------------------------------------------------
         """
         """
-        self.place.read_row_from_database_with_rowid(self.db, self.args.place_rowid_fk, True)
+        self.place.read_row_from_database_with_rowid(self.db, place_rowid_fk, True)
         if self.place.project.rowid != None:
             print('Creating signature for ' + self.place.name + ' using the ' + self.place.project.name + ' dataset.')
             self.study_area.read_row_from_database_with_project_rowid(self.db, self.place.project.rowid, True)
@@ -452,6 +456,80 @@ class slateCreateSignatures:
                         else:
                             algaeApp.error_message('Unable to load the mask layer for geoprocess ' + self.study_area.geoprocess.name +
                                                    ' and resolution ' + str(resolution.cell_size_x) + '.')
+                            
+    def run(self):
+    #------------------------------------------------------------------------------
+        """
+        """
+        place = slatePlace()
+        ok = True
+        #
+        # ----- read resolution
+        #
+        self.resolution.read_row_from_database_with_rowid(self.db, self.args.resolution_rowid_fk)
+        if self.resolution.folder != None and len(self.resolution.folder) > 0:
+            print('Running at a resolution of ' + self.resolution.name + '.')
+        else:
+            algaeApp.error_message('Resolution not setup.')
+            return
+        #
+        # ----- setup sql to read single item or multiple
+        #
+        sql = "SELECT rowid FROM " + place.table_name + " ";
+        parms = {}
+        if self.args.place_rowid_fk != None:
+            #
+            # ----- signature for a single place
+            #
+            sql += "WHERE rowid = %(place_rowid_fk)s"
+            parms = {'place_rowid_fk': self.args.place_rowid_fk}
+        elif self.args.where != None:
+            #
+            # ----- run with a where clause
+            #       project_rowid_fk is required
+            #
+            sql += "WHERE project_rowid_fk = %(project_rowid_fk)s AND "
+            sql += self.args.where
+            sql += " ORDER BY name ASC"
+            parms = {'project_rowid_fk': self.args.project_rowid_fk}
+        elif self.args.project_rowid_fk != None:
+            #
+            # ----- run everything for a project
+            #
+            sql += "WHERE project_rowid_fk = %(project_rowid_fk)s ORDER BY name ASC"
+            parms = {'project_rowid_fk': self.args.project_rowid_fk}
+        else:
+            algaeApp.error_message('Run criteria not specified.')
+            ok = False
+        #
+        # ----- connect to the core process log
+        #
+        if self.args.process_rowid_fk != None:
+            self.core_process = algaeTblCoreProcess()
+            self.core_process.read_row_from_database_with_rowid(self.db, self.args.process_rowid_fk)
+            if self.core_process.rowid != None and self.core_process.rowid > 0:
+                print('Process logging with command ' + self.core_process.command)
+            else:
+                self.core_process = None  # remove instance so it's not used
+        #
+        # ----- loop through one or multiple items
+        #
+        if ok:
+            if self.args.max_to_run != None:
+                sql += ' LIMIT ' + str(self.args.max_to_run)
+            data = self.db.get_all(sql, parms)
+            if data != None:
+                print('%r place(s) read.' % len(data))
+                num_finished = 0
+                for row in data:
+                    self.create(int(row[0]))
+                    num_finished += 1
+                    pct_finished = float(num_finished) / float(len(data)) * 100.0
+                    if self.core_process != None:
+                        self.core_process.update_progress(self.db, pct_finished)
+                        if pct_finished == 100.0:
+                            msg = 'Finished creating signatures for ' + str(len(data)) + ' place(s).'
+                            self.core_process.update_message(self.db, msg)
         
         
         

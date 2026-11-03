@@ -37,9 +37,12 @@ import argparse
 #
 parser = argparse.ArgumentParser(description='Create signatures for one or more places.')
 parser.add_argument("--place_rowid_fk", type=int, help="Rowid of place.")
+parser.add_argument("--project_rowid_fk", type=int, help="Rowid of project from sp.project.", default=None)
+parser.add_argument("--where", help="SQL WHERE clause to select places to create signatures for.", default=None)
 parser.add_argument("--resolution_rowid_fk", required=True, help="Rowid of resolution from ref.resolution.")
 parser.add_argument("--process_rowid_fk", type=int, help="Rowid from core.process that started the run.", default=None)
 parser.add_argument("-bm", "--build_model", help="Build signature models.", action="store_true")
+parser.add_argument("--max_to_run", type=int, help="Maximum number of geoprocesses to run.", default=None)
 parser.add_argument("--debug", help="Debug messages.", action="store_true")
 args = parser.parse_args()
 
@@ -62,7 +65,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
     #
     #
     signatures = slateCreateSignatures(db, args)
-    signatures.create()
+    signatures.run()
     #
     # ----- close database
     #
