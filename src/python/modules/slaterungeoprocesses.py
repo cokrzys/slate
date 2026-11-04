@@ -102,6 +102,7 @@ class slateRunGeoprocesses:
                     if (gp.require_mask_layer and mask_layer.file_exists()) or not gp.require_mask_layer:
                         
                         parms = {}
+                        parms['processRowid'] = self.args.process_rowid_fk
                         parms['scriptsFolder'] = os.path.join(app.config.scripts_folder, '')
                         parms['pythonAppsFolder'] = os.path.join(app.config.python_apps_folder, '')
                         parms['palettesFolder'] = os.path.join(app.config.palettes_folder, '')

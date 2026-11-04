@@ -36,6 +36,7 @@ SETVARS=$(jq -r '.scriptsFolder' $PARMS)'set_common_vars.sh'
 "$SLATE_PYTHON_APPS_FOLDER"createsignatures.py \
 --resolution_rowid_fk $(jq -r '.resolutionRowid' $PARMS) \
 --project_rowid_fk $(jq -r '.projectRowid' $PARMS) \
+--process_rowid_fk $(jq -r '.processRowid' $PARMS) \
 --debug
 
 #

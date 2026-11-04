@@ -71,7 +71,7 @@ class slateStudyArea extends algaeTblBase
    * Get links to act on the item.
    * @return string  HTML string with the links.
    */
-  public function getActionLinks($openInNewTab=False)
+  public function getActionLinks($openInNewTab = False, $includeDelete = True)
   // --------------------------------------------------------------------------
   {
     $html = '';

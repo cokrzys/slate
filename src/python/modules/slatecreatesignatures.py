@@ -20,6 +20,7 @@ import numpy as np
 from algaecore import algaeCore
 from algaeapp import algaeApp
 from algaedb import algaeDB
+from algaetblcoreprocess import algaeTblCoreProcess
 
 from slateapp import slateApp
 from refresolution import refResolution

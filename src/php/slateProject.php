@@ -58,11 +58,11 @@ class slateProject extends algaeTblNamedObjectBase
    * @param boolean $openInNewTab True to open in a new tab, default is False.
    * @return string  HTML string with the links.
    */
-  public function getActionLinks($openInNewTab = False)
+  public function getActionLinks($openInNewTab = False, $includeDelete = True)
   // --------------------------------------------------------------------------
   {
     global $app;
-    $html = parent::getActionLinks($openInNewTab);
+    $html = parent::getActionLinks($openInNewTab, $includeDelete);
     $html .= $app->config->menu_separator;
     $html .= $app->getPageLink($this->editpage, 'Add a New Project', algaeAccess::ROLE_WRITE, $app->config->app_name, '', $openInNewTab);
     return $html;

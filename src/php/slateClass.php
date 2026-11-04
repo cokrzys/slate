@@ -53,7 +53,7 @@ class slateClass extends algaeTblBase
    * {@inheritDoc}
    * @see algaeTblBase::getActionLinks()
    */
-  public function getActionLinks($openInNewTab=False)
+  public function getActionLinks($openInNewTab=False, $includeDelete = True)
   // --------------------------------------------------------------------------
   {
     $html = '';

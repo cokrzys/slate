@@ -63,6 +63,7 @@ class slateGeoProcess extends algaeTblBase
     $this->deletepage = 'delete_geoprocess.php';
     $this->select_geoprocess_page = 'select_geoprocess.php';
     $this->browsepage = 'browse_geoprocesses.php';
+    $this->canCopy = True;
     $this->showBatchParametersTab = False;
     $this->showAddLink = True;
     $this->project = new slateProject();
@@ -133,10 +134,10 @@ class slateGeoProcess extends algaeTblBase
    * Get links to act on the item.
    * @return string  HTML string with the links.
    */
-  public function getActionLinks($openInNewTab=False)
+  public function getActionLinks($openInNewTab = False, $includeDelete = True)
   // --------------------------------------------------------------------------
   {
-    $html = parent::getActionLinks();
+    $html = parent::getActionLinks($openInNewTab, $includeDelete);
     $html .= $this->getRunLink();
     return $html;
   }
@@ -163,7 +164,7 @@ class slateGeoProcess extends algaeTblBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    echo $this->getActionLinks(), '<p />';
+    echo $this->getActionLinks(False), '<p />';
     algaeTable::start('geoprocessDetailsTable', 'algae_table', 'width:60%');
     algaeTable::writeHeader(array(), False);
     algaeTable::writeTwoColumns('Name', '<b>' . $this->name . '</b>', False);
@@ -316,7 +317,7 @@ class slateGeoProcess extends algaeTblBase
         $p->showBrowsePageLink = False;
         $p->read_row_from_database_with_rowid($row[0]);
         echo '<tr>';
-        algaeTable::writeData($p->getActionLinks(), False);
+        algaeTable::writeData($p->getActionLinks(False, False), False);
         algaeTable::writeData($p->sequence, False);
         algaeTable::writeData($p->getHomepageLink(), False);
         algaeTable::writeData(algaeCore::getColorBlock($p->data_group->html_color, True, $p->data_group->name), False);
@@ -458,6 +459,7 @@ class slateGeoProcess extends algaeTblBase
           
           $command = $app->getPythonAppsPath('rungeoprocesses.py') . 
             ' --geoprocess_rowid_fk ' . strval($this->rowid) . 
+            ' --process_rowid_fk ' . strval($this->process->rowid) . 
             ' --resolution_rowid_fk ' . strval($app->getResolutionParameter(slateApp::RESOLUTION_ROWID));
           
           $this->process->startInBackground($command, 'show_progress.php');
@@ -740,10 +742,13 @@ class slateGeoProcess extends algaeTblBase
     
     if (isset($_REQUEST['rowid']))
     {
-      // echo 'DEBUG A2<p />';
-      // $this->debug = True;
       $this->read_row_from_database_with_rowid($_REQUEST['rowid']);
       $this->decodeParameters();
+      if ( (isset($_REQUEST['copy'])) && ($_REQUEST['copy'] == 'True') )
+      {
+        $this->rowid = null;
+        $this->name .= ' (copy)';
+      }
     }
     
     // $this->decodeParameters();
@@ -826,7 +831,7 @@ class slateGeoProcess extends algaeTblBase
         //
         // ----- 
         //
-        if (isset($_REQUEST['rowid']))
+        if ( (isset($_REQUEST['rowid'])) && (! isset($_REQUEST['copy'])) )
         {
           # $this->debug = true;
           if ($this->ok_to_update())
