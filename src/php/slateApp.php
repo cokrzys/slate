@@ -88,6 +88,7 @@ class slateApp extends algaeApp
     echo $this->getPageLink($this->getURLBase() . 'browse_geoprocesses.php', 'GeoProcesses', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'browse_layers.php', 'Layers', algaeAccess::ROLE_READ, $this->config->app_name);
     
+    echo $this->getPageLink($this->getURLBase() . 'graphs.php', 'Graphs', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'reports.php', 'Reports', algaeAccess::ROLE_READ, $this->config->app_name);
     echo $this->getPageLink($this->getURLBase() . 'utilities.php', 'Utilities', algaeAccess::ROLE_READ, $this->config->app_name, '');
     
@@ -96,6 +97,17 @@ class slateApp extends algaeApp
     echo $this->getPageLink('edit_setup.php', 'Setup', algaeAccess::ROLE_READ, $this->config->app_name, '');
     */
     echo '<p />';
+  }
+  
+  /**
+   * Graphs menu.
+   */
+  public function graphsMenu()
+  // --------------------------------------------------------------------------
+  {
+    echo '<ul>';
+    echo '<li>', $this->getPageLink($this->getURLBase() . 'graph_proximity.php', 'Proximity', algaeAccess::ROLE_READ, $this->config->app_name, ''), '</li>';
+    echo '</ul>';
   }
   
   /**
