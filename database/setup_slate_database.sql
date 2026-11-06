@@ -13,6 +13,7 @@
     
   2026.10.13 | Started version tracking.
   2026.10.27 | Added sp.legend and sp.legend_item.
+  2026.11.06 | Added resolution_rowid_fk to sp.signature.
 
 */
 
@@ -25,7 +26,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.10.27' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.11.06' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -654,6 +655,7 @@ CREATE TABLE sp.signature
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.signature_rowid'),
   place_rowid_fk INTEGER NOT NULL REFERENCES sp.place,
   layer_rowid_fk INTEGER NOT NULL REFERENCES sp.layer,
+  resolution_rowid_fk INTEGER NOT NULL REFERENCES ref.resolution,
   numeric_val NUMERIC NOT NULL,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,

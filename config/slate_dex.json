@@ -629,6 +629,12 @@
         "required": true,
         "uniqueKey": true,
         "canUpdate": false
+      },
+      {
+        "name": "resolution_rowid_fk",
+        "variableName": "resolution.rowid",
+        "required": true,
+        "canUpdate": false
       }
     ]
   },

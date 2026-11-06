@@ -20,6 +20,7 @@ from algaetblbase import algaeTblBase
 from slateapp import slateApp
 from slateplace import slatePlace
 from slatelayer import slateLayer
+from refresolution import refResolution
 
 class slateSignature(algaeTblBase):
 
@@ -33,6 +34,7 @@ class slateSignature(algaeTblBase):
         self.numeric_val = None
         self.place = slatePlace()
         self.layer = slateLayer()
+        self.resolution = refResolution()
 
 
 
