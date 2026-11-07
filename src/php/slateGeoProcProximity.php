@@ -46,6 +46,8 @@ class slateGeoProcProximity extends slateGeoprocess
     $this->mainTabName = 'Proximity';
     $this->showBatchParametersTab = True;
     $this->data_type->name = 'Float32';
+    $this->data_distribution->name = 'Proximity';
+    $this->units->name = 'Meters';
     $this->max_distance = null;
     $this->output_prefix = null;
     $this->filter = null;
