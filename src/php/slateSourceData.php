@@ -44,6 +44,7 @@ class slateSourceData extends algaeTblBase
     $this->homepage = 'source_data.php';
     $this->editpage = 'edit_source_data.php';
     $this->browsepage = 'browse_source_data.php';
+    $this->deletepage = 'delete_source_data.php';
     $this->itemName = 'Source Data';
     $this->itemNamePlural = 'Source Data';
     $this->project = new slateProject();
@@ -164,7 +165,7 @@ class slateSourceData extends algaeTblBase
         $o->init();
         $o->read_row_from_database_with_rowid($row[0]);
         echo '<tr>';
-        algaeTable::writeData($o->getActionLinks(), False);
+        algaeTable::writeData($o->getActionLinks(False, False), False);
         algaeTable::writeData($o->getHomepageLink(), False);
         algaeTable::writeData($o->data_group->getHomepageLink($this->name, algaeAccess::ROLE_READ, False, null, True), False);
         algaeTable::writeData(algaeCore::getStringWithLinks($o->description), False);
@@ -183,8 +184,8 @@ class slateSourceData extends algaeTblBase
   {
     global $app;
     algaeForm::startSingleTab('Source Data');
-    echo $app->getPageLink('select_data_to_upload.php', 'Upload', algaeAccess::ROLE_WRITE, $app->config->app_name);
-    echo $app->getPageLink('link_to_data.php', 'Link (TODO)', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
+    echo $app->getPageLink('select_data_to_upload.php', 'Upload', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
+    // echo $app->getPageLink('link_to_data.php', 'Link (TODO)', algaeAccess::ROLE_WRITE, $app->config->app_name, '');
     echo '<p />';
     $this->report_records();
     algaeForm::endSingleTab();
@@ -464,6 +465,81 @@ class slateSourceData extends algaeTblBase
     {
       $this->scanDirectory($this->getDirectory());
     }
+  }
+  
+  protected function checkStudyAreaUse()
+  // --------------------------------------------------------------------------
+  {
+    $sql = "SELECT COUNT(*) AS num
+            FROM sp.study_area sa
+            INNER JOIN sp.source_file sf ON sa.source_file_rowid_fk = sf.rowid
+            WHERE sf.source_data_rowid_fk = $1";
+    $num = algaeDB::getScalarInteger($sql, array($this->rowid), 0);
+    if ($num > 0)
+    {
+      algaeApp::errorMessage('Used in one or more study areas.  Change the study area(s) before deleting.');
+    }
+  }
+  
+  protected function checkGeoProcessUse()
+  // --------------------------------------------------------------------------
+  {
+    $sql = "SELECT t2.rowid
+            FROM
+            (
+              SELECT rowid, name,
+            	CASE
+            	  WHEN source_file_rowid_fk IS NOT NULL THEN CAST(source_file_rowid_fk AS INTEGER)
+            	  WHEN raster_file_rowid_fk IS NOT NULL THEN CAST(raster_file_rowid_fk AS INTEGER)
+            	ELSE NULL
+            	END AS source_file_rowid_fk
+              FROM
+              (
+            	SELECT rowid, name,
+            	  CAST(parameters::json->'source_file_rowid_fk' AS TEXT) AS source_file_rowid_fk,
+            	  CAST(parameters::json->'raster_file_rowid_fk' AS TEXT) AS raster_file_rowid_fk
+            	FROM sp.geoprocess
+              ) t1
+            ) t2
+            INNER JOIN sp.source_file sf ON t2.source_file_rowid_fk = sf.rowid
+            WHERE sf.source_data_rowid_fk = $1";
+    $data = algaeDB::getArray($sql, array($this->rowid));
+    if (count($data) > 0)
+    {
+      echo 'Data used by the following GeoProcesses.<p />';
+      foreach ($data as $row)
+      {
+        $gp = new slateGeoProcess();
+        $gp->read_row_from_database_with_rowid($row[0]);
+        echo $gp->getHomepageLink(), '<p />';
+      }
+      algaeApp::errorMessage('Deleting the data will break the GeoProcesses.');
+    }
+  }
+  
+  public function showWhatsBeingDeleted()
+  // --------------------------------------------------------------------------
+  {
+    $sf = new slateSourceFile();
+    $num = algaeDB::getScalarInteger("SELECT COUNT(rowid) FROM $sf->table_name WHERE source_data_rowid_fk = $1", 
+      array($this->rowid), 0);
+    if ($num > 0)
+    {
+      echo $num, ' row(s) from ', $sf->table_name, '.<p />';
+    }
+    echo 'Directory ', $this->getDirectory(), '.<p />';
+    
+    $this->checkStudyAreaUse();
+    $this->checkGeoProcessUse();    
+  }
+  
+  public function delete()
+  // --------------------------------------------------------------------------
+  {
+    algaeFile::deleteDirectory($this->getDirectory());
+    $sf = new slateSourceFile();
+    algaeDB::deleteFromTable($sf->table_name, 'source_data_rowid_fk', $this->rowid);
+    parent::delete();
   }
   
 }
