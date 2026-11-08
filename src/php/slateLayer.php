@@ -581,14 +581,14 @@ class slateLayer extends algaeTblBase
   protected function selectLayersForDataDistribution($distribution, $id, $default, $required = False)
   // --------------------------------------------------------------------------
   {
-    $sql = "SELECT l.rowid, g.name
+    $sql = "SELECT g.name, l.rowid
             FROM sp.layer l
             INNER JOIN sp.geoprocess g ON l.geoprocess_rowid_fk = g.rowid
             WHERE l.resolution_rowid_fk = 2
             AND g.data_distribution_rowid_fk = (SELECT rowid FROM ref.data_distribution WHERE name = '$99')
             ORDER BY 2";
     $sql = str_replace('$99', $distribution, $sql);
-    return algaeForm::selectWithSQL($sql, $id, $default, $required);
+    return algaeForm::selectWithSQL($sql, $id, $default, $required, array(), 500);
   }
   
   public function selectProximityLayers($id, $default, $required = False)

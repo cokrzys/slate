@@ -136,13 +136,13 @@ fi
 #
 # ----- replace 0 (on the feature values)
 #
-echo -e "\nReplacing 0 values (on the feature) with 0.01."
+echo -e "\nReplacing 0 values (on the feature) with 1."
 gdal_calc.py \
 --overwrite \
 --quiet \
 -A $WORKING_FOLDER"/_t2.tiff" \
 --outfile=$WORKING_FOLDER"/_t3.tiff" \
---calc="where(A>0,A,0.01)"
+--calc="where(A>0,A,1)"
 
 #
 # ----- apply study area mask
