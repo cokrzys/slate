@@ -353,6 +353,17 @@ class slateLayer(algaeTblBase):
         else:
             slateApp.error_message("Unable to create raster " + filename + '.');
         return False
+    
+    def write_histogram(self, db, histogram, bin_edges):
+    #------------------------------------------------------------------------------
+        """
+        """
+        sql = u"""UPDATE {table} SET histogram = %(histogram)s, bin_edges = %(bin_edges)s
+                    WHERE rowid = %(rowid)s""".format(table=self.table_name)
+        if not db.execute_query(sql, {'histogram': histogram, 'bin_edges': bin_edges, 'rowid': self.rowid}):
+            algaeApp.error_message('Unable to update histogram for layer rowid ' + str(rowid) + '.')
+            return False
+        return True
 
 
 

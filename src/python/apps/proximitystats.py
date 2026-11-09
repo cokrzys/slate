@@ -45,7 +45,8 @@ args = parser.parse_args()
 #==============================================================================
 
 app = slateApp()
-builtins.app = app
+builtins.app = app # add app to builtins for true globl access
+gdal.DontUseExceptions() # prevents warning re: future exceptions use by default
 
 #
 # ----- open database

@@ -11,6 +11,7 @@
 
 import sys
 import os
+import math
 
 import numpy as np
 from osgeo import gdal, osr
@@ -39,21 +40,36 @@ class slateProximityStats():
         l.read_row_from_database_with_rowid(db, args.layer_rowid_fk)
         l.read_data()
         
+        print('Calculating histogram for ' + l.filename)
+        
         print("NoData value = %r" % l.nodata_value)
         num_nodata_values = (l.data == l.nodata_value).sum()
         print("Num NoData values = %r" % num_nodata_values)
         
         if num_nodata_values > 0:
             l.data = l.data[(l.data != l.nodata_value)]
+            
+        min = np.nanmin(l.data)
+        max = np.nanmax(l.data)
+        
+        #
+        # ----- half the cell size + a small buffer
+        #
+        num_bins = math.ceil(((max - min) / l.resolution.cell_size_x) * 2.25)
+        print('Optimal Num Bins = ' + f"{num_bins:.2f}")
     
-        hist, bin_edges = np.histogram(l.data, 100)
-        print('Bin Edges:', bin_edges)
-        print('Histogram Counts:', hist)
+        hist, bin_edges = np.histogram(l.data, num_bins)
         
-        print(hist.sum())
-        
-        for edge in bin_edges:
-            print(f"{edge:.2f}")
+        if args.debug:
+            print('Bin Edges:', bin_edges)
+            print('Histogram Counts:', hist)
+            print(hist.sum())
+            for edge in bin_edges:
+                print(f"{edge:.2f}")
+            
+        if l.write_histogram(db, hist.tolist(), bin_edges.tolist()):
+            print('Histogram and bin edges written to ' + l.table_name + '.')
+            
         
         
     

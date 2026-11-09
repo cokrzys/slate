@@ -14,6 +14,7 @@
   2026.10.13 | Started version tracking.
   2026.10.27 | Added sp.legend and sp.legend_item.
   2026.11.06 | Added resolution_rowid_fk to sp.signature.
+  2026.11.08 | Added histogram arrays to sp.layer.
 
 */
 
@@ -26,7 +27,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.11.06' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.11.08' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -634,6 +635,8 @@ CREATE TABLE sp.layer
   data_q3 NUMERIC,
   sig_lower_cutoff NUMERIC,
   sig_upper_cutoff NUMERIC,
+  histogram BIGINT ARRAY,
+  bin_edges NUMERIC ARRAY,
   calc_begin_utc TIMESTAMP,
   calc_end_utc TIMESTAMP,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
