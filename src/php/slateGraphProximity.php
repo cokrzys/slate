@@ -15,8 +15,9 @@ class slateGraphProximity extends algaeGraphLine
 {
   
   CONST PARAMETERS_PREFIX = 'proximityGraph';
+  CONST MAX_FIELDS = 3;
   
-  public $field;
+  public $fields_array;
   public $layer;
   
   /**
@@ -27,16 +28,21 @@ class slateGraphProximity extends algaeGraphLine
   {
     parent::__construct();
     
-    $this->field = new algaeTblField();
+    
+    $this->fields_array = array();
+    for ($i = 0; $i < slateGraphProximity::MAX_FIELDS; $i++) 
+    {
+      $this->fields_array[] = new algaeTblField();
+      // echo 'DEBUG: ', count($this->fields_array), '<p />';
+      $id = 'field' . strval($i);
+      $this->fields_array[$i]->read_row_from_database_with_rowid(algaeForm::getDefaultValue($id,
+        slateGraphProximity::PARAMETERS_PREFIX . $id));
+    }
     $this->layer = new slateLayer();
-    
-    $this->field->rowid = algaeForm::getDefaultValue('field', '', slateGraphProximity::PARAMETERS_PREFIX . 'Field');
-    $this->field->read_row_from_database_with_rowid($this->field->rowid);
-    
     $this->layer->rowid = algaeForm::getDefaultValue('layer', '', slateGraphProximity::PARAMETERS_PREFIX . 'Layer');
     $this->layer->read_row_from_database_with_rowid($this->layer->rowid);
     
-    $this->sql = "SELECT t2.*,
+    $this->sql = "SELECT dist,
                     ROUND(CAST(cumulative_val AS NUMERIC) / CAST(total AS NUMERIC) * 100, 4) AS pct_of_total
                   FROM
                   (
@@ -55,13 +61,13 @@ class slateGraphProximity extends algaeGraphLine
                     ) t1
                   ) t2";
     
-    $this->sql_parms = array($this->field->rowid, $this->layer->rowid, $this->layer->resolution->rowid);
+    // $this->sql_parms = array($this->field->rowid, $this->layer->rowid, $this->layer->resolution->rowid);
     
-    $this->mainTitle = $this->field->name . ' vs ' . $this->layer->geoprocess->name;
-    $this->xAxis->varNum = 2;
+    // $this->mainTitle = $this->field->name . ' vs ' . $this->layer->geoprocess->name;
+    $this->xAxis->varNum = 0;
     $this->xAxis->title = 'Distance (meters)';
-    $this->yAxis->varNum = 7;
-    $this->yAxis->title = 'Cumulative % ' . $this->field->name;
+    $this->yAxis->varNum = 1;
+    // $this->yAxis->title = 'Cumulative % ' . $this->field->name;
     $this->marginBottom += 5;
     $this->marginLeft += 5;
   }
@@ -70,15 +76,64 @@ class slateGraphProximity extends algaeGraphLine
   // --------------------------------------------------------------------------
   {
     algaeTable::writeTwoColumns('Layer', $this->layer->selectProximityLayers('layer', $this->layer->geoprocess->name), False);
-    algaeTable::writeTwoColumns('Field', $this->field->selectNumericFields('field', $this->field->name), False);
+    
+    for ($i = 0; $i < slateGraphProximity::MAX_FIELDS; $i++)
+    {
+      $id = 'field' . strval($i);
+      algaeTable::writeTwoColumns('Field', 
+        $this->fields_array[$i]->selectNumericFields($id, $this->fields_array[$i]->name), False);
+    }
+    
+  }
+  
+  protected function loadFieldData($field)
+  // --------------------------------------------------------------------------
+  {
+    if ( (isset($field->rowid)) && ($field->rowid > 0) )
+    {
+      $sql = $this->sql;
+      $parms = array($field->rowid, $this->layer->rowid, $this->layer->resolution->rowid);
+      $data = algaeDB::getArray($sql, $parms);
+      if ( (isset($data)) && (count($data) > 0) )
+      {
+        algaeCore::addJavaScript($this->javaScriptVar . ".addData(" . json_encode($data, JSON_NUMERIC_CHECK) . ", '" . 
+          $field->name . "','" . '#0000FF' . "');");
+        return True;
+      }
+    }
+    return False;
+  }
+  
+  protected function loadDistanceData()
+  // --------------------------------------------------------------------------
+  {
+    $sql = "SELECT bin_max, cumulative_pct FROM layer_histogram($1)";
+    $data = algaeDB::getArray($sql, array($this->layer->rowid));
+    if ( (isset($data)) && (count($data) > 0) )
+    {
+      algaeCore::addJavaScript($this->javaScriptVar . ".addData(" . json_encode($data, JSON_NUMERIC_CHECK) . ", '" . 'Layer' . "','" . '#0000FF' . "');");
+      return True;
+    }
+    return False;
   }
   
   protected function loadData()
   // --------------------------------------------------------------------------
   {
-    if ( ($this->layer->rowid > 0) && ($this->field->rowid > 0) )
+    if ($this->layer->rowid > 0)
     {
-      return parent::loadData();
+      $ret = False;
+      
+      for ($i = 0; $i < slateGraphProximity::MAX_FIELDS; $i++)
+      {
+        foreach ($this->fields_array as $field)
+        {
+          $this->loadFieldData($field);
+        }
+      }
+      
+      $ret = $this->loadDistanceData();
+      return $ret;
     }
     else
     {
