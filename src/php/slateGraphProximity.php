@@ -35,7 +35,7 @@ class slateGraphProximity extends algaeGraphLine
       $this->fields_array[] = new algaeTblField();
       // echo 'DEBUG: ', count($this->fields_array), '<p />';
       $id = 'field' . strval($i);
-      $this->fields_array[$i]->read_row_from_database_with_rowid(algaeForm::getDefaultValue($id,
+      $this->fields_array[$i]->read_row_from_database_with_rowid(algaeForm::getDefaultValue($id, '',
         slateGraphProximity::PARAMETERS_PREFIX . $id));
     }
     $this->layer = new slateLayer();
@@ -63,13 +63,15 @@ class slateGraphProximity extends algaeGraphLine
     
     // $this->sql_parms = array($this->field->rowid, $this->layer->rowid, $this->layer->resolution->rowid);
     
-    // $this->mainTitle = $this->field->name . ' vs ' . $this->layer->geoprocess->name;
+    $this->mainTitle = $this->layer->geoprocess->name;
     $this->xAxis->varNum = 0;
     $this->xAxis->title = 'Distance (meters)';
     $this->yAxis->varNum = 1;
-    // $this->yAxis->title = 'Cumulative % ' . $this->field->name;
+    $this->yAxis->title = 'Cumulative %';
     $this->marginBottom += 5;
     $this->marginLeft += 5;
+    $this->marginTop += 10;
+    $this->legendPosition = algaeGraph::LEGEND_LOWER_RIGHT;
   }
   
   protected function addOptionItems()
@@ -86,6 +88,25 @@ class slateGraphProximity extends algaeGraphLine
     
   }
   
+  protected function adjustBrightness($hexCode, $adjustPercent) {
+    $hexCode = ltrim($hexCode, '#');
+    
+    if (strlen($hexCode) == 3) {
+      $hexCode = $hexCode[0] . $hexCode[0] . $hexCode[1] . $hexCode[1] . $hexCode[2] . $hexCode[2];
+    }
+    
+    $hexCode = array_map('hexdec', str_split($hexCode, 2));
+    
+    foreach ($hexCode as & $color) {
+      $adjustableLimit = $adjustPercent < 0 ? $color : 255 - $color;
+      $adjustAmount = ceil($adjustableLimit * $adjustPercent);
+      
+      $color = str_pad(dechex($color + $adjustAmount), 2, '0', STR_PAD_LEFT);
+    }
+    
+    return '#' . implode($hexCode);
+  }
+  
   protected function loadFieldData($field)
   // --------------------------------------------------------------------------
   {
@@ -96,8 +117,30 @@ class slateGraphProximity extends algaeGraphLine
       $data = algaeDB::getArray($sql, $parms);
       if ( (isset($data)) && (count($data) > 0) )
       {
+        
+        
+        /*
         algaeCore::addJavaScript($this->javaScriptVar . ".addData(" . json_encode($data, JSON_NUMERIC_CHECK) . ", '" . 
           $field->name . "','" . '#0000FF' . "');");
+        */
+        
+        $da = new algaeGraphSeriesAttribs();
+        $da->asLine = True;
+        $da->symbolSize = 20;
+        $da->lineColor = $this->adjustBrightness($field->html_color, -0.25);
+        $da->fillColor = $field->html_color;
+        $da->symbol = algaeGraph::GRAPH_SYMBOL_CIRCLE;
+        $this->addData($data, $field->name, $field->html_color, $da);
+        
+        $legend = new algaeGraphLegendItem();
+        $legend->symbol = algaeGraph::GRAPH_SYMBOL_LINE;
+        $legend->lineColor = $field->html_color;
+        $legend->lineStyle = algaeGraphLegendItem::GRAPH_LINESTYLE_SOLID;
+        $legend->lineThickness = 2;
+        $legend->text = $field->name;
+        $this->legendData[] = $legend;
+        
+        
         return True;
       }
     }
@@ -111,7 +154,19 @@ class slateGraphProximity extends algaeGraphLine
     $data = algaeDB::getArray($sql, array($this->layer->rowid));
     if ( (isset($data)) && (count($data) > 0) )
     {
-      algaeCore::addJavaScript($this->javaScriptVar . ".addData(" . json_encode($data, JSON_NUMERIC_CHECK) . ", '" . 'Layer' . "','" . '#0000FF' . "');");
+      $color = '#6c6c6c';
+      
+      algaeCore::addJavaScript($this->javaScriptVar . ".addData(" . json_encode($data, JSON_NUMERIC_CHECK) . 
+        ", '" . 'Layer' . "','" . $color . "');");
+      
+      $legend = new algaeGraphLegendItem();
+      $legend->symbol = algaeGraph::GRAPH_SYMBOL_LINE;
+      $legend->lineColor = $color;
+      $legend->lineStyle = algaeGraphLegendItem::GRAPH_LINESTYLE_SOLID;
+      $legend->lineThickness = 2;
+      $legend->text = $this->layer->geoprocess->name;
+      $this->legendData[] = $legend;
+      
       return True;
     }
     return False;
@@ -124,12 +179,9 @@ class slateGraphProximity extends algaeGraphLine
     {
       $ret = False;
       
-      for ($i = 0; $i < slateGraphProximity::MAX_FIELDS; $i++)
+      foreach ($this->fields_array as $field)
       {
-        foreach ($this->fields_array as $field)
-        {
-          $this->loadFieldData($field);
-        }
+        $this->loadFieldData($field);
       }
       
       $ret = $this->loadDistanceData();
