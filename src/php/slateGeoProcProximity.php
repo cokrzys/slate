@@ -121,7 +121,14 @@ class slateGeoProcProximity extends slateGeoprocess
       $app->getDetailString($app->getFilenameTemplate()), False);
     algaeTable::writeTwoColumns('Max Distance', algaeForm::inputText('max_distance', $this->max_distance, 10), False);
     algaeTable::writeTwoColumns('Invert', algaeForm::checkbox('invert', 'invert', array(), $this->invert), False);
-    algaeTable::writeTwoColumns('Filter', algaeForm::inputText('filter', $this->filter, 100), False);
+    $label = 'Filter';
+    if ($this->source == slateGeoProcProximity::RASTER_SOURCE)
+    {
+      $label = 'Value(s)';
+    }
+    algaeTable::writeTwoColumns($label, algaeForm::inputText('filter', $this->filter, 100), False);
+    $note = 'One or more comma separated raster values to calculate proximity to.';
+    algaeTable::writeTwoColumns('', $app->getDetailString($note, False), False);
   }
   
   /**

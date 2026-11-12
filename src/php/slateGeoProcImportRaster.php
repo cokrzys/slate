@@ -113,6 +113,7 @@ class slateGeoProcImportRaster extends slateGeoprocess
     $resampling_methods = array('average', 'bilinear', 'cubic', 'cubicspline', 'lanczos', 'max', 'med', 'min', 'mode', 'near', 'q1', 'q3', 'rms', 'sum');
     algaeTable::writeTwoColumns('Resampling Method', algaeForm::selectWithArray('resampling_method', $this->resampling_method, $resampling_methods), False);
 
+    /*
     echo '<tr><td colspan=2></td></tr>';
     echo '<tr><td colspan=2></td></tr>';
     echo '<tr><td colspan=2>Parameters for initial signature modeling:</td></tr>';
@@ -122,6 +123,7 @@ class slateGeoProcImportRaster extends slateGeoprocess
     
     algaeTable::writeTwoColumns('Lower Cutoff', algaeForm::inputText('lower_cutoff', $this->lower_cutoff, 10), False);
     algaeTable::writeTwoColumns('Upper Cutoff', algaeForm::inputText('upper_cutoff', $this->upper_cutoff, 10), False);
+    */
   
   }
   
