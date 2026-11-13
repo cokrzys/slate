@@ -175,8 +175,8 @@ class slatePlace extends algaeTblNamedObjectBase
     // ----- signature_tab
     //
     echo '<div id="signature_tab">';
-    // $s = new slateSignature();
-    // $s->reportPlaceSignature($this);
+    $s = new slateSignature();
+    $s->reportPlaceSignature($this);
     echo '</div>';
     //
     // ----- files_tab

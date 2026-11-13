@@ -73,6 +73,7 @@ class slateApp extends algaeApp
     require_once 'slateClass.php';
     require_once 'slatePlace.php';
     require_once 'slatePlaceData.php';
+    require_once 'slateSignature.php';
   }
   
   /**

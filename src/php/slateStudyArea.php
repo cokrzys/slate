@@ -211,15 +211,13 @@ class slateStudyArea extends algaeTblBase
       //
       // ----- reference place
       //
-      /*
-      $sql = "SELECT name
+      $sql = "SELECT name, rowid
               FROM sp.place
               WHERE project_rowid_fk = $1";
       $sql = str_replace('$1', $this->project->rowid, $sql);
       algaeTable::writeTwoColumns('Reference Place', algaeForm::selectWithSQL($sql, 
         $this->get_control_id('place_rowid_fk'), $this->place->name), False);
       algaeTable::end();
-      */
       //
       // ----- 
       //
