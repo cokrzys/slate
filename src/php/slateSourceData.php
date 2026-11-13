@@ -118,7 +118,7 @@ class slateSourceData extends algaeTblBase
             if ($u->makeFolder($u->target_dir))
             {
               # echo 'DEBUG: target_dir = ', $u->target_dir, '<p />';
-              if ($u->uploadMultiple('components', True) > 0)
+              if ($u->uploadMultiple('components', True, True) > 0)
               {
                 header("Location: {$this->editpage}?rowid={$this->rowid}");
               }
@@ -404,6 +404,7 @@ class slateSourceData extends algaeTblBase
     // ----- files_tab
     //
     echo '<div id="files_tab">';
+    $this->refreshFilesList();
     slateFolder::reportFiles($this->getDirectory());
     echo '</div>';
     //

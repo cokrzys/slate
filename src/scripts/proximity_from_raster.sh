@@ -154,6 +154,12 @@ $WORKING_FOLDER"_t3.tiff" \
 "$DEST"
 
 #
+# ----- proximity histogram
+#
+"$SLATE_PYTHON_APPS_FOLDER"proximitystats.py \
+--layer_rowid_fk $(jq -r '.layerRowid' $PARMS)
+
+#
 # ----- make colored version
 #
 echo -e "\nMaking colored version of proximity raster."
