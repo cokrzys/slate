@@ -423,6 +423,8 @@ class slateSourceData extends algaeTblBase
   protected function scanDirectory($dir)
   // --------------------------------------------------------------------------
   {
+    $num_updated = 0;
+    $num_added = 0;
     $ffs = scandir($dir);
     
     unset($ffs[array_search('.', $ffs, true)]);
@@ -441,18 +443,31 @@ class slateSourceData extends algaeTblBase
       else 
       {
         $full_filename = algaeCore::getFullPath($dir, $ff);
-        echo $full_filename, '<p />';
+        // echo $full_filename, '<p />';
         
         $f = new slateSourceFile();
         $f->filename = $full_filename;
         $f->source_data->rowid = $this->rowid;
         $f->size_bytes = filesize($full_filename);
         $f->file_format->rowid = $f->file_format->getFormatRowidForFilename($full_filename);
-        $f->write();
+        
+        $exists = $f->exists();
+        
+        if ($f->write())
+        {
+          if ($exists)
+          {
+            $num_updated += 1;
+          }
+          else 
+          {
+            $num_added += 1;
+          }
+        }
         
       }
     }
-    echo '</ol>';
+    echo $num_added, ' file(s) added, ', $num_updated, ' updated.<p />';
   }
   
   public function refreshFilesList()

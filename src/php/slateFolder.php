@@ -69,6 +69,10 @@ class slateFolder
     if (file_exists($folder))
     {
       $files = scandir($folder);
+      
+      unset($files[array_search('.', $files, true)]);
+      unset($files[array_search('..', $files, true)]);
+      
       if (sizeof($files) > 2)
       {
         echo sizeof($files), ' file(s) in ', $folder, '<p />';
