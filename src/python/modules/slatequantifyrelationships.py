@@ -61,11 +61,13 @@ class slateQuantifyRelationships:
             field = algaeTblField()
             field.read_row_from_database_with_rowid(self.db, self.args.field_rowid_fk)
             if field.rowid != None:
-                # TODO: Check field type and get correct value column
-                sql = "SELECT t1.* FROM (" + sql
-                sql +=  u""") t1 LEFT OUTER JOIN sp.place_data pd ON pd.place_rowid_fk = t1.place_rowid_fk
-                          AND field_rowid_fk = %(field_rowid_fk)s"""
-                parms['field_rowid_fk'] = self.args.field_rowid_fk
+                if field.isNumeric():
+                    sql = "SELECT t1.*, " + field.getDataColumn() + " FROM (" + sql
+                    sql +=  u""") t1 LEFT OUTER JOIN sp.place_data pd ON pd.place_rowid_fk = t1.place_rowid_fk
+                              AND field_rowid_fk = %(field_rowid_fk)s"""
+                    parms['field_rowid_fk'] = self.args.field_rowid_fk
+                else:
+                    algaeApp.error_message('Value field ' + field.field_type.name + ' is not numeric.')
             else:
                 algaeApp.error_message('Problem reading field for rowid ' + str(self.args.field_rowid_fk) + '.')
         return self.db.get_all(sql, parms)
@@ -76,15 +78,17 @@ class slateQuantifyRelationships:
         """
         """
         rel = slateRelationship()
-        # rel.debug = True
+        rel.debug = self.args.debug
         signature_data = self.read_signatures(layer, place_set)
         print('%r signature(s) loaded.' % len(signature_data))
-        rel.total_data_items = len(signature_data)
+        rel.total_sig_count = len(signature_data)
         rel.add_histogram(histogram_data)
         if len(signature_data) > 0:
             for row in signature_data:
-                rel.add_data_to_bin(row[1])
-            rel.print_max_contrast()
+                if len(row) == 3:
+                    rel.add_data_to_bin(row[1], row[2])
+                else:
+                    rel.add_data_to_bin(row[1])
             rel.max_contrast()
         
         
@@ -102,7 +106,7 @@ class slateQuantifyRelationships:
                     print('Processing layer ' + l.geoprocess.name + ' (rowid ' + str(l.rowid) + ')')
                     histogram_data = l.read_histogram(self.db)
                     if len(histogram_data) > 0:
-                        if self.args.debug: layer.print_histogram(self.db)
+                        if self.args.debug: l.print_histogram(self.db)
                         self.process_layer(l, histogram_data, place_set)
                     else:
                         algaeApp.error_message('Histogram not found for layer ' + l.geoprocess.name + '.')
