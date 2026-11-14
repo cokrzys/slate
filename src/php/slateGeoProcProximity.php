@@ -127,8 +127,11 @@ class slateGeoProcProximity extends slateGeoprocess
       $label = 'Value(s)';
     }
     algaeTable::writeTwoColumns($label, algaeForm::inputText('filter', $this->filter, 100), False);
-    $note = 'One or more comma separated raster values to calculate proximity to.';
-    algaeTable::writeTwoColumns('', $app->getDetailString($note, False), False);
+    if ($this->source == slateGeoProcProximity::RASTER_SOURCE)
+    {
+      $note = 'One or more comma separated raster values to calculate proximity to.';
+      algaeTable::writeTwoColumns('', $app->getDetailString($note, False), False);
+    }
   }
   
   /**

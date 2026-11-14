@@ -14,12 +14,14 @@ import os
 import math
 import subprocess
 import datetime
+import inspect
 
 import numpy as np
 
 from algaecore import algaeCore
 from algaeapp import algaeApp
 from algaedb import algaeDB
+from algaetblfield import algaeTblField
 from algaetblcoreprocess import algaeTblCoreProcess
 
 from slateapp import slateApp
@@ -45,12 +47,28 @@ class slateQuantifyRelationships:
     #------------------------------------------------------------------------------
         """
         """
+        print(inspect.currentframe().f_code.co_name)
         sql = u"""SELECT place_rowid_fk, numeric_val
                 FROM sp.signature
                 WHERE layer_rowid_fk = %(layer_rowid_fk)s AND resolution_rowid_fk = %(resolution_rowid_fk)s
                   AND place_rowid_fk IN ("""
         sql += place_set.sql + ")"
-        return self.db.get_all(sql, {'layer_rowid_fk': layer.rowid, 'resolution_rowid_fk': self.resolution.rowid})
+        parms = {'layer_rowid_fk': layer.rowid, 'resolution_rowid_fk': self.resolution.rowid}
+        #
+        # ----- if optional field_rowid_fk read data from a value field as well
+        #
+        if self.args.field_rowid_fk != None:
+            field = algaeTblField()
+            field.read_row_from_database_with_rowid(self.db, self.args.field_rowid_fk)
+            if field.rowid != None:
+                # TODO: Check field type and get correct value column
+                sql = "SELECT t1.* FROM (" + sql
+                sql +=  u""") t1 LEFT OUTER JOIN sp.place_data pd ON pd.place_rowid_fk = t1.place_rowid_fk
+                          AND field_rowid_fk = %(field_rowid_fk)s"""
+                parms['field_rowid_fk'] = self.args.field_rowid_fk
+            else:
+                algaeApp.error_message('Problem reading field for rowid ' + str(self.args.field_rowid_fk) + '.')
+        return self.db.get_all(sql, parms)
         
         
     def process_layer(self, layer, histogram_data, place_set):

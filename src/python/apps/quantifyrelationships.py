@@ -37,6 +37,7 @@ import argparse
 #
 parser = argparse.ArgumentParser(description='Quantify relationships between places and layers.')
 parser.add_argument("--place_set_rowid_fk", type=int, required=True, help="Rowid of a place set.")
+parser.add_argument("--field_rowid_fk", type=int, help="Optional rowid of a value field to check value relationships.", default=None)
 parser.add_argument("--resolution_rowid_fk", type=int, required=True, help="Rowid of resolution from ref.resolution.")
 parser.add_argument("--process_rowid_fk", type=int, help="Rowid from core.process that started the run.", default=None)
 parser.add_argument("--max_to_run", type=int, help="Maximum number of items to run.", default=None)
