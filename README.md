@@ -17,7 +17,7 @@ Web based Geospatial analytics and predictive modeling with a focus on minerals 
 
 - [parsesdcodes.py](/docs/parsesdcodes.md) - Parse space delimited codes in shapefiles.
 
-## References
+## Reference
 
 - [Legend Files](docs/legend_files.md)
 
