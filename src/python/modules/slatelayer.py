@@ -364,6 +364,25 @@ class slateLayer(algaeTblBase):
             algaeApp.error_message('Unable to update histogram for layer rowid ' + str(rowid) + '.')
             return False
         return True
+    
+    def read_histogram(self, db):
+    #------------------------------------------------------------------------------
+        """
+        """
+        sql = "SELECT * FROM layer_histogram(%(layer_rowid_fk)s) ORDER BY bin_min"
+        return db.get_all(sql, {'layer_rowid_fk': self.rowid})
+    
+    def print_histogram(self, db):
+    #------------------------------------------------------------------------------
+        histogram_data = self.read_histogram(db)
+        if len(histogram_data) > 0:
+            print('%r rows in the histogram array.' % len(histogram_data))
+            for row in histogram_data:
+                line = ''
+                for item in row:
+                    line += str(item) + ' '
+                print(line)
+        
 
 
 
