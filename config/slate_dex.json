@@ -556,6 +556,24 @@
     ]
   },
   {
+    "tableName": "sp.place_set",
+    "parentTableName": "algae.set_base",
+    "comment": "A set of places and support for the sp.place_set table.",
+    "source": "slate",
+    "phpClass": "slatePlaceSet",
+    "pythonClass": "slatePlaceSet",
+    "columns":
+    [
+      {
+        "name": "project_rowid_fk",
+        "variableName": "project.rowid",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      }
+    ]
+  },
+  {
     "tableName": "sp.source_data",
     "parentTableName": "algae.base",
     "comment": "A source dataset and support for sp.source_data.",

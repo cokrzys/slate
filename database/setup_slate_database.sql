@@ -14,7 +14,7 @@
   2026.10.13 | Started version tracking.
   2026.10.27 | Added sp.legend and sp.legend_item.
   2026.11.06 | Added resolution_rowid_fk to sp.signature.
-  2026.11.08 | Added histogram arrays to sp.layer.
+  2026.11.13 | Added histogram arrays to sp.layer.
 
 */
 
@@ -27,7 +27,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.11.08' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.11.13' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -519,6 +519,29 @@ CREATE TABLE sp.place_data
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.place_data FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+--
+-- sp.place_set
+--
+DROP TABLE IF EXISTS sp.place_set;
+DROP SEQUENCE IF EXISTS sp.place_set_rowid;
+CREATE SEQUENCE sp.place_set_rowid START 1;
+CREATE TABLE sp.place_set
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.place_set_rowid'),
+  record_status_rowid_fk INTEGER NOT NULL REFERENCES ref.record_status DEFAULT algae_active_rowid(), 
+  project_rowid_fk INTEGER NOT NULL REFERENCES sp.project,
+  name VARCHAR NOT NULL UNIQUE,
+  html_color VARCHAR NOT NULL DEFAULT algae_default_color(),
+  sql VARCHAR,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(project_rowid_fk, name)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.place_set FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
     
 --
