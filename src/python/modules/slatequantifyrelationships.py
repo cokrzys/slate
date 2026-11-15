@@ -81,7 +81,6 @@ class slateQuantifyRelationships:
         rel.debug = self.args.debug
         signature_data = self.read_signatures(layer, place_set)
         print('%r signature(s) loaded.' % len(signature_data))
-        rel.total_sig_count = len(signature_data)
         rel.add_histogram(histogram_data)
         if len(signature_data) > 0:
             for row in signature_data:
@@ -89,7 +88,10 @@ class slateQuantifyRelationships:
                     rel.add_data_to_bin(row[1], row[2])
                 else:
                     rel.add_data_to_bin(row[1])
-            rel.max_contrast()
+            # rel.max_contrast()
+            rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, False)
+            rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, False)
+            # rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, True)
         
         
     def loop_through_layers(self, place_set):
