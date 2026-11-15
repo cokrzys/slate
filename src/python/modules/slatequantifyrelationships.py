@@ -42,6 +42,7 @@ class slateQuantifyRelationships:
         self.args = args
         self.core_process = None # an instance of algaeTblCoreProcess if it's used
         self.resolution = refResolution()
+        self.debug = False
         
     def read_signatures(self, layer, place_set):
     #------------------------------------------------------------------------------
@@ -73,26 +74,48 @@ class slateQuantifyRelationships:
         return self.db.get_all(sql, parms)
         
         
-    def process_layer(self, layer, histogram_data, place_set):
+    def process_layer(self, rowid, place_set):
     #------------------------------------------------------------------------------
         """
         """
+        layer = slateLayer()
         rel = slateRelationship()
-        rel.debug = self.args.debug
-        signature_data = self.read_signatures(layer, place_set)
-        print('%r signature(s) loaded.' % len(signature_data))
-        rel.add_histogram(histogram_data)
-        if len(signature_data) > 0:
-            for row in signature_data:
-                if len(row) == 3:
-                    rel.add_data_to_bin(row[1], row[2])
-                else:
-                    rel.add_data_to_bin(row[1])
-            # rel.max_contrast()
-            rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, False)
-            rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, False)
-            # rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, True)
-        
+        rel.debug = self.debug        
+        if layer.read_row_from_database_with_rowid(self.db, rowid):
+            print('Processing layer ' + layer.geoprocess.name + ' (rowid ' + str(layer.rowid) + ')')
+            histogram_data = layer.read_histogram(self.db)
+            if len(histogram_data) > 0:
+                if self.debug: layer.print_histogram(self.db)
+                rel.add_histogram(histogram_data)
+                #
+                #
+                #
+                signature_data = self.read_signatures(layer, place_set)
+                print('%r signature(s) loaded.' % len(signature_data))
+                if len(signature_data) > 0:
+                    for row in signature_data:
+                        if len(row) == 3:
+                            if self.debug: print('Adding sig %r and quantity %r' % (row[1], row[2]))
+                            rel.add_data_to_bin(row[1], row[2])
+                        else:
+                            rel.add_data_to_bin(row[1])
+                    #
+                    #
+                    #
+                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, False)
+                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.PCT_RATIO, False)
+                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, False)
+                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.PCT_RATIO, False)
+                    
+                    print('----- Reverse -----')
+                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, True)
+                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.PCT_RATIO, True)
+                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, True)
+                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.PCT_RATIO, True)
+
+                    # rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, False)
+            else:
+                algaeApp.error_message('Histogram not found for layer ' + layer.geoprocess.name + '.')
         
     def loop_through_layers(self, place_set):
     #------------------------------------------------------------------------------
@@ -103,15 +126,7 @@ class slateQuantifyRelationships:
         if rowids_array != None and len(rowids_array) > 0:
             num_checked = 0
             for rowid in rowids_array:
-                l = slateLayer()
-                if l.read_row_from_database_with_rowid(self.db, rowid):
-                    print('Processing layer ' + l.geoprocess.name + ' (rowid ' + str(l.rowid) + ')')
-                    histogram_data = l.read_histogram(self.db)
-                    if len(histogram_data) > 0:
-                        if self.args.debug: l.print_histogram(self.db)
-                        self.process_layer(l, histogram_data, place_set)
-                    else:
-                        algaeApp.error_message('Histogram not found for layer ' + l.geoprocess.name + '.')
+                self.process_layer(rowid, place_set)
                 num_checked += 1
                 if self.args.max_to_run != None and num_checked >= self.args.max_to_run:
                     break
@@ -120,6 +135,7 @@ class slateQuantifyRelationships:
     #------------------------------------------------------------------------------
         """
         """
+        self.debug = self.args.debug
         #
         # ----- read resolution
         #
@@ -135,8 +151,11 @@ class slateQuantifyRelationships:
         ps = slatePlaceSet()
         ps.read_row_from_database_with_rowid(self.db, self.args.place_set_rowid_fk)
         if ps.rowid != None:
-            if self.args.debug: print(ps.sql)
-            self.loop_through_layers(ps)
+            if self.debug: print(ps.sql)
+            if self.args.layer_rowid_fk == None:
+                self.loop_through_layers(ps)
+            else:
+                self.process_layer(self.args.layer_rowid_fk, ps)
         else:
             algaeApp.error_message('Problem reading place set.')
         

@@ -55,9 +55,9 @@ class slateRelationship:
             for row in histogram:
                 self.total_num_cells += row[1]
                 bin = dict()
-                bin[slateRelationship.MIN] = float(row[4])
-                bin[slateRelationship.MAX] = float(row[5])
-                bin[slateRelationship.NUM_CELLS] = float(row[1])
+                bin[slateRelationship.MIN] = row[4]
+                bin[slateRelationship.MAX] = row[5]
+                bin[slateRelationship.NUM_CELLS] = row[1]
                 bin[slateRelationship.NUM_SIGNATURES] = 0
                 bin[slateRelationship.QUANTITY_SUM] = 0
                 if len(self.bin_data) == 0 or bin[slateRelationship.MIN] >= self.bin_data[-1][slateRelationship.MAX]:
@@ -128,16 +128,26 @@ class slateRelationship:
             #
             #
             #
+            if self.debug:
+              print('Index %r cum amt %r cum cells %r amt pct %r cells %r stat %r' % 
+                    (i, cumulative_amount, cumulative_cell_count, amount_pct, cells_pct, stat))
+            #
+            #
+            #
             if max_stat == None or stat > max_stat:
                 max_stat = stat
                 max_index = i
                 max_amount_pct = amount_pct
                 max_cells_pct = cells_pct
+                if self.debug: 'Max stat updated.'
                 
         if max_stat != None:
+            print('---')
             print('Relationship type ' + relationship_type)
             print(statistic + ' = ' + str(max_stat))
             print('Reverse %r' % reverse)
+            print('Bin min %r max %r' % 
+                  (self.bin_data[max_index][slateRelationship.MIN], self.bin_data[max_index][slateRelationship.MAX]))
             
         
         
