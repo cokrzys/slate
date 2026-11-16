@@ -78,19 +78,19 @@ class slateQuantifyRelationships:
     #------------------------------------------------------------------------------
         """
         """
-        layer = slateLayer()
         rel = slateRelationship()
-        rel.debug = self.debug        
-        if layer.read_row_from_database_with_rowid(self.db, rowid):
-            print('Processing layer ' + layer.geoprocess.name + ' (rowid ' + str(layer.rowid) + ')')
-            histogram_data = layer.read_histogram(self.db)
+        rel.debug = self.debug    
+        rel.place_set = place_set    
+        if rel.layer.read_row_from_database_with_rowid(self.db, rowid):
+            print('Processing layer ' + rel.layer.geoprocess.name + ' (rowid ' + str(rel.layer.rowid) + ')')
+            histogram_data = rel.layer.read_histogram(self.db)
             if len(histogram_data) > 0:
-                if self.debug: layer.print_histogram(self.db)
+                if self.debug: rel.layer.print_histogram(self.db)
                 rel.add_histogram(histogram_data)
                 #
                 #
                 #
-                signature_data = self.read_signatures(layer, place_set)
+                signature_data = self.read_signatures(rel.layer, place_set)
                 print('%r signature(s) loaded.' % len(signature_data))
                 if len(signature_data) > 0:
                     for row in signature_data:
@@ -99,23 +99,26 @@ class slateQuantifyRelationships:
                             rel.add_data_to_bin(row[1], row[2])
                         else:
                             rel.add_data_to_bin(row[1])
+                            
+                    if rel.write(self.db):
+                        rel.write_bin_data(self.db)
                     #
                     #
                     #
-                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, False)
-                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.PCT_RATIO, False)
-                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, False)
-                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.PCT_RATIO, False)
+                    rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.CONTRAST, False)
+                    # rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.PCT_RATIO, False)
+                    # rel.calc_cumulative_relationship(slateRelationship.QUANTITY, slateRelationship.CONTRAST, False)
+                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY, slateRelationship.PCT_RATIO, False)
                     
                     print('----- Reverse -----')
-                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.CONTRAST, True)
-                    rel.calc_cumulative_relationship(slateRelationship.NUM_SIGNATURES, slateRelationship.PCT_RATIO, True)
-                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, True)
-                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.PCT_RATIO, True)
+                    # rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.CONTRAST, True)
+                    # rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.PCT_RATIO, True)
+                    # rel.calc_cumulative_relationship(slateRelationship.QUANTITY, slateRelationship.CONTRAST, True)
+                    # rel.calc_cumulative_relationship(slateRelationship.QUANTITY, slateRelationship.PCT_RATIO, True)
 
                     # rel.calc_cumulative_relationship(slateRelationship.QUANTITY_SUM, slateRelationship.CONTRAST, False)
             else:
-                algaeApp.error_message('Histogram not found for layer ' + layer.geoprocess.name + '.')
+                algaeApp.error_message('Histogram not found for layer ' + rel.layer.geoprocess.name + '.')
         
     def loop_through_layers(self, place_set):
     #------------------------------------------------------------------------------

@@ -19,16 +19,20 @@ import numpy as np
 
 from algaecore import algaeCore
 from algaeapp import algaeApp
+from algaedb import algaeDB
+from algaetblbase import algaeTblBase
 
 from slateapp import slateApp
+from slatelayer import slateLayer
+from slateplaceset import slatePlaceSet
 
-class slateRelationship:
+class slateRelationship(algaeTblBase):
     
     MIN = 'min'
     MAX = 'max'
-    NUM_CELLS = 'num_cells'
-    NUM_SIGNATURES = 'num_signatures'
-    QUANTITY_SUM = 'quantity_sum'
+    CELLS = 'cells'
+    SIGNATURES = 'signatures'
+    QUANTITY = 'quantity'
     
     CONTRAST = 'Contrast'
     PCT_RATIO = 'Pct Ratio'
@@ -39,11 +43,34 @@ class slateRelationship:
         """
         Constructor.
         """
+        super().__init__()
+        self.table_name = 'sp.relationship'
         self.bin_data = []
-        self.total_num_cells = 0
-        self.total_num_signatures = 0
+        self.total_cells = 0
+        self.total_signatures = 0
         self.total_quantity = 0
+        self.place_set = slatePlaceSet()
+        self.layer = slateLayer()
         self.debug = False
+        
+    def write_bin_data(self, db):
+    #------------------------------------------------------------------------------
+        """
+        """
+        sql = u"""UPDATE {table} SET bin_data = %(bin_data)s
+                    WHERE rowid = %(rowid)s""".format(table=self.table_name)
+        
+        #
+        # self.bin_data is a list of dicts
+        # this converts it to a list of lists which is needed to write to PostgreSQL
+        # https://www.geeksforgeeks.org/python/python-convert-list-of-dictionaries-to-list-of-lists/
+        #
+        bin_data_list = [[value for value in d.values()] for d in self.bin_data]
+                    
+        if not db.execute_query(sql, {'bin_data': bin_data_list, 'rowid': self.rowid}):
+            algaeApp.error_message('Unable to update histogram for layer rowid ' + str(self.rowid) + '.')
+            return False
+        return True
         
     def add_histogram(self, histogram):
     #------------------------------------------------------------------------------
@@ -51,15 +78,15 @@ class slateRelationship:
         bin, num, cumulative_num, total_num, bin_min, bin_max, pct, cumulative_pct
         """
         if len(histogram) > 0:
-            self.total_num_cells = 0
+            self.total_cells = 0
             for row in histogram:
-                self.total_num_cells += row[1]
+                self.total_cells += row[1]
                 bin = dict()
                 bin[slateRelationship.MIN] = row[4]
                 bin[slateRelationship.MAX] = row[5]
-                bin[slateRelationship.NUM_CELLS] = row[1]
-                bin[slateRelationship.NUM_SIGNATURES] = 0
-                bin[slateRelationship.QUANTITY_SUM] = 0
+                bin[slateRelationship.CELLS] = row[1]
+                bin[slateRelationship.SIGNATURES] = 0
+                bin[slateRelationship.QUANTITY] = 0
                 if len(self.bin_data) == 0 or bin[slateRelationship.MIN] >= self.bin_data[-1][slateRelationship.MAX]:
                     self.bin_data.append(bin)
                 else:
@@ -72,7 +99,7 @@ class slateRelationship:
     #------------------------------------------------------------------------------
         """
         """
-        self.total_num_signatures += 1
+        self.total_signatures += 1
         if data != None: self.total_quantity += data
         #
         #
@@ -80,15 +107,15 @@ class slateRelationship:
         for index, bin in enumerate(self.bin_data):
             if (sig >= bin[slateRelationship.MIN] and sig < bin[slateRelationship.MAX]) or \
                 (index == len(self.bin_data) - 1 and sig >= bin[slateRelationship.MIN] and sig <= bin[slateRelationship.MAX]):
-                bin[slateRelationship.NUM_SIGNATURES] += 1     
+                bin[slateRelationship.SIGNATURES] += 1     
                 if data != None:
-                    bin[slateRelationship.QUANTITY_SUM] += data
+                    bin[slateRelationship.QUANTITY] += data
                 #
                 #
                 #
                 if self.debug: 
-                    print('Bin num_signatures is %r.' % bin[slateRelationship.NUM_SIGNATURES])
-                    print('Bin quantity_sum is %r.' % bin[slateRelationship.QUANTITY_SUM])
+                    print('Bin num_signatures is %r.' % bin[slateRelationship.SIGNATURES])
+                    print('Bin quantity_sum is %r.' % bin[slateRelationship.QUANTITY])
                 break
         # TODO: Message if not binned
             
@@ -109,15 +136,15 @@ class slateRelationship:
         
         for i in r:
             cumulative_amount += self.bin_data[i][relationship_type]
-            cumulative_cell_count += self.bin_data[i][slateRelationship.NUM_CELLS]
+            cumulative_cell_count += self.bin_data[i][slateRelationship.CELLS]
             #
             #
             #
-            if relationship_type == slateRelationship.NUM_SIGNATURES:
-                amount_pct = cumulative_amount / self.total_num_signatures * 100
+            if relationship_type == slateRelationship.SIGNATURES:
+                amount_pct = cumulative_amount / self.total_signatures * 100
             else:
                 amount_pct = cumulative_amount / self.total_quantity * 100
-            cells_pct = cumulative_cell_count / self.total_num_cells * 100
+            cells_pct = cumulative_cell_count / self.total_cells * 100
             #
             #
             #

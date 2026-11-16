@@ -243,7 +243,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
              layer.data_q3 = float(q[2]) # TODO: Adapt for different data types
              layer.sig_lower_cutoff = float(lower_cutoff)
              layer.sig_upper_cutoff = float(upper_cutoff)
-             layer.write_to_database(db)
+             layer.write(db)
          #
          # ----- skewness
          #

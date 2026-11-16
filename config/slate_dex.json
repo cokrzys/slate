@@ -657,6 +657,43 @@
     ]
   },
   {
+    "tableName": "sp.relationship",
+    "parentTableName": "algae.base",
+    "comment": "Relationship between a set of places and a layer and support for sp.relationship.",
+    "source": "slate",
+    "phpClass": "slateRelationship",
+    "pythonClass": "slateRelationship",
+    "columns":
+    [
+      {
+        "name": "place_set_rowid_fk",
+        "variableName": "place_set.rowid",
+        "required": true,
+        "uniqueKey": true,
+        "canUpdate": false
+      },
+      {
+        "name": "layer_rowid_fk",
+        "variableName": "layer.rowid",
+        "required": true,
+        "uniqueKey": true,
+        "canUpdate": false
+      },
+      {
+        "name": "total_cells",
+        "required": true
+      },
+      {
+        "name": "total_signatures",
+        "required": true
+      },
+      {
+        "name": "total_quantity",
+        "required": true
+      }
+    ]
+  },
+  {
     "tableName": "sp.shapefile",
     "parentTableName": "algae.named_object_base",
     "comment": "Support for shapefiles and the sp.shapefile table.  TODO: Flush out reading additional fields from extent box.",

@@ -82,16 +82,16 @@ def write_classes(db, layer_rowid_fk, legend, bin_count_tuple, nodata_value):
                 sc.code = legend['legend'][i]['charCode']
                 sc.html_color = slateApp.rgb_to_html(legend['legend'][i]['red'], legend['legend'][i]['green'], legend['legend'][i]['blue'])
                 sc.description = legend['legend'][i]['description']
-                sc.write_to_database(db)
+                sc.write(db)
             elif sc.raster_value == nodata_value:
                 sc.code = slateApp.NODATA_DESC
                 sc.description = 'NoData'
                 sc.html_color = slateApp.rgb_to_html(slateApp.NODATA_COLOR[0], slateApp.NODATA_COLOR[1], slateApp.NODATA_COLOR[2])
-                sc.write_to_database(db)
+                sc.write(db)
             else:
                 sc.code = str(sc.raster_value)
                 sc.html_color = slateApp.get_random_html_color()
-                sc.write_to_database(db)
+                sc.write(db)
                 print('WARNING: Legend not found for raster value %r.' % sc.raster_value)
                 
 def create_legend(bin_counts):

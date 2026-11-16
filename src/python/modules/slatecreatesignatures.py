@@ -375,7 +375,7 @@ class slateCreateSignatures:
             sig.layer.rowid = layer.rowid
             sig.numeric_val = float(val)
             sig.resolution = resolution
-            sig.write_to_database(self.db)
+            sig.write(self.db)
             #
             #
             #
