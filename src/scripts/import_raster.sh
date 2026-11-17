@@ -113,6 +113,12 @@ fi
 $WORKING_FOLDER"_t2.tiff"
 
 #
+# ----- build and save histogram
+#
+"$SLATE_PYTHON_APPS_FOLDER"proximitystats.py \
+--layer_rowid_fk $(jq -r '.layerRowid' $PARMS)
+
+#
 # ----- build array with optional parameters
 #       uses array expansion to send to the application
 #       not included if they're not used

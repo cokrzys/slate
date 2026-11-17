@@ -23,6 +23,7 @@ from algaetblbase import algaeTblBase
 
 from slateapp import slateApp
 from slatelayer import slateLayer
+from email.policy import default
 
 class slateProximityStats():
 
@@ -31,6 +32,22 @@ class slateProximityStats():
         """
         Constructor.
         """
+        
+    def sequential_histograms(self, data):
+    #------------------------------------------------------------------------------
+        """
+        """
+        methods = ['auto', 'fd', 'doane', 'scott', 'stone', 'rice', 'sturges', 'sqrt']
+        print('Suggested number of bins by method:')
+        for method in methods:
+            test_edges = np.histogram_bin_edges(data, bins=method)
+            print(method + ' = ' + str(len(test_edges)))
+        #
+        #
+        #
+        default_method = 'stone'
+        print('Using ' + default_method + ' method to calculate the optimal number of bins.')
+        return np.histogram(data, bins=default_method)
         
     def run(self, db, args):
     #------------------------------------------------------------------------------
@@ -51,24 +68,35 @@ class slateProximityStats():
             
         min = np.nanmin(l.data)
         max = np.nanmax(l.data)
+        hist = None
+        bin_edges = None
         
-        #
-        # ----- half the cell size + a small buffer
-        #
-        num_bins = math.ceil(((max - min) / l.resolution.cell_size_x) * 2.25)
-        print('Optimal Num Bins = ' + f"{num_bins:.2f}")
-    
-        hist, bin_edges = np.histogram(l.data, num_bins)
+        if l.geoprocess.data_distribution.name == 'Proximity':
+            #
+            # ----- half the cell size + a small buffer
+            #
+            num_bins = math.ceil(((max - min) / l.resolution.cell_size_x) * 2.25)
+            print('Optimal Num Bins = ' + f"{num_bins:.2f}")
+            hist, bin_edges = np.histogram(l.data, num_bins)
+        elif l.geoprocess.data_distribution.name == 'Sequential':
+            #
+            #
+            #
+            hist, bin_edges = self.sequential_histograms(l.data)
+        else:
+            algaeApp.error_message('Unsupported distribution type ' + l.geoprocess.data_distribution.name + '.')
         
-        if args.debug:
-            print('Bin Edges:', bin_edges)
-            print('Histogram Counts:', hist)
-            print(hist.sum())
-            for edge in bin_edges:
-                print(f"{edge:.2f}")
-            
-        if l.write_histogram(db, hist.tolist(), bin_edges.tolist()):
-            print('Histogram and bin edges written to ' + l.table_name + '.')
+        if len(hist) > 0:
+            if args.debug:
+                print('Bin Edges:', bin_edges)
+                print('Histogram Counts:', hist)
+                print(hist.sum())
+                for edge in bin_edges:
+                    print(f"{edge:.2f}")
+                
+            if l.write_histogram(db, hist.tolist(), bin_edges.tolist()):
+                print('Histogram and bin edges written to ' + l.table_name + '.')
+                if args.debug: l.print_histogram(db)
             
         
         
