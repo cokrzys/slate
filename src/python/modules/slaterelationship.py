@@ -121,9 +121,10 @@ class slateRelationship(algaeTblBase):
                 break
         # TODO: Message if not binned
             
-    def calc_cumulative_relationship(self, relationship_type, statistic, reverse = False):
+    def obsolete_calc_cumulative_relationship(self, relationship_type, statistic, reverse = False):
     #------------------------------------------------------------------------------
         """
+        OBSOLETE DO NOT MODIFY.
         """
         num_bins = len(self.bin_data)
         cumulative_amount = 0
@@ -180,7 +181,6 @@ class slateRelationship(algaeTblBase):
             #
             #
             #
-            rd = slateRelationshipData()
             
         
         

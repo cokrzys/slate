@@ -717,7 +717,7 @@ CREATE TRIGGER update_modified BEFORE UPDATE
   algae_update_modified_column();
   
 --
--- sp.place_data
+-- sp.relationship_data
 --
 DROP TABLE IF EXISTS sp.relationship_data;
 DROP SEQUENCE IF EXISTS sp.relationship_data_rowid;

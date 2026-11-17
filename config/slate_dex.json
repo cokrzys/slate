@@ -702,8 +702,8 @@
     "parentTableName": "algae.data_value_base",
     "comment": "Data values associated with a relationship.",
     "source": "slate",
-    "phpClass": "slatePlaceData",
-    "pythonClass": "slatePlaceData",
+    "phpClass": "slateRelationshipData",
+    "pythonClass": "slateRelationshipData",
     "columns":
     [
       {
@@ -719,6 +719,70 @@
         "canUpdate": false,
         "required": true,
         "uniqueKey": true
+      }
+    ]
+  },
+  {
+    "tableName": "sp.relationship_statistic",
+    "parentTableName": "algae.tbl_base",
+    "comment": "Statistics associated with a relationship.",
+    "source": "slate",
+    "phpClass": "slateRelationshipStatistic",
+    "pythonClass": "slateRelationshipStatistic",
+    "columns":
+    [
+      {
+        "name": "relationship_rowid_fk",
+        "variableName": "relationship.rowid",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      },
+      {
+        "name": "name",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      },
+      {
+        "name": "distribution",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      },
+      {
+        "name": "amount_type",
+        "canUpdate": false,
+        "required": true,
+        "uniqueKey": true
+      },
+      {
+        "name": "val",
+        "required": true
+      },
+      {
+        "name": "bin_index"
+      },
+      {
+        "name": "bin_min"
+      },
+      {
+        "name": "bin_max"
+      },
+      {
+        "name": "amount"
+      },
+      {
+        "name": "cells"
+      },
+      {
+        "name": "amount_pct"
+      },
+      {
+        "name": "cells_pct"
+      },
+      {
+        "name": "description"
       }
     ]
   },

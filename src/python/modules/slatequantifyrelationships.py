@@ -30,6 +30,7 @@ from slateplace import slatePlace
 from slateplaceset import slatePlaceSet
 from slatelayer import slateLayer
 from slaterelationship import slateRelationship
+from slaterelationshipstatistic import slateRelationshipStatistic
 
 class slateQuantifyRelationships:
     
@@ -110,13 +111,33 @@ class slateQuantifyRelationships:
                             
                     if rel.write(self.db):
                         rel.write_bin_data(self.db)
+                        
+                    
+                    rs = slateRelationshipStatistic()
+                    rs.relationship = rel
+                    
+                    rs.calc_cumulative(slateRelationship.SIGNATURES, slateRelationship.CONTRAST, False)
+                    rs.write(self.db)
+                    rs.calc_cumulative(slateRelationship.QUANTITY, slateRelationship.CONTRAST, False)
+                    rs.write(self.db)
+                    rs.calc_cumulative(slateRelationship.SIGNATURES, slateRelationship.PCT_RATIO, False)
+                    rs.write(self.db)
+                    rs.calc_cumulative(slateRelationship.QUANTITY, slateRelationship.PCT_RATIO, False)
+                    rs.write(self.db)
+                    
+                    rs.calc_cumulative(slateRelationship.SIGNATURES, slateRelationship.CONTRAST, True)
+                    rs.write(self.db)
+                    rs.calc_cumulative(slateRelationship.QUANTITY, slateRelationship.CONTRAST, True)
+                    rs.write(self.db)
+                    rs.calc_cumulative(slateRelationship.SIGNATURES, slateRelationship.PCT_RATIO, True)
+                    rs.write(self.db)
+                    rs.calc_cumulative(slateRelationship.QUANTITY, slateRelationship.PCT_RATIO, True)
+                    rs.write(self.db)
                     #
                     #
                     #
-                    rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.CONTRAST, False)
-                    # rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.PCT_RATIO, False)
-                    # rel.calc_cumulative_relationship(slateRelationship.QUANTITY, slateRelationship.CONTRAST, False)
-                    rel.calc_cumulative_relationship(slateRelationship.QUANTITY, slateRelationship.PCT_RATIO, False)
+                    # rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.CONTRAST, False)
+                    # rel.calc_cumulative_relationship(slateRelationship.QUANTITY, slateRelationship.PCT_RATIO, False)
                     
                     print('----- Reverse -----')
                     # rel.calc_cumulative_relationship(slateRelationship.SIGNATURES, slateRelationship.CONTRAST, True)
