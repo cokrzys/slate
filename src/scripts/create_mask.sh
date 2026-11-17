@@ -110,6 +110,11 @@ then
 fi
 
 #
+# ----- delete temporary files
+#
+"$SLATE_SCRIPTS_FOLDER"delete_temporary_files.sh $WORKING_FOLDER
+
+#
 # ----- update layer calc end timestamp
 #
 "$SLATE_PYTHON_APPS_FOLDER"updatelayerfiledates.py \
