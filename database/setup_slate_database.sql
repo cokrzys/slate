@@ -15,6 +15,7 @@
   2026.10.27 | Added sp.legend and sp.legend_item.
   2026.11.06 | Added resolution_rowid_fk to sp.signature.
   2026.11.13 | Added histogram arrays to sp.layer.
+  2026.11.16 | Added sp.relationship and sp.relationship_data.
 
 */
 
@@ -27,7 +28,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.11.13' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.11.16' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -689,6 +690,54 @@ CREATE TABLE sp.signature
 );
 CREATE TRIGGER update_modified BEFORE UPDATE
   ON sp.signature FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+--
+-- sp.relationship
+--
+DROP TABLE IF EXISTS sp.relationship;
+DROP SEQUENCE IF EXISTS sp.relationship_rowid;
+CREATE SEQUENCE sp.relationship_rowid START 1;
+CREATE TABLE sp.relationship
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.relationship_rowid'),
+  place_set_rowid_fk INTEGER NOT NULL REFERENCES sp.place_set,
+  layer_rowid_fk INTEGER NOT NULL REFERENCES sp.layer,
+  field_rowid_fk INTEGER REFERENCES ref.field,
+  total_cells BIGINT NOT NULL,
+  total_signatures BIGINT NOT NULL,
+  total_quantity NUMERIC,
+  bin_data NUMERIC[][],
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(place_set_rowid_fk, layer_rowid_fk)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.relationship FOR EACH ROW EXECUTE PROCEDURE
+  algae_update_modified_column();
+  
+--
+-- sp.place_data
+--
+DROP TABLE IF EXISTS sp.relationship_data;
+DROP SEQUENCE IF EXISTS sp.relationship_data_rowid;
+CREATE SEQUENCE sp.relationship_data_rowid START 1;
+CREATE TABLE sp.relationship_data
+(
+  rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.relationship_data_rowid'),
+  relationship_rowid_fk INTEGER NOT NULL REFERENCES sp.relationship,
+  field_rowid_fk INTEGER NOT NULL REFERENCES ref.field,
+  text_val VARCHAR,
+  numeric_val NUMERIC,
+  integer_val BIGINT,
+  datetime_val TIMESTAMP,
+  description VARCHAR,
+  timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  UNIQUE(relationship_rowid_fk, field_rowid_fk)
+);
+CREATE TRIGGER update_modified BEFORE UPDATE
+  ON sp.relationship_data FOR EACH ROW EXECUTE PROCEDURE
   algae_update_modified_column();
   
 --

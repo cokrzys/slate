@@ -21,6 +21,7 @@ from algaecore import algaeCore
 from algaeapp import algaeApp
 from algaedb import algaeDB
 from algaetblbase import algaeTblBase
+from algaetblfield import algaeTblField
 
 from slateapp import slateApp
 from slatelayer import slateLayer
@@ -51,6 +52,7 @@ class slateRelationship(algaeTblBase):
         self.total_quantity = 0
         self.place_set = slatePlaceSet()
         self.layer = slateLayer()
+        self.field = algaeTblField()
         self.debug = False
         
     def write_bin_data(self, db):
@@ -175,6 +177,10 @@ class slateRelationship(algaeTblBase):
             print('Reverse %r' % reverse)
             print('Bin min %r max %r' % 
                   (self.bin_data[max_index][slateRelationship.MIN], self.bin_data[max_index][slateRelationship.MAX]))
+            #
+            #
+            #
+            rd = slateRelationshipData()
             
         
         

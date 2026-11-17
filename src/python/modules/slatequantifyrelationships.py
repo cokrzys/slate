@@ -80,7 +80,15 @@ class slateQuantifyRelationships:
         """
         rel = slateRelationship()
         rel.debug = self.debug    
-        rel.place_set = place_set    
+        rel.place_set = place_set
+        #
+        # ----- add quantity field rowid if specified
+        #
+        if self.args.field_rowid_fk != None:
+            rel.field.read_row_from_database_with_rowid(self.db, self.args.field_rowid_fk)
+        #
+        # ----- read layer details
+        #
         if rel.layer.read_row_from_database_with_rowid(self.db, rowid):
             print('Processing layer ' + rel.layer.geoprocess.name + ' (rowid ' + str(rel.layer.rowid) + ')')
             histogram_data = rel.layer.read_histogram(self.db)
