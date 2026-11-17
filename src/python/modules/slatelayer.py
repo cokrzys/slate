@@ -369,7 +369,7 @@ class slateLayer(algaeTblBase):
     #------------------------------------------------------------------------------
         """
         """
-        sql = "SELECT * FROM layer_histogram(%(layer_rowid_fk)s) ORDER BY bin_min"
+        sql = "SELECT * FROM slate_layer_histogram(%(layer_rowid_fk)s) ORDER BY bin_min"
         return db.get_all(sql, {'layer_rowid_fk': self.rowid})
     
     def print_histogram(self, db):

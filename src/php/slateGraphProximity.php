@@ -150,7 +150,7 @@ class slateGraphProximity extends algaeGraphLine
   protected function loadDistanceData()
   // --------------------------------------------------------------------------
   {
-    $sql = "SELECT bin_max, cumulative_pct FROM layer_histogram($1)";
+    $sql = "SELECT bin_max, cumulative_pct FROM slate_layer_histogram($1)";
     $data = algaeDB::getArray($sql, array($this->layer->rowid));
     if ( (isset($data)) && (count($data) > 0) )
     {
