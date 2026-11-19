@@ -513,33 +513,26 @@ class slateGeoProcess extends algaeTblBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    $num_errors = 0;
     //
-    // ----- delete dependents
-    //
-    algaeDB::deleteFromTable('sp.layer', 'geoprocess_rowid_fk', $this->rowid);
-    
-    //
-    //
+    // ----- delete files and folders
     //
     algaeFile::deleteDirectory($this->getDirectory());
     //
     // ----- delete the geoprocess
     //
-    if ($num_errors == 0)
+    $rowid = $this->rowid;
+    algaeDB::executeQuery('CALL slate_delete_geoprocess($1)', array($rowid));
+    $num_rows = algaeDB::getScalarInteger("SELECT COUNT(*) FROM $this->table_name WHERE rowid = $1", array($rowid), 0);
+    if ($num_rows == 0)
     {
-      if (algaeDB::deleteFromTable($this->table_name, 'rowid', $this->rowid))
-      {
-        $app->successMessage('GeoProcess ' . $this->name . ' deleted from ' . $this->table_name . '.');
-        echo 'Goto the ', $app->getPageLink($this->browsepage, 'GeoProcesses', algaeAccess::ROLE_READ, $app->config->app_name, ''), ' page.<p />';
-      }
-      else
-      {
-        $num_errors += 1;
-      }
+      $app->successMessage('GeoProcess ' . $this->name . ' deleted from ' . $this->table_name . '.');
+      echo 'Goto the ', $app->getPageLink($this->browsepage, 'GeoProcesses', algaeAccess::ROLE_READ, $app->config->app_name, ''), ' page.<p />';
+      $this->deleted = True;
     }
-    if ($num_errors == 0) $this->deleted = True;
-    return $num_errors;
+    else 
+    {
+      algaeApp::errorMessage('GeoProcess not deleted.');
+    }
   }
   
   /**
@@ -619,9 +612,8 @@ class slateGeoProcess extends algaeTblBase
   public function showWhatsBeingDeleted()
   // --------------------------------------------------------------------------
   {
-    global $app;
-    echo 'Deleting GeoProcess ', $this->getHomepageLink();
-    echo ' from ', $this->project->getHomepageLink(), '.<p />';
+    echo 'GeoProcess ', $this->getHomepageLink(), ' and records from all linked tables.<p />';
+    /*
     $num_layers = algaeDB::getScalarInteger("SELECT COUNT(rowid) FROM sp.layer WHERE geoprocess_rowid_fk = $1", array($this->rowid), 0);
     if ($num_layers > 0)
     {
@@ -640,10 +632,11 @@ class slateGeoProcess extends algaeTblBase
     {
       echo $num_signatures, ' signature(s)<p />';
     }
+    */
     //
     // ----- geoprocess folder
     //
-    echo 'The folder ', $this->getDirectory() . ' and all files in it will be deleted.<p />';
+    echo 'The folder ', $this->getDirectory() . ' and all files and sub-directories.<p />';
   }
   
   /**

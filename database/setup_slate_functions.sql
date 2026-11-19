@@ -95,7 +95,9 @@ END
 $func$;
 
 -------------------------------------------------------------------------------
--- Delete a GeoProcess and all associated data.
+--
+--  Delete a GeoProcess and all associated data.
+--
 -------------------------------------------------------------------------------
 CREATE OR REPLACE PROCEDURE slate_delete_geoprocess(rowid_to_delete INT)
 LANGUAGE plpgsql
