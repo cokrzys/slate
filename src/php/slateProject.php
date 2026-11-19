@@ -362,7 +362,6 @@ class slateProject extends algaeTblNamedObjectBase
       array('#overview_tab', 'Overview'),
       // array('#shapefiles_tab', 'Raw Data'),
       array('#study_area_tab', 'Study Area'),
-      // array('#bounds_tab', 'Lat-Long Bounds'),
       array('#file_size_estimates', 'File Size Estimates')
       // array('#map_tab', 'Map'),
       // array('#build_tab', 'Processing'),
@@ -386,13 +385,6 @@ class slateProject extends algaeTblNamedObjectBase
     //
     echo '<div id="file_size_estimates">';
     refResolution::reportFileSizeEstimates($sa);
-    echo '</div>';
-    //
-    // ----- bounds_tab
-    //
-    echo '<div id="bounds_tab">';
-    // $sa->readLatLongBounds();
-    // $sa->reportLatLongBounds();
     echo '</div>';
     //
     // ----- end of all tabs div

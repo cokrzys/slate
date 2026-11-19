@@ -402,8 +402,9 @@ class slateStudyArea extends algaeTblBase
     algaeTable::writeTwoColumns('Modified', $this->timestamp_modified_utc);
     algaeTable::writeTwoColumns('Rowid', $this->rowid);
     algaeTable::end();
-    // $this->readLatLongBounds();
-    // $this->reportLatLongBounds();
+    
+    $this->readLatLongBounds();
+    $this->reportLatLongBounds();
     // $this->reportApproximateFileSizes();
     // $this->getThumbnailSize();
   }
