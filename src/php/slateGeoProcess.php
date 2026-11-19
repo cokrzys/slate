@@ -518,6 +518,10 @@ class slateGeoProcess extends algaeTblBase
     // ----- delete dependents
     //
     algaeDB::deleteFromTable('sp.layer', 'geoprocess_rowid_fk', $this->rowid);
+    
+    //
+    //
+    //
     algaeFile::deleteDirectory($this->getDirectory());
     //
     // ----- delete the geoprocess
@@ -621,8 +625,24 @@ class slateGeoProcess extends algaeTblBase
     $num_layers = algaeDB::getScalarInteger("SELECT COUNT(rowid) FROM sp.layer WHERE geoprocess_rowid_fk = $1", array($this->rowid), 0);
     if ($num_layers > 0)
     {
-      echo $num_layers, ' layer(s) will be deleted.<p />';
-    } 
+      echo $num_layers, ' layer(s)<p />';
+    }
+    //
+    //
+    //
+    $sql = "SELECT s.rowid
+            FROM sp.signature s
+            INNER JOIN sp.layer l ON s.layer_rowid_fk = l.rowid
+            WHERE l.geoprocess_rowid_fk = $1";
+    $count_sql = "SELECT COUNT(*) FROM (" . $sql . ") t";
+    $num_signatures = algaeDB::getScalarInteger($count_sql, array($this->rowid), 0);
+    if ($num_signatures > 0)
+    {
+      echo $num_signatures, ' signature(s)<p />';
+    }
+    //
+    // ----- geoprocess folder
+    //
     echo 'The folder ', $this->getDirectory() . ' and all files in it will be deleted.<p />';
   }
   

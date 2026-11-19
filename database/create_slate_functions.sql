@@ -1,3 +1,14 @@
+/**
+
+  slate | PostgreSQL stored procedures.
+  
+  @author    Brian Krzys (brian.krzys@rtspatial.com)
+  @copyright (c) 2026 RTSpatial Ltd.
+  @license   SPDX-License-Identifier: MIT
+  @link      https://github.com/cokrzys/slate
+
+*/
+
 --
 --
 --
@@ -82,4 +93,55 @@ BEGIN
 	) b);
 END
 $func$;
+
+-------------------------------------------------------------------------------
+-- Delete a GeoProcess and all associated data.
+-------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE slate_delete_geoprocess(rowid_to_delete INT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	
+	  --
+	  -- signatures
+	  --
+    DELETE FROM sp.signature WHERE rowid IN 
+    (
+	    SELECT s.rowid
+	    FROM sp.signature s
+	    INNER JOIN sp.layer l ON s.layer_rowid_fk = l.rowid
+	    WHERE l.geoprocess_rowid_fk = rowid_to_delete
+    );
+    --
+    -- relationship statistics
+    --
+    DELETE FROM sp.relationship_statistic WHERE rowid IN 
+    (
+	    SELECT rs.rowid
+			FROM sp.relationship_statistic rs
+			INNER JOIN sp.relationship r ON rs.relationship_rowid_fk = r.rowid
+			INNER JOIN sp.layer l ON r.layer_rowid_fk = l.rowid
+			WHERE l.geoprocess_rowid_fk = rowid_to_delete
+    );
+    --
+    -- relationships
+    --
+    DELETE FROM sp.relationship WHERE rowid IN 
+    (
+			SELECT r.rowid
+			FROM sp.relationship r
+			INNER JOIN sp.layer l ON r.layer_rowid_fk = l.rowid
+			WHERE l.geoprocess_rowid_fk = rowid_to_delete
+    );
+    --
+    -- layers
+    --
+    DELETE FROM sp.layer WHERE geoprocess_rowid_fk = rowid_to_delete;
+    --
+    -- geoprocess
+    --
+    DELETE FROM sp.geoprocess WHERE rowid = rowid_to_delete;
+    
+END;
+$$;
 

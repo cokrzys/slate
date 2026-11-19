@@ -137,44 +137,51 @@ class slateSignature extends algaeTblBase
       // ----- calc similarity
       //
       $similarity = null;
-      if ($row[4] == 'Categorical')
+      if ($row[5] == $row[6])
       {
-        if ($row[5] == $row[6])
-        {
-          $similarity = 1;
-        }
-        else 
-        {
-          $similarity = 0;
-        }
+        $similarity = 1;
       }
-      else 
+      else
       {
-        if ($layer->data_min != null)
+        if ($row[4] == 'Categorical')
         {
-          $sig_range = abs($row[5] - $row[6]);
-          $data_range = null;
-          if ( ($layer->sig_lower_cutoff != null) && ($layer->sig_upper_cutoff != null) )
+          if ($row[5] == $row[6])
           {
-            $data_range = $layer->sig_upper_cutoff - $layer->sig_lower_cutoff;
+            $similarity = 1;
           }
           else 
           {
-            $data_range = $layer->data_q3 - $layer->data_q1;
-          }
-          $similarity = 0;
-          if ($sig_range < $data_range)
-          {
-            $similarity = 1 - ($sig_range / $data_range);
+            $similarity = 0;
           }
         }
         else 
         {
-          if ($row[4] != 'Categorical')
+          if ($layer->data_min != null)
           {
-            $app->errorMessage('Missing data_min for ' . $row[1] . '.');
+            $sig_range = abs($row[5] - $row[6]);
+            $data_range = null;
+            if ( ($layer->sig_lower_cutoff != null) && ($layer->sig_upper_cutoff != null) )
+            {
+              $data_range = $layer->sig_upper_cutoff - $layer->sig_lower_cutoff;
+            }
+            else 
+            {
+              $data_range = $layer->data_q3 - $layer->data_q1;
+            }
+            $similarity = 0;
+            if ($sig_range < $data_range)
+            {
+              $similarity = 1 - ($sig_range / $data_range);
+            }
           }
-          $similarity = '';
+          else 
+          {
+            if ($row[4] != 'Categorical')
+            {
+              $app->errorMessage('Missing data_min for ' . $row[1] . '.');
+            }
+            $similarity = '';
+          }
         }
       }
       algaeTable::writeData(algaeCore::getFormattedNumber($similarity, 2));
