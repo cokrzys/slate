@@ -35,6 +35,9 @@ psql slate postgres -f /opt/algae-main/database/setup_app_database.sql
 # add the slate data model
 psql slate postgres -f /opt/slate-main/database/setup_slate_database.sql
 
+# add stored procedures
+psql slate postgres -f /opt/slate-main/database/setup_slate_functions.sql
+
 # check versions
 psql slate postgres -c "SELECT algae_app_database_version(), slate_database_version();"
 ```
