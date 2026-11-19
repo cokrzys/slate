@@ -16,6 +16,7 @@
   2026.11.06 | Added resolution_rowid_fk to sp.signature.
   2026.11.13 | Added histogram arrays to sp.layer.
   2026.11.16 | Added sp.relationship and sp.relationship_data.
+  2026.11.18 | Stored procedure updates and dropped resolution_rowid_fk from sp.signature.
 
 */
 
@@ -28,7 +29,7 @@ SET client_min_messages TO WARNING;
 -- function to get the version
 --
 CREATE OR REPLACE FUNCTION slate_database_version() RETURNS varchar LANGUAGE SQL AS
-  $$ SELECT CAST('2026.11.16' AS VARCHAR); $$;
+  $$ SELECT CAST('2026.11.18' AS VARCHAR); $$;
   
 --
 -- add PostGIS support
@@ -682,7 +683,6 @@ CREATE TABLE sp.signature
   rowid INTEGER PRIMARY KEY DEFAULT nextval('sp.signature_rowid'),
   place_rowid_fk INTEGER NOT NULL REFERENCES sp.place,
   layer_rowid_fk INTEGER NOT NULL REFERENCES sp.layer,
-  resolution_rowid_fk INTEGER NOT NULL REFERENCES ref.resolution,
   numeric_val NUMERIC NOT NULL,
   timestamp_loaded_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
   timestamp_modified_utc TIMESTAMP NOT NULL DEFAULT current_timestamp,
