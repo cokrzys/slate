@@ -126,23 +126,22 @@ $WORKING_FOLDER"_t2.tiff"
 ARRAY_OPTIONAL_PARAMETERS=()
 
 # legend rowid
-if [ "$(jq -r '.legendRowid' $PARMS)" ] && [ "$(jq -r '.legendRowid' $PARMS)" != '' ]; then
+if [ "$(jq -r '.legend_rowid_fk' $PARMS)" ] && [ "$(jq -r '.legend_rowid_fk' $PARMS)" != '' ]; then
   ARRAY_OPTIONAL_PARAMETERS+=( --legend_rowid )
-  ARRAY_OPTIONAL_PARAMETERS+=( "$(jq -r '.legendRowid' $PARMS)" )
+  ARRAY_OPTIONAL_PARAMETERS+=( "$(jq -r '.legend_rowid_fk' $PARMS)" )
 fi
 
 #
 # ----- make colored version
 #
-if [ -f "$(jq -r '.legendFilename' $PARMS)" ] || [ "$(jq -r '.outputDataType' $PARMS)" == 'Categorical' ]; then
+if [ "$(jq -r '.outputDataDistribution' $PARMS)" == 'Categorical' ]; then
 	echo -e "\nCreating classes and making a colored raster."
-	"$SLATE_PYTHON_APPS_FOLDER"color_and_make_classes.py \
+	"$SLATE_PYTHON_APPS_FOLDER"colorwithlegend.py \
 	-lrowid $(jq -r '.layerRowid' $PARMS) \
-	-a_nodata $OUTPUT_NODATA \
+	-a_nodata ${OUTPUT_NODATA%.*} \
 	"${ARRAY_OPTIONAL_PARAMETERS[@]}" \
 	$WORKING_FOLDER"_t2.tiff" \
-	"$DEST" \
-	$(jq -r '.legendFilename' $PARMS)
+	"$DEST" 
 else
 	echo -e "\nCreating a colored raster using gdaldem."
 	#
@@ -161,7 +160,7 @@ fi
 # ----- make thumbnails
 #
 if [ -f "$DEST" ]; then
-  if [ -f "$(jq -r '.legendFilename' $PARMS)" ] || [ "$(jq -r '.outputDataType' $PARMS)" == 'Categorical' ]; then
+  if [ "$(jq -r '.outputDataDistribution' $PARMS)" == 'Categorical' ]; then
     "$SLATE_SCRIPTS_FOLDER"make_thumbnails.sh $PARMS "$DEST" "$DEST"
   else
     "$SLATE_SCRIPTS_FOLDER"make_thumbnails.sh $PARMS "$DEST" "$DEST_COLORED"

@@ -84,9 +84,9 @@ class slateProximityStats():
             #
             hist, bin_edges = self.sequential_histograms(l.data)
         else:
-            algaeApp.error_message('Unsupported distribution type ' + l.geoprocess.data_distribution.name + '.')
+            print('Unsupported distribution type ' + l.geoprocess.data_distribution.name + '.')
         
-        if len(hist) > 0:
+        if hist != None and len(hist) > 0:
             if args.debug:
                 print('Bin Edges:', bin_edges)
                 print('Histogram Counts:', hist)

@@ -108,6 +108,7 @@ class slateRunGeoprocesses:
                         parms['palettesFolder'] = os.path.join(app.config.palettes_folder, '')
                         parms['workingFolder'] = os.path.join(gp.get_directory(self.resolution.folder), '')
                         parms['outputDataType'] = gp.data_type.name
+                        parms['outputDataDistribution'] = gp.data_distribution.name
                         parms['outputNoDataValue'] = gp.data_type.nodata_value
                         parms['noDataByte'] = app.config.nodata_byte
                         parms['noDataFloat32'] = app.config.nodata_float32

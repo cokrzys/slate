@@ -186,6 +186,44 @@
     []
   },
   {
+    "tableName": "sp.legend_item",
+    "parentTableName": "algae.tbl_base",
+    "comment": "Individual items as part of a legend.",
+    "source": "slate",
+    "phpClass": "slateLegendItem",
+    "pythonClass": "slateLegendItem",
+    "columns":
+    [
+      {
+        "name": "legend_rowid_fk",
+        "variableName": "legend.rowid",
+        "required": true,
+        "uniqueKey": true,
+        "canUpdate": false
+      },
+      {
+        "name": "int_code",
+        "required": true,
+        "uniqueKey": true,
+        "canUpdate": false
+      },
+      {
+        "name": "text_code"
+      },
+      {
+        "name": "sort_order",
+        "required": true
+      },
+      {
+        "name": "html_color",
+        "required": true
+      },
+      {
+        "name": "description"
+      }
+    ]
+  },
+  {
     "tableName": "sp.project",
     "parentTableName": "algae.named_object_base",
     "comment": "Overall project container and support for the sp.project table.",

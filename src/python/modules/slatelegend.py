@@ -33,8 +33,9 @@ class slateLegend(algaeTblNamedObjectBase):
         """
         super().__init__()
         self.table_name = 'sp.legend'
+        self.legend_items = None
     
-    def update_descriptions(self, db, layer_rowid_fk, legend_rowid_fk):
+    def update_descriptions_obsolete(self, db, layer_rowid_fk, legend_rowid_fk):
     # ------------------------------------------------------------------------------
         """
         """        
@@ -47,6 +48,12 @@ class slateLegend(algaeTblNamedObjectBase):
         if not db.execute_query(sql, {'layer_rowid_fk':layer_rowid_fk, 'legend_rowid_fk':legend_rowid_fk}):
             algaeApp.error_message('Problem updating the legend descriptions.')
             print('  layer_rowid_fk = ' + str(layer_rowid_fk) + ', legend_rowid_fk = ' + str(legend_rowid_fk))
+            
+    def load_legend_items(self, db):
+    # ------------------------------------------------------------------------------
+        """
+        """
+        from slatelegenditem import slateLegendItem
     
         
             

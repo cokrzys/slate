@@ -2,7 +2,7 @@
 
 """
 
- slate | Color an image and make classes with a legend file.
+ slate | Color a categorical image using a legend.
  
  @author    Brian Krzys (brian.krzys@rtspatial.com)
  @copyright (c) 2026 RTSpatial Ltd.
@@ -34,11 +34,11 @@ import argparse
 #
 # ----- setup command line arguments
 #
-parser = argparse.ArgumentParser(description='Color an image and make classes with a legend file.')
+parser = argparse.ArgumentParser(description='Color a categorical image using a legend.')
 parser.add_argument("src_dataset", help="The source dataset name.")
 parser.add_argument("dst_dataset", help="The destination filename.")
-parser.add_argument("legend_filename", help="Legend filename.")
-parser.add_argument("--legend_rowid", type=int, default=0, help="Legend rowid from sp.legend.")
+parser.add_argument("--legend_filename", default=None, help="Legend filename.")
+parser.add_argument("--legend_rowid", type=int, default=None, help="Legend rowid from sp.legend.")
 parser.add_argument("-lrowid", "--layer_rowid_fk", type=int, default=0, help="Layer rowid.")
 parser.add_argument("-hl", "--header_lines", type=int, default=0, help="The number of header lines to skip.")
 parser.add_argument("-a_nodata", "--nodata_value", type=int, default=255, help="Nodata value, used to color values.")
@@ -171,7 +171,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         # ----- legend from file
         #
         legend = None
-        if args.legend_filename != 'null':
+        if args.legend_filename != None:
             leg = open(args.legend_filename, 'r')
             if leg is None: sys.exit("ERROR: Unable to open the legend file " + args.legend_filename + ".")
             legend = json.load(leg)
@@ -179,13 +179,16 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         #
         # ----- legend from database
         #
-        if legend == None and args.legend_rowid > 0:
-            print('TODO: Use database legend for colors, legend rowid = ' + str(args.legend_rowid))
+        if legend == None and args.legend_rowid != None:
+            dbLegend = slateLegend()
+            dbLegend.read_row_from_database_with_rowid(db, args.legend_rowid)
+            dbLegend.load_legend_items(db)
         #
         # ----- create random legend
         #
         if legend == None:
-            legend = create_legend(bc)
+            print('TODO: Re-enable automatic legend creation.')
+            # legend = create_legend(bc)
         
         #
         # ----- open xml file

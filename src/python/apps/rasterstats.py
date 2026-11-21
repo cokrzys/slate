@@ -267,7 +267,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
              print("Skewness test = %r %r" % scipy.stats.skewtest(valid_data))
              print("Kurtosis test = %r %r" % scipy.stats.kurtosistest(valid_data))
              print("Normal test = %r %r" % scipy.stats.normaltest(valid_data))
-             print("Shapiro-Wilk = %r %r" % scipy.stats.shapiro(valid_data))
+             if num_valid_cells < 5000: print("Shapiro-Wilk = %r %r" % scipy.stats.shapiro(valid_data))
          #
          # ----- count the number of unique values if applicable
          #
