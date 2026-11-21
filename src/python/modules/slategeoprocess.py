@@ -84,7 +84,16 @@ class slateGeoProcess(algaeTblBase):
         if self.parameters != None:
             j = json.loads(self.parameters)
             for key, value in j.items():
-                parms[key] = value
+                #
+                # ----- replace newlines and tabs specifically with a space
+                #       setup initially to handle sql statements being fed to gdal_rasterize
+                #       that doesn't work unless they're removed
+                #
+                if isinstance(value, str):
+                    clean_value = value.expandtabs(1)
+                    parms[key] = ' '.join(clean_value.splitlines())
+                else:
+                    parms[key] = value
                 #
                 #
                 #
