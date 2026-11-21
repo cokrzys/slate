@@ -50,10 +50,11 @@ class slateQuantifyRelationships:
         """
         """
         print(inspect.currentframe().f_code.co_name)
-        sql = u"""SELECT place_rowid_fk, numeric_val
-                FROM sp.signature
-                WHERE layer_rowid_fk = %(layer_rowid_fk)s AND resolution_rowid_fk = %(resolution_rowid_fk)s
-                  AND place_rowid_fk IN ("""
+        sql = u"""SELECT s.place_rowid_fk, s.numeric_val
+                FROM sp.signature s
+                INNER JOIN sp.layer l ON s.layer_rowid_fk = l.rowid
+                WHERE s.layer_rowid_fk = %(layer_rowid_fk)s AND l.resolution_rowid_fk = %(resolution_rowid_fk)s
+                  AND s.place_rowid_fk IN ("""
         sql += place_set.sql + ")"
         parms = {'layer_rowid_fk': layer.rowid, 'resolution_rowid_fk': self.resolution.rowid}
         #

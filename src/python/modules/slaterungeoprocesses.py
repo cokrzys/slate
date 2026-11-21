@@ -277,7 +277,7 @@ class slateRunGeoprocesses:
             self.core_process = algaeTblCoreProcess()
             self.core_process.read_row_from_database_with_rowid(self.db, self.args.process_rowid_fk)
             if self.core_process.rowid != None and self.core_process.rowid > 0:
-                print('Process logging with command ' + self.core_process.command)
+                if self.debug: print('Process logging with command ' + self.core_process.command)
             else:
                 self.core_process = None  # remove instance so it's not used
         #

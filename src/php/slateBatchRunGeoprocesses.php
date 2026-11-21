@@ -15,6 +15,7 @@ class slateBatchRunGeoprocesses
 {
   
   const WHOLE_PROJECT = 'Everything for the Project';
+  const LIST_OF_SEQUENCE_NUMBERS = 'List of Sequence Numbers';
   const SEQUENCE_RANGE = 'Range of Sequence Numbers';
   
   public $choices;
@@ -31,7 +32,7 @@ class slateBatchRunGeoprocesses
   {
     $this->choices = array();
     $this->choices[] = slateBatchRunGeoprocesses::WHOLE_PROJECT;
-    $this->choices[] = 'List of Sequence Numbers';
+    $this->choices[] = slateBatchRunGeoprocesses::LIST_OF_SEQUENCE_NUMBERS;
     $this->choices[] = slateBatchRunGeoprocesses::SEQUENCE_RANGE;
     $parameters_prefix = 'GeoprocessesBatchRun';
     $this->run_type = algaeForm::getDefaultValue('run_type', null, $parameters_prefix . 'Type');
@@ -145,6 +146,20 @@ class slateBatchRunGeoprocesses
       else 
       {
         $app->errorMessage('Sequence parameters not specified.');
+      }
+    }
+    elseif ($this->run_type == slateBatchRunGeoprocesses::LIST_OF_SEQUENCE_NUMBERS)
+    {
+      $this->parameters = trim($this->parameters);
+      if (strlen($this->parameters) > 0)
+      {
+        $where = "'" . 'sequence IN (' . $this->parameters . ")'";
+        $parameters['--where'] = $where;
+        $ok_to_run = True;
+      }
+      else
+      {
+        $app->errorMessage('List of sequence parameters not specified.');
       }
     }
     else 
