@@ -54,8 +54,34 @@ class slateLegend(algaeTblNamedObjectBase):
         """
         """
         from slatelegenditem import slateLegendItem
-    
-        
+        self.legend_items = list()
+        li = slateLegendItem()
+        sql = li.get_sql(True)
+        sql += ' WHERE ' + li.table_name + ".legend_rowid_fk = %(legend_rowid_fk)s ORDER BY int_code"
+        parms = {'legend_rowid_fk': self.rowid}
+        data = db.get_all(sql, parms)
+        if data != None:
+            for row in data:
+                new_item = slateLegendItem()
+                new_item.debug = self.debug
+                new_item.read_row_from_database_with_rowid(db, row[0])
+                if new_item.rowid != None:
+                    self.legend_items.append(new_item)
+            if self.debug: print(str(len(self.legend_items)) + ' legend item(s) read.')
+        else:
+            algaeApp.error_message('No legend items for legend ' + self.name + '.')
+            
+    def write_to_gdal_color_table(self, color_table):
+    # ------------------------------------------------------------------------------
+        """
+        """
+        if self.legend_items != None:
+            for item in self.legend_items:
+                rgb = algaeCore.html_to_rgb(item.html_color)
+                if self.debug:
+                    print('Index %r = rgb %r %r %r for html %r' % (item.int_code, rgb[0], rgb[1], rgb[2], item.html_color))
+                color_table.SetColorEntry(item.int_code, (rgb[0], rgb[1], rgb[2]))
+
             
         
 

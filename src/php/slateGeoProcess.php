@@ -112,6 +112,12 @@ class slateGeoProcess extends algaeTblBase
     return $this->project->getItemDirectory($resolution_folder, $app->config->geoprocesses_folder, $this->rowid);
   }
   
+  public function isCategorical()
+  // --------------------------------------------------------------------------
+  {
+    return $this->data_distribution->isCategorical();
+  }
+  
   /**
    * Decode parameters stored in $this->parameters.  Implemented in a derived
    * class if needed.

@@ -187,7 +187,7 @@
   },
   {
     "tableName": "sp.legend_item",
-    "parentTableName": "algae.tbl_base",
+    "parentTableName": "algae.base",
     "comment": "Individual items as part of a legend.",
     "source": "slate",
     "phpClass": "slateLegendItem",
@@ -756,7 +756,7 @@
   },
   {
     "tableName": "sp.relationship_statistic",
-    "parentTableName": "algae.tbl_base",
+    "parentTableName": "algae.base",
     "comment": "Statistics associated with a relationship.",
     "source": "slate",
     "phpClass": "slateRelationshipStatistic",

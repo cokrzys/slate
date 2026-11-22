@@ -17,6 +17,8 @@
 class refDataDistribution extends algaeTblReferenceBase
 {
   
+  const CATEGORICAL = 'Categorical';
+  
   /**
    * Constructor.
    */
@@ -38,6 +40,16 @@ class refDataDistribution extends algaeTblReferenceBase
     $this->homepage = 'data_distribution.php';
     $this->editpage = 'edit_data_distribution.php';
     $this->itemName = 'Data Distribution';
+  }
+  
+  public function isCategorical()
+  // --------------------------------------------------------------------------
+  {
+    if ($this->name == refDataDistribution::CATEGORICAL)
+    {
+      return True;
+    }
+    return False;
   }
   
 }

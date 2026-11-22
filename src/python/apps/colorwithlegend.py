@@ -42,7 +42,7 @@ parser.add_argument("--legend_rowid", type=int, default=None, help="Legend rowid
 parser.add_argument("-lrowid", "--layer_rowid_fk", type=int, default=0, help="Layer rowid.")
 parser.add_argument("-hl", "--header_lines", type=int, default=0, help="The number of header lines to skip.")
 parser.add_argument("-a_nodata", "--nodata_value", type=int, default=255, help="Nodata value, used to color values.")
-parser.add_argument("-v", "--verbose", help="Verbose messages.", action="store_true")
+parser.add_argument("--debug", help="Debug messages.", action="store_true")
 args = parser.parse_args()
 
 def write_classes(db, layer_rowid_fk, legend, bin_count_tuple, nodata_value):
@@ -143,13 +143,13 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
     if input is None:
         print('Cannot open raster ' + args.src_dataset)
         sys.exit()
-    if args.verbose: print('Input raster opened.')
+    if args.debug: print('Input raster opened.')
     
     #
     # ----- input raster parameters used for processing
     #
     band = input.GetRasterBand(1)
-    if args.verbose:
+    if args.debug:
         print('band.XSize = %r.' % band.XSize)
         print('band.YSize = %r.' % band.YSize)
     
@@ -158,7 +158,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
     #
     data = band.ReadAsArray(0, 0, band.XSize, band.YSize)
     gdaltype = slateApp.NP2GDAL_CONVERSION[data.dtype.name]
-    if args.verbose: print('GDAL type for the input raster = %r' % gdaltype)
+    if args.debug: print('GDAL type for the input raster = %r' % gdaltype)
     
     if gdaltype <= 2:
         
@@ -166,11 +166,16 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         # ----- get bin counts for each value in the raster
         #
         bc = slateApp.get_bin_counts(data)
-        if args.verbose: slateApp.report_bin_counts(bc)
+        if args.debug: slateApp.report_bin_counts(bc)
         #
-        # ----- legend from file
+        # ----- initial different legends
         #
         legend = None
+        dbLegend = slateLegend()
+        colors = gdal.ColorTable()
+        #
+        # ----- legend from file 
+        #
         if args.legend_filename != None:
             leg = open(args.legend_filename, 'r')
             if leg is None: sys.exit("ERROR: Unable to open the legend file " + args.legend_filename + ".")
@@ -180,13 +185,15 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         # ----- legend from database
         #
         if legend == None and args.legend_rowid != None:
-            dbLegend = slateLegend()
+            if args.debug: print('Legend rowid = ' + str(args.legend_rowid))
             dbLegend.read_row_from_database_with_rowid(db, args.legend_rowid)
+            if args.debug: print('Read legend ' + dbLegend.name)
             dbLegend.load_legend_items(db)
+            dbLegend.write_to_gdal_color_table(colors)
         #
         # ----- create random legend
         #
-        if legend == None:
+        if legend == None and dbLegend.legend_items == None:
             print('TODO: Re-enable automatic legend creation.')
             # legend = create_legend(bc)
         
@@ -206,14 +213,12 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         
         #
         # ----- read and parse the legend file
-        #
-        colors = gdal.ColorTable()
-        
+        #        
         line_num = 1
         expected_code = 0
         if legend != None:
             for legend_item in legend['legend']:
-                if args.verbose: print(u"class [%r] legend [%s] color [%s]" % (code, legend_entry, color))
+                if args.debug: print(u"class [%r] legend [%s] color [%s]" % (code, legend_entry, color))
                 #
                 # ----- set the color palette entry in the image
                 #
@@ -235,7 +240,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
                     xml.write(u'\t\t<Category>{name} {desc}</Category>\n'.format(name=legend_item['charCode'], desc=legend_item['description']))
                     expected_code += 1
                 elif expected_code > legend_item['numCode']:
-                    if args.verbose: print(u"Expected code {ec} is > than the current code {cc}.".format(ec=expected_code, cc=legend_item['numCode']))
+                    if args.debug: print(u"Expected code {ec} is > than the current code {cc}.".format(ec=expected_code, cc=legend_item['numCode']))
         
         #
         # ----- create output raster
@@ -245,7 +250,7 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         if output is None:
             print('ERROR: Unable to create raster ' + args.dst_dataset)
             sys.exit()
-        if args.verbose: print('Output raster opened.')
+        if args.debug: print('Output raster opened.')
         
         #
         # ----- set output projection to the same as the input
@@ -275,17 +280,9 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         #
         # ----- write classes to the database
         #
-        if int(args.layer_rowid_fk) > 0: 
+        # if int(args.layer_rowid_fk) > 0: 
             # print('DEBUG: Before write_classes().')
-            write_classes(db, args.layer_rowid_fk, legend, bc, args.nodata_value)
-            #
-            # ----- TODO: temporary to add legend entries
-            #
-            if args.legend_rowid > 0:
-                # print('DEBUG: Before update_descriptions().')
-                sl = slateLegend()
-                # sl.debug = True
-                sl.update_descriptions(db, args.layer_rowid_fk, args.legend_rowid)
+            # write_classes(db, args.layer_rowid_fk, legend, bc, args.nodata_value)
         
         output = None
         xml = None

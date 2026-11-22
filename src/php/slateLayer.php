@@ -160,6 +160,10 @@ class slateLayer extends algaeTblBase
   protected function getFullyPathedRasterForWebMap()
   // --------------------------------------------------------------------------
   {
+    if ($this->geoprocess->isCategorical())
+    {
+      return $this->getFullyPathedFilename();
+    }
     $filename = $this->getFullyPathedColoredFilename();
     if (file_exists($filename))
     {
@@ -302,7 +306,10 @@ class slateLayer extends algaeTblBase
     #
     #
     $this->writeFileDownloadPair('Thumbnail', $this->getFullyPathedThumbnailFilename());
-    $this->writeFileDownloadPair('Colored', $this->getFullyPathedColoredFilename());
+    if (! $this->geoprocess->isCategorical())
+    {
+      $this->writeFileDownloadPair('Colored', $this->getFullyPathedColoredFilename());
+    }
     $this->writeFileDownloadPair('Overlay', $this->getFullyPathedOverlayFilename());
     algaeTable::writeTwoColumns('Calc Begin (UTC)', $this->calc_begin_utc);
     algaeTable::writeTwoColumns('Calc End (UTC)', $this->calc_end_utc);
@@ -389,7 +396,7 @@ class slateLayer extends algaeTblBase
       array('#stats_tab', 'Stats'),
       array('#map_tab', 'Map'),
       array('#classes_tab', 'Classes'),
-      array('#signatures_tab', 'Signatures'),
+      // array('#signatures_tab', 'Signatures'),
       array('#info_tab', 'Info')
       # array('#map_file_tab', 'Map File')
     ));
@@ -430,9 +437,11 @@ class slateLayer extends algaeTblBase
     //
     // ----- signatures_tab
     //
+    /**
     echo '<div id="signatures_tab">';
     // slateSignature::reportSignaturesForLayer($this->rowid);
     echo '</div>';
+    */
     //
     // ----- info_tab
     //

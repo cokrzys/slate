@@ -18,11 +18,11 @@ from algaecore import algaeCore
 from algaeapp import algaeApp
 from algaedb import algaeDB
 from algaetblbase import algaeTblBase
-from algaetblnamedobjectbase import algaeTblNamedObjectBase
 
 from slateconfig import slateConfig
 from slateapp import slateApp
 from slateproject import slateProject
+from slatelegend import slateLegend
 
 class slateLegendItem(algaeTblBase):
 
