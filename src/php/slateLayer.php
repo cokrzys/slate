@@ -391,15 +391,19 @@ class slateLayer extends algaeTblBase
     //
     // ----- initial tabs setup
     //
-    algaeForm::startTabs(array(
+    $tabs_array = (array(
       array('#overview_tab', 'Overview'),
       array('#stats_tab', 'Stats'),
-      array('#map_tab', 'Map'),
-      array('#classes_tab', 'Classes'),
+      array('#map_tab', 'Map')
       // array('#signatures_tab', 'Signatures'),
-      array('#info_tab', 'Info')
       # array('#map_file_tab', 'Map File')
     ));
+    if ($this->geoprocess->isCategorical())
+    {
+      $tabs_array[] = array('#classes_tab', 'Classes');
+    }
+    $tabs_array[] = array('#info_tab', 'Info');
+    algaeForm::startTabs($tabs_array);
     //
     // ----- overview_tab
     //
@@ -430,10 +434,13 @@ class slateLayer extends algaeTblBase
     //
     // ----- classes_tab
     //
-    echo '<div id="classes_tab">';
-    $c = new slateClass();
-    $c->reportRecordsForLayer($this->rowid);
-    echo '</div>';
+    if ($this->geoprocess->isCategorical())
+    {
+      echo '<div id="classes_tab">';
+      $c = new slateClass();
+      $c->reportRecordsForLayer($this->rowid);
+      echo '</div>';
+    }
     //
     // ----- signatures_tab
     //

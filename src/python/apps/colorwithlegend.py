@@ -278,16 +278,19 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         xml.write(u'</PAMDataset>\n')
         
         #
-        # ----- write classes to the database
+        # ----- write classes
         #
-        # if int(args.layer_rowid_fk) > 0: 
-            # print('DEBUG: Before write_classes().')
-            # write_classes(db, args.layer_rowid_fk, legend, bc, args.nodata_value)
-        
+        if int(args.layer_rowid_fk) > 0: 
+            if legend != None:
+                write_classes(db, args.layer_rowid_fk, legend, bc, args.nodata_value)
+            elif dbLegend.get_num_items() > 0:
+                dbLegend.write_classes(db, args.layer_rowid_fk, bc, args.nodata_value)
+            else:
+                write_classes(db, args.layer_rowid_fk, legend, bc, args.nodata_value)
         output = None
         xml = None
     else:
-        print('ERROR: Only Byte or UInt16 TIFF files support color tables.')
+        algaeApp.error_message('Only Byte or UInt16 TIFF files support color tables.')
         
     input = None
     

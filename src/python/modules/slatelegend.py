@@ -23,6 +23,7 @@ from algaetblnamedobjectbase import algaeTblNamedObjectBase
 from slateconfig import slateConfig
 from slateapp import slateApp
 from slateproject import slateProject
+from slateclass import slateClass
 
 class slateLegend(algaeTblNamedObjectBase):
 
@@ -48,6 +49,14 @@ class slateLegend(algaeTblNamedObjectBase):
         if not db.execute_query(sql, {'layer_rowid_fk':layer_rowid_fk, 'legend_rowid_fk':legend_rowid_fk}):
             algaeApp.error_message('Problem updating the legend descriptions.')
             print('  layer_rowid_fk = ' + str(layer_rowid_fk) + ', legend_rowid_fk = ' + str(legend_rowid_fk))
+            
+    def get_num_items(self):
+    # ------------------------------------------------------------------------------
+        """
+        """
+        if self.legend_items != None:
+            return len(self.legend_items)
+        return 0
             
     def load_legend_items(self, db):
     # ------------------------------------------------------------------------------
@@ -81,6 +90,46 @@ class slateLegend(algaeTblNamedObjectBase):
                 if self.debug:
                     print('Index %r = rgb %r %r %r for html %r' % (item.int_code, rgb[0], rgb[1], rgb[2], item.html_color))
                 color_table.SetColorEntry(item.int_code, (rgb[0], rgb[1], rgb[2]))
+            
+    def write_classes(self, db, layer_rowid_fk, bin_counts, nodata_value):
+    # ------------------------------------------------------------------------------
+        """
+        """
+        sc = slateClass()
+        sc.delete_classes(db, layer_rowid_fk)
+        #
+        # ----- loop and write each class
+        #
+        for i in range(0, len(bin_counts[0])):
+            sc.layer_rowid_fk = layer_rowid_fk
+            sc.raster_value = int(bin_counts[0][i])
+            sc.num_values = int(bin_counts[1][i])
+            
+            matched = False
+            for item in self.legend_items:
+                if item.int_code == sc.raster_value:
+                    matched = True
+                    if item.text_code != None:
+                        sc.code = item.text_code
+                    else:
+                        sc.code = str(sc.raster_value)
+                    sc.description = item.description
+                    sc.html_color = item.html_color
+                    sc.write(db)
+                    break
+            
+            if not matched and sc.raster_value == nodata_value:
+                sc.code = slateApp.NODATA_DESC
+                sc.description = 'NoData'
+                sc.html_color = slateApp.rgb_to_html(slateApp.NODATA_COLOR[0], slateApp.NODATA_COLOR[1], slateApp.NODATA_COLOR[2])
+                sc.write(db)
+            elif not matched:
+                sc.code = str(sc.raster_value)
+                sc.html_color = slateApp.get_random_html_color()
+                sc.write(db)
+                print('WARNING: Legend not found for raster value %r.' % sc.raster_value)
+                
+        
 
             
         

@@ -96,10 +96,10 @@ $WORKING_FOLDER"mask_legend.json"
 echo -e "\nColoring and making classes."
 "$SLATE_PYTHON_APPS_FOLDER"colorwithlegend.py \
 -lrowid $(jq -r '.layerRowid' $PARMS) \
+--legend_filename $WORKING_FOLDER"mask_legend.json" \
 -a_nodata $NODATA_BYTE \
 $WORKING_FOLDER"_t1.tiff" \
-"$DEST" \
-$WORKING_FOLDER"mask_legend.json"
+"$DEST"
 
 #
 # ----- make thumbnails
