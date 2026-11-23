@@ -298,7 +298,7 @@ class slateRunGeoprocesses:
                     if self.core_process != None:
                         self.core_process.update_progress(self.db, pct_finished)
                         if pct_finished == 100.0:
-                            msg = 'Finished running ' + str(len(data)) + ' geoprocess(es) at resolution ' + self.resolution.name + '.'
+                            msg = 'Finished running ' + str(len(data)) + ' geoprocess(es) at a resolution of ' + self.resolution.name + '.'
                             self.core_process.update_message(self.db, msg)
                     
         

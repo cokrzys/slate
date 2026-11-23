@@ -70,6 +70,7 @@ class slateApp extends algaeApp
     require_once 'slateGeoProcProximity.php';
     require_once 'slateGeoProcProximityFromPostGIS.php';
     require_once 'slateGeoProcSignatures.php';
+    require_once 'slateGeoProcQuantifyRelationships.php';
     require_once 'slateLayer.php';
     require_once 'slateClass.php';
     require_once 'slatePlace.php';

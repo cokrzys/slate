@@ -33,8 +33,8 @@
   //
   // ----- page content
   //
-  $m = new slateGeoProcSignatures();
-  $m->processForm();
+  $o = new slateGeoProcSignatures();
+  $o->processForm();
   //
   // ----- finish up and close page
   //

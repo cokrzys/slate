@@ -68,7 +68,7 @@ class slateProximityStats():
             
         min = np.nanmin(l.data)
         max = np.nanmax(l.data)
-        hist = None
+        hist = []
         bin_edges = None
         
         if l.geoprocess.data_distribution.name == 'Proximity':
@@ -86,7 +86,7 @@ class slateProximityStats():
         else:
             print('Unsupported distribution type ' + l.geoprocess.data_distribution.name + '.')
         
-        if hist != None and len(hist) > 0:
+        if len(hist) > 0:
             if args.debug:
                 print('Bin Edges:', bin_edges)
                 print('Histogram Counts:', hist)
