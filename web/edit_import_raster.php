@@ -27,7 +27,7 @@
   //
   // ----- initial the html page
   //
-  $title = 'Re-Project a Raster';
+  $title = 'Import Raster';
   $app->startPage($title);
   $app->showHeader($title);
   //
