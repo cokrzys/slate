@@ -21,6 +21,8 @@ RESOLUTION_NAME=$(jq '.resolutionName' $PARMS)
 RESOLUTION_FOLDER=$(jq '.resolutionFolder' $PARMS)
 NODATA_BYTE=$(jq '.noDataByte' $PARMS)
 NODATA_FLOAT32=$(jq '.noDataFloat32' $PARMS)
+OUTPUT_DATA_TYPE=$(jq '.outputDataType' $PARMS)
+OUTPUT_NODATA=$(jq -r '.outputNoDataValue' $PARMS)
 # PROCESS_ROWID=$(jq '.process.rowid' $PARMS)
 
 #
@@ -33,6 +35,7 @@ SLATE_PALETTES_FOLDER=`sed -e 's/^"//' -e 's/"$//' <<<"$SLATE_PALETTES_FOLDER"`
 WORKING_FOLDER=`sed -e 's/^"//' -e 's/"$//' <<<"$WORKING_FOLDER"`
 RESOLUTION_NAME=`sed -e 's/^"//' -e 's/"$//' <<<"$RESOLUTION_NAME"`
 RESOLUTION_FOLDER=`sed -e 's/^"//' -e 's/"$//' <<<"$RESOLUTION_FOLDER"`
+OUTPUT_DATA_TYPE=`sed -e 's/^"//' -e 's/"$//' <<<"$OUTPUT_DATA_TYPE"`
 
 
 

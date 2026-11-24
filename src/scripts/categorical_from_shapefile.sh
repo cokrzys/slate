@@ -37,69 +37,90 @@ CODE_FIELD=$(jq -r '.attribute_field' $PARMS)
 echo "Input filename = "$SOURCE
 echo "Output filename = "$DEST
 
-echo $WORKING_FOLDER"_t1.shp"
+#
+# ----- project to study area coordinate system
+#
+echo -e "\nRe-projecting."
+  ogr2ogr \
+  -t_srs 'EPSG:'$SRID \
+  -overwrite \
+  -f 'ESRI Shapefile' $WORKING_FOLDER"_t0.shp" \
+  "$SOURCE"
 
 #
 # ----- code categorical values
+#       !!!!!!!!!! TODO CHANGE --legend_rowid_fk 10 \
 #
 echo -e "\nCreating numeric codes for categorical values."
-"$SLATE_PYTHON_APPS_FOLDER"addcatcodes.py \
--af $(jq -r '.attribute_field' $PARMS) \
--ot Byte \
-"$SOURCE" \
-$WORKING_FOLDER"_t1.shp"
-
-exit
+  "$SLATE_PYTHON_APPS_FOLDER"addcatcodes.py \
+  -af $(jq -r '.attribute_field' $PARMS) \
+  -ot $OUTPUT_DATA_TYPE \
+  --legend_rowid_fk 10 \
+  $WORKING_FOLDER"_t0.shp" \
+  $WORKING_FOLDER"_t1.shp"
 
 #
 # ----- convert vector to raster
 # 
 echo -e "\nConverting shapefile to raster."
-gdal_rasterize \
--a 'slate_code' \
--ot $OUTPUT_TYPE \
--a_nodata $(jq '.geoProcess.outputType.nodataValue' $PARMS) \
--init $(jq '.geoProcess.outputType.nodataValue' $PARMS) \
--a_srs 'EPSG:'$SRID \
--te $XMIN $YMIN $XMAX $YMAX \
--tr $RESOLUTION $RESOLUTION \
--l '_t1' \
-$FOLDER"_t1.shp" \
-$FOLDER"_t2.tiff"
+  gdal_rasterize \
+  -a 'slate_code' \
+  -ot $OUTPUT_DATA_TYPE \
+  -a_nodata ${OUTPUT_NODATA%.*} \
+  -init ${OUTPUT_NODATA%.*} \
+  -a_srs 'EPSG:'$SRID \
+  -te $XMIN $YMIN $XMAX $YMAX \
+  -tr $RESOLUTION $RESOLUTION \
+  -l '_t1' \
+  $WORKING_FOLDER"_t1.shp" \
+  $WORKING_FOLDER"_t2.tiff"
 
 #
 # ----- apply study area mask
 #
 echo -e "\nApplying study area mask."
-"$SLATE_PYTHON_APPS_FOLDER"mask.py \
-$(jq -r '.studyArea.maskFilename' $PARMS) \
-$FOLDER"_t2.tiff" \
-$FOLDER"_t3.tiff" \
--ov $(jq '.geoProcess.outputType.nodataValue' $PARMS) \
--nodata $(jq '.geoProcess.outputType.nodataValue' $PARMS)
+  "$SLATE_PYTHON_APPS_FOLDER"mask.py \
+  $(jq -r '.maskFilename' $PARMS) \
+  $WORKING_FOLDER"_t2.tiff" \
+  $WORKING_FOLDER"_t3.tiff" \
+  -mv $NODATA_BYTE \
+  -ov ${OUTPUT_NODATA%.*} \
+  -nodata ${OUTPUT_NODATA%.*}
 
 #
 # ----- color and make classes
+#       !!!!!!!!!! TODO CHANGE --legend_rowid_fk 10 \
 #
-echo -e "\nColoring final raster and writing classes to the database."
-"$SLATE_PYTHON_APPS_FOLDER"color_and_make_classes.py \
--lrowid $(jq -r '.categoricalParameters.layer.rowid' $PARMS) \
--a_nodata $(jq '.geoProcess.outputType.nodataValue' $PARMS) \
-$FOLDER"_t3.tiff" \
-"$DEST" \
-$FOLDER"$LEGEND_FILENAME"
+echo -e "\nCreating classes and making a colored raster."
+  "$SLATE_PYTHON_APPS_FOLDER"colorwithlegend.py \
+  -lrowid $(jq -r '.layerRowid' $PARMS) \
+  --legend_rowid 10 \
+  "${ARRAY_OPTIONAL_PARAMETERS[@]}" \
+  $WORKING_FOLDER"_t3.tiff" \
+  "$DEST"
 
 #
 # ----- make thumbnails
 #
 if [ -f "$DEST" ]
 then
-
-  "$SLATE_SCRIPTS"/make_thumbnails.sh $PARMS "$DEST"
-  
+  "$SLATE_SCRIPTS_FOLDER"make_thumbnails.sh $PARMS "$DEST" "$DEST"
 fi
+
+#
+# ----- delete temporary files
+#
+"$SLATE_SCRIPTS_FOLDER"delete_temporary_files.sh $WORKING_FOLDER
+
+#
+# ----- update layer calc end timestamp
+#
+"$SLATE_PYTHON_APPS_FOLDER"updatelayerfiledates.py \
+  --layer_rowid_fk $(jq -r '.layerRowid' $PARMS) \
+  --column end
+
 
 #
 # ----- show environment
 #
-"$SLATE_SCRIPTS"/show_environment.sh
+"$SLATE_SCRIPTS_FOLDER"show_environment.sh $PARMS

@@ -138,7 +138,6 @@ class slateLegend(algaeTblNamedObjectBase):
         self.record_status.read_row_from_database_with_name(db, 'Active');
         self.html_color = '#000000';
         if self.write(db):
-            if self.debug: print('DEBUG: Legend ' + name + ' added.')
             int_code = 1
             for text_code in unique_values:
                 li = slateLegendItem()
@@ -150,7 +149,16 @@ class slateLegend(algaeTblNamedObjectBase):
                 li.html_color = algaeCore.get_random_html_color()
                 li.write(db)
                 int_code += 1
-                
+            print('Legend ' + self.name + ' added or updated.')
+            
+    def get_int_code(self, text_code_to_match, default = 254):
+    # ------------------------------------------------------------------------------
+        if self.get_num_items() > 0:
+            for item in self.legend_items:
+                if item.text_code == text_code_to_match:
+                    print('Matched text code ' + text_code_to_match + ' to integer code ' + str(item.int_code))
+                    return item.int_code
+        return default
                 
         
                 

@@ -16,6 +16,7 @@ import shapefile
 import subprocess
 import datetime
 import inspect
+from shutil import copyfile
 
 import numpy as np
 
@@ -85,7 +86,7 @@ class slateCategoryCoder:
         #
         w = shapefile.Writer(self.args.output_file, shapeType=r.shapeType)
         w.field(code_field[0], code_field[1], code_field[2], code_field[3])
-        w.field('slate_code', 'N')
+        w.field('slate_code', 'N', size=5, decimal=0)
         
         #
         # ----- get unique sorted list of attribute values
@@ -101,27 +102,29 @@ class slateCategoryCoder:
         if not slateApp.in_gdal_unit_range(self.args.output_type, len(unique)):
             print("ERROR: Number of unique values is greater than the " + self.args.output_type + " output data range.")
         
+        sl = slateLegend()
+        sl.debug = self.debug
         if self.args.legend_rowid_fk == None:
-            sl = slateLegend()
-            sl.debug = self.debug
+            print('Making a new legend.')
             filename =  os.path.basename(self.args.input_file)
             filename_parts = os.path.splitext(filename)
             legend_name = filename_parts[0] + ' | ' + self.args.attribute_field
-            print(legend_name)
             sl.make_legend(self.db, legend_name, unique)
+            sl.load_legend_items(self.db)
+        else:
+            print('Loading from existing legend.')
+            sl.read_row_from_database_with_rowid(self.db, self.args.legend_rowid_fk)
+            sl.load_legend_items(self.db)
+            
+        if sl.get_num_items == 0:
+            algaeApp.error_message('No legend items, all polygons will be given the same value.')
         
         #
         # ----- loop and create output shapefile
         #
         for shaperec in r.iterShapeRecords():
-            w.record(shaperec.record[self.args.attribute_field], unique.index(str(shaperec.record[self.args.attribute_field])) + 1)
+            w.record(shaperec.record[self.args.attribute_field], sl.get_int_code(shaperec.record[self.args.attribute_field]))
             w.shape(shaperec.shape)
-            
-            
-        #
-        # ----- create the legend file
-        #
-        # create_legend(self.args.output_legend_file, unique, style_list)
         
         #
         # ----- close applicable files
@@ -131,11 +134,10 @@ class slateCategoryCoder:
         #
         # ----- copy the projection file if it exists
         #
-#         input_prj_filename = os.path.splitext(self.args.input_file)[0] + '.prj'
-#         
-#         if os.path.isfile(input_prj_filename):
-#             output_prj_filename = os.path.splitext(self.args.output_file)[0] + '.prj'
-#             copyfile(input_prj_filename, output_prj_filename)
+        input_prj_filename = os.path.splitext(self.args.input_file)[0] + '.prj'
+        if os.path.isfile(input_prj_filename):
+            output_prj_filename = os.path.splitext(self.args.output_file)[0] + '.prj'
+            copyfile(input_prj_filename, output_prj_filename)
 
         
         

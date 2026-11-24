@@ -39,4 +39,5 @@ echo 'YMAX                      : '$YMAX
 echo 'RESOLUTION                : '$RESOLUTION
 echo 'RESOLUTION_FOLDER         : '$RESOLUTION_FOLDER
 echo 'RESOLUTION_NAME           : '$RESOLUTION_NAME
+echo 'OUTPUT_DATA_TYPE          : '$OUTPUT_DATA_TYPE
 echo '================================================================================='
