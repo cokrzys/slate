@@ -46,16 +46,24 @@ echo -e "\nRe-projecting."
   -overwrite \
   -f 'ESRI Shapefile' $WORKING_FOLDER"_t0.shp" \
   "$SOURCE"
+  
+#
+# ----- setup optional legend_rowid_fk parameter
+#
+ARRAY_OPTIONAL_PARAMETERS=()
+if [ "$(jq -r '.legend_rowid_fk' $PARMS)" ] && [ "$(jq -r '.legend_rowid_fk' $PARMS)" != '' ]; then
+  ARRAY_OPTIONAL_PARAMETERS+=( --legend_rowid_fk )
+  ARRAY_OPTIONAL_PARAMETERS+=( "$(jq -r '.legend_rowid_fk' $PARMS)" )
+fi
 
 #
 # ----- code categorical values
-#       !!!!!!!!!! TODO CHANGE --legend_rowid_fk 10 \
 #
 echo -e "\nCreating numeric codes for categorical values."
   "$SLATE_PYTHON_APPS_FOLDER"addcatcodes.py \
   -af $(jq -r '.attribute_field' $PARMS) \
   -ot $OUTPUT_DATA_TYPE \
-  --legend_rowid_fk 10 \
+  "${ARRAY_OPTIONAL_PARAMETERS[@]}" \
   $WORKING_FOLDER"_t0.shp" \
   $WORKING_FOLDER"_t1.shp"
 
@@ -86,15 +94,22 @@ echo -e "\nApplying study area mask."
   -mv $NODATA_BYTE \
   -ov ${OUTPUT_NODATA%.*} \
   -nodata ${OUTPUT_NODATA%.*}
+  
+#
+# ----- setup optional legend_rowid_fk parameter
+#
+ARRAY_OPTIONAL_PARAMETERS=()
+if [ "$(jq -r '.legend_rowid_fk' $PARMS)" ] && [ "$(jq -r '.legend_rowid_fk' $PARMS)" != '' ]; then
+  ARRAY_OPTIONAL_PARAMETERS+=( --legend_rowid_fk )
+  ARRAY_OPTIONAL_PARAMETERS+=( "$(jq -r '.legend_rowid_fk' $PARMS)" )
+fi
 
 #
 # ----- color and make classes
-#       !!!!!!!!!! TODO CHANGE --legend_rowid_fk 10 \
 #
 echo -e "\nCreating classes and making a colored raster."
   "$SLATE_PYTHON_APPS_FOLDER"colorwithlegend.py \
   -lrowid $(jq -r '.layerRowid' $PARMS) \
-  --legend_rowid 10 \
   "${ARRAY_OPTIONAL_PARAMETERS[@]}" \
   $WORKING_FOLDER"_t3.tiff" \
   "$DEST"

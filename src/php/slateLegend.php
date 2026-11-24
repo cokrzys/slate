@@ -39,4 +39,11 @@ class slateLegend extends algaeTblNamedObjectBase
     $this->itemName = 'Legend';
   }
   
+  public static function select($id, $default, $required = False)
+  // --------------------------------------------------------------------------
+  {
+    $sl = new slateLegend();
+    return algaeForm::selectWithTableAndFieldWithRowid($sl->table_name, 'name', $id, $default, $required, [], 600);
+  }
+  
 }

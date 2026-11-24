@@ -860,7 +860,7 @@ class slateGeoProcess extends algaeTblBase
           {
             if ($this->update())
             {
-              header("Location: {$this->browsepage}?message=" . urlencode('GeoProcess ' . $this->name . ' updated.'));
+              header("Location: {$this->homepage}?rowid=" . strval($this->rowid) . "&message=" . urlencode('GeoProcess ' . $this->name . ' updated.'));
             }
             else
             {
@@ -874,7 +874,7 @@ class slateGeoProcess extends algaeTblBase
           {
             if ($this->insert())
             {
-              header("Location: {$this->browsepage}?message=" . urlencode('GeoProcess ' . $this->name . ' added.'));
+              header("Location: {$this->homepage}?rowid=" . strval($this->rowid) . "&message=" . urlencode('GeoProcess ' . $this->name . ' added.'));
             }
             else
             {

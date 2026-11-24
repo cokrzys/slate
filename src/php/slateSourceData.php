@@ -379,6 +379,7 @@ class slateSourceData extends algaeTblBase
     algaeTable::writeTwoColumns('Name', '<b>' . $this->name . '</b>', False);
     algaeTable::writeTwoColumns('Folder', $this->getDirectory());
     algaeTable::writeTwoColumns('Data Group', $this->data_group->getHomepageLink($this->data_group->name, algaeAccess::ROLE_READ, False, null, True), False);
+    algaeTable::writeTwoColumns('URL', algaeCore::getStringWithLinks($this->url), False);
     algaeTable::writeTwoColumns('Description', algaeCore::getStringWithLinks($this->description), False);
     algaeTable::writeTwoColumns('Status', algaeCore::getColorBlock($this->record_status->html_color, True, $this->record_status->name), False);
     algaeTable::writeTwoColumns('Added', $this->timestamp_loaded_utc);

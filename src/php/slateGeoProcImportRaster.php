@@ -107,8 +107,7 @@ class slateGeoProcImportRaster extends slateGeoprocess
     algaeTable::writeTwoColumns('Output Prefix', algaeForm::inputText('output_prefix', $this->output_prefix, 40, algaeForm::REQUIRED) . 
       $app->getDetailString($app->getFilenameTemplate()), False);
     
-    algaeTable::writeTwoColumns('Legend',
-      algaeForm::selectWithTableAndFieldWithRowid('sp.legend', 'name', 'legend_rowid_fk', $this->legend->name), False);
+    algaeTable::writeTwoColumns('Legend', slateLegend::select('legend_rowid_fk', $this->legend->name, False), False);
     
     $resampling_methods = array('average', 'bilinear', 'cubic', 'cubicspline', 'lanczos', 'max', 'med', 'min', 'mode', 'near', 'q1', 'q3', 'rms', 'sum');
     algaeTable::writeTwoColumns('Resampling Method', algaeForm::selectWithArray('resampling_method', $this->resampling_method, $resampling_methods), False);

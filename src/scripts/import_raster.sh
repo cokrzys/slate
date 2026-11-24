@@ -127,7 +127,7 @@ ARRAY_OPTIONAL_PARAMETERS=()
 
 # legend rowid
 if [ "$(jq -r '.legend_rowid_fk' $PARMS)" ] && [ "$(jq -r '.legend_rowid_fk' $PARMS)" != '' ]; then
-  ARRAY_OPTIONAL_PARAMETERS+=( --legend_rowid )
+  ARRAY_OPTIONAL_PARAMETERS+=( --legend_rowid_fk )
   ARRAY_OPTIONAL_PARAMETERS+=( "$(jq -r '.legend_rowid_fk' $PARMS)" )
 fi
 

@@ -38,7 +38,7 @@ parser = argparse.ArgumentParser(description='Color a categorical image using a 
 parser.add_argument("src_dataset", help="The source dataset name.")
 parser.add_argument("dst_dataset", help="The destination filename.")
 parser.add_argument("--legend_filename", default=None, help="Legend filename.")
-parser.add_argument("--legend_rowid", type=int, default=None, help="Legend rowid from sp.legend.")
+parser.add_argument("--legend_rowid_fk", type=int, default=None, help="Legend rowid from sp.legend.")
 parser.add_argument("-lrowid", "--layer_rowid_fk", type=int, default=0, help="Layer rowid.")
 parser.add_argument("-hl", "--header_lines", type=int, default=0, help="The number of header lines to skip.")
 parser.add_argument("-a_nodata", "--nodata_value", type=int, default=255, help="Nodata value, used to color values.")
@@ -184,9 +184,9 @@ if db.open(app.config.app_database, app.config.database_port, app.config.databas
         #
         # ----- legend from database
         #
-        if legend == None and args.legend_rowid != None:
-            if args.debug: print('Legend rowid = ' + str(args.legend_rowid))
-            dbLegend.read_row_from_database_with_rowid(db, args.legend_rowid)
+        if legend == None and args.legend_rowid_fk != None:
+            if args.debug: print('Legend rowid = ' + str(args.legend_rowid_fk))
+            dbLegend.read_row_from_database_with_rowid(db, args.legend_rowid_fk)
             if args.debug: print('Read legend ' + dbLegend.name)
             dbLegend.load_legend_items(db)
             dbLegend.write_to_gdal_color_table(colors)
