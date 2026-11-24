@@ -129,6 +129,31 @@ class slateLegend(algaeTblNamedObjectBase):
                 sc.write(db)
                 print('WARNING: Legend not found for raster value %r.' % sc.raster_value)
                 
+    def make_legend(self, db, name, unique_values):
+    # ------------------------------------------------------------------------------
+        """
+        """
+        from slatelegenditem import slateLegendItem
+        self.name = name
+        self.record_status.read_row_from_database_with_name(db, 'Active');
+        self.html_color = '#000000';
+        if self.write(db):
+            if self.debug: print('DEBUG: Legend ' + name + ' added.')
+            int_code = 1
+            for text_code in unique_values:
+                li = slateLegendItem()
+                li.legend.rowid = self.rowid
+                li.int_code = int_code
+                li.text_code = text_code
+                li.legend.rowid = self.rowid
+                li.sort_order = li.int_code
+                li.html_color = algaeCore.get_random_html_color()
+                li.write(db)
+                int_code += 1
+                
+                
+        
+                
         
 
             

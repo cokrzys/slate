@@ -42,7 +42,7 @@ parser.add_argument("--legend_rowid", type=int, default=None, help="Legend rowid
 parser.add_argument("-lrowid", "--layer_rowid_fk", type=int, default=0, help="Layer rowid.")
 parser.add_argument("-hl", "--header_lines", type=int, default=0, help="The number of header lines to skip.")
 parser.add_argument("-a_nodata", "--nodata_value", type=int, default=255, help="Nodata value, used to color values.")
-parser.add_argument("--debug", help="Debug messages.", action="store_true")
+parser.add_argument("-debug", help="Debug messages.", action="store_true")
 args = parser.parse_args()
 
 def write_classes(db, layer_rowid_fk, legend, bin_count_tuple, nodata_value):
