@@ -144,6 +144,13 @@ class slatePlace extends algaeTblNamedObjectBase
     $study_area->readRowFromDatabaseWithProjectRowid($app->getCurrentProjectRowid());
     $study_area->setMapBounds($map);
     $map->startMapFile();
+    
+    $study_area->addToMap($map);
+    
+    $places_layer = new algaeMapLayerPostGIS('Places', 'places', 1, 4326);
+    $places_layer->sql = 'SELECT rowid, name, ST_Transform(location::geometry, 4326) AS geom FROM sp.place';
+    $map->addLayer($places_layer);
+    
     $map->endMapFile();
     $map->show();
     echo '</div>';

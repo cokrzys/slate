@@ -693,6 +693,16 @@ class slateStudyArea extends algaeTblBase
     }
   }
   
+  public function addToMap($map)
+  // --------------------------------------------------------------------------
+  {
+    if (is_file($this->source_file->filename))
+    {
+      $map->addShapefileLayer($this->source_file->filename,
+        '3DPolygon', 'Study Area', 'study_area', 1, $this->srid_fk);
+    }
+  }
+  
 }
 
 

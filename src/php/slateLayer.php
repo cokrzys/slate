@@ -422,6 +422,12 @@ class slateLayer extends algaeTblBase
     $map->startMapFile();
     $name = pathinfo($this->filename, PATHINFO_FILENAME);
     $map->addRasterLayer($this->getFullyPathedRasterForWebMap(), $name, $name, 1, $study_area->srid_fk, 70);
+    $study_area->addToMap($map);
+    
+    $places_layer = new algaeMapLayerPostGIS('Places', 'places', 1, 4326);
+    $places_layer->sql = 'SELECT rowid, name, ST_Transform(location::geometry, 4326) AS geom FROM sp.place';
+    $map->addLayer($places_layer);
+    
     $map->endMapFile();
     $map->show();
     echo '</div>';
