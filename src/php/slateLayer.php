@@ -559,8 +559,7 @@ class slateLayer extends algaeTblBase
     if ($val != null)
     {
       $str = '';
-      if ( ($this->geoprocess->data_type->name == 'Categorical') || 
-           ($this->geoprocess->data_type->name == 'Mask') )
+      if ($this->geoprocess->isCategorical())
       {
         $str = algaeCore::getFormattedNumber($val, 0, null, '');
         $c = new slateClass();

@@ -232,12 +232,20 @@ class slateApp extends algaeApp
   
   /**
    * Get the default resolution name.
-   * @return string Typically 'Low' or 'High'.
    */
   public function getResolutionName()
   // --------------------------------------------------------------------------
   {
     return $this->getResolutionParameter(slateApp::RESOLUTION_NAME);
+  }
+  
+  /**
+   * Get the default resolution rowid.
+   */
+  public function getResolutionRowid()
+  // --------------------------------------------------------------------------
+  {
+    return $this->getResolutionParameter(slateApp::RESOLUTION_ROWID);
   }
   
   public function getResolutionFolder()

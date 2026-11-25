@@ -112,26 +112,6 @@ class slatePlace extends algaeTblNamedObjectBase
   }
   
   /**
-   * Get menu options for a file.  Actions depend on the file type.
-   * @param string $filename Filename to get actions for.
-   */
-  protected function getFileActions($filename)
-  // --------------------------------------------------------------------------
-  {
-    global $app;
-    $html = '';
-    $html = algaeFile::getDownloadLink($filename, 'Download', False);
-    /*
-    if ($this->isTextFile($filename))
-    {
-      $html .= $app->settings->menuSeparator;
-      $html .= $app->getPageLink('view_text_file.php?filename=' . urlencode($filename), 'View', algaeAccess::ROLE_READ, $app->settings->appName, '', True);
-    }
-    */
-    return $html;
-  }
-  
-  /**
    * Report details for the object.
    * {@inheritDoc}
    * @see algaeTblBase::reportDetails()
@@ -140,15 +120,14 @@ class slatePlace extends algaeTblNamedObjectBase
   // --------------------------------------------------------------------------
   {
     global $app;
-    // $map = new algaeMap();
     //
     // ----- initial tabs setup
     //
     algaeForm::startTabs(array(
       array('#overview_tab', 'Overview'),
       array('#map_tab', 'Map'),
-      array('#signature_tab', 'Signature'),
-      array('#files_tab', 'Files')
+      array('#signature_tab', 'Signature')
+      // array('#files_tab', 'Files')
     ));
     //
     // ----- overview_tab
@@ -160,16 +139,13 @@ class slatePlace extends algaeTblNamedObjectBase
     // ----- map_tab
     //
     echo '<div id="map_tab">';
-    /*    
+    $map = new algaeMap();
     $study_area = new slateStudyArea();
     $study_area->readRowFromDatabaseWithProjectRowid($app->getCurrentProjectRowid());
     $study_area->setMapBounds($map);
     $map->startMapFile();
-    $name = pathinfo($this->filename, PATHINFO_FILENAME);
-    $map->addRasterLayer($this->getFullyPathedRasterForWebMap(), $name, $name, 1, $study_area->srid_fk, 70);
     $map->endMapFile();
     $map->show();
-    */
     echo '</div>';
     //
     // ----- signature_tab
@@ -181,9 +157,11 @@ class slatePlace extends algaeTblNamedObjectBase
     //
     // ----- files_tab
     //
+    /*
     echo '<div id="files_tab">';
     slateFolder::reportFiles($this->getDirectory());
     echo '</div>';
+    */
     //
     // ----- end tabs
     //

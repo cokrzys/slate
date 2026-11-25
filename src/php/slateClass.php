@@ -63,9 +63,9 @@ class slateClass extends algaeTblBase
   public function readRowFromDatabaseWithLayerAndValue($layer_rowid_fk, $val)
   // --------------------------------------------------------------------------
   {
-    $sql = $this->getSQL();
+    $sql = $this->get_sql();
     $sql .= " WHERE {$this->table_name}.layer_rowid_fk = $1 AND {$this->table_name}.raster_value = $2";
-    $this->readRowFromDatabaseWithSQL($sql, array($layer_rowid_fk, intval($val)));
+    $this->read_row_from_database_with_sql($sql, array($layer_rowid_fk, intval($val)));
     if ($this->rowid > 0)
     {
       return True;
