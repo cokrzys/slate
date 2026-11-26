@@ -83,22 +83,24 @@ echo -e "\nRe-projecting."
   -f 'ESRI Shapefile' $WORKING_FOLDER"_t0.shp" \
   "$SOURCE"
 
+"$SLATE_SCRIPTS_FOLDER"shapefile_to_raster.sh $PARMS
+
 #
 # ----- convert vector to raster
 # 
-echo -e "\nConverting shapefile to raster."
-  gdal_rasterize \
-  -burn 1 \
-  -ot Byte \
-  -a_nodata $NODATA_BYTE \
-  -init $NODATA_BYTE \
-  -a_srs 'EPSG:'$SRID \
-  -te $XMIN $YMIN $XMAX $YMAX \
-  -tr $RESOLUTION $RESOLUTION \
-  -l "_t0" \
-  "${ARRAY_OPTIONAL_PARAMETERS[@]}" \
-  $WORKING_FOLDER"_t0.shp" \
-  $WORKING_FOLDER"_t1.tiff"
+#echo -e "\nConverting shapefile to raster."
+#  gdal_rasterize \
+#  -burn 1 \
+#  -ot Byte \
+#  -a_nodata $NODATA_BYTE \
+#  -init $NODATA_BYTE \
+#  -a_srs 'EPSG:'$SRID \
+#  -te $XMIN $YMIN $XMAX $YMAX \
+#  -tr $RESOLUTION $RESOLUTION \
+#  -l "_t0" \
+#  "${ARRAY_OPTIONAL_PARAMETERS[@]}" \
+#  $WORKING_FOLDER"_t0.shp" \
+#  $WORKING_FOLDER"_t1.tiff"
 
 #
 # ----- remove temporary file if it exists
