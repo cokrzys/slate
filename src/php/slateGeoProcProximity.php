@@ -25,6 +25,7 @@ class slateGeoProcProximity extends slateGeoprocess
   public $output_prefix;
   public $filter;
   public $invert;
+  public $internal_and_external;
   
   /**
    * Constructor.
@@ -52,6 +53,7 @@ class slateGeoProcProximity extends slateGeoprocess
     $this->output_prefix = null;
     $this->filter = null;
     $this->invert = False;
+    $this->internal_and_external = False;
     $this->source = slateGeoProcProximity::VECTOR_SOURCE;
     $this->command = slateGeoProcProximity::VECTOR_COMMAND;
   }
@@ -87,6 +89,7 @@ class slateGeoProcProximity extends slateGeoprocess
       if (array_key_exists('output_prefix', $a)) { $this->output_prefix = $a['output_prefix']; }
       if (array_key_exists('max_distance', $a)) { $this->max_distance = $a['max_distance']; }
       if (array_key_exists('invert', $a)) { $this->invert = algaeCore::getBoolean($a['invert']); }
+      if (array_key_exists('internal_and_external', $a)) { $this->invert = algaeCore::getBoolean($a['internal_and_external']); }
       if (array_key_exists('filter', $a)) { $this->filter = $a['filter']; }
     }
   }
@@ -121,6 +124,7 @@ class slateGeoProcProximity extends slateGeoprocess
       $app->getDetailString($app->getFilenameTemplate()), False);
     algaeTable::writeTwoColumns('Max Distance', algaeForm::inputText('max_distance', $this->max_distance, 10), False);
     algaeTable::writeTwoColumns('Invert', algaeForm::checkbox('invert', 'invert', array(), $this->invert), False);
+    algaeTable::writeTwoColumns('Internal and External', algaeForm::checkbox('internal_and_external', 'internal_and_external', array(), $this->internal_and_external), False);
     $label = 'Filter';
     if ($this->source == slateGeoProcProximity::RASTER_SOURCE)
     {
@@ -159,6 +163,7 @@ class slateGeoProcProximity extends slateGeoprocess
     $a['output_prefix'] = $this->output_prefix;
     $a['max_distance'] = $this->max_distance;
     $a['invert'] = algaeCore::getTrueFalse($this->invert);
+    $a['internal_and_external'] = algaeCore::getTrueFalse($this->internal_and_external);
     $a['filter'] = $this->filter;
     $this->parameters = json_encode($a, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT);
   }

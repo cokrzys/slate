@@ -50,25 +50,25 @@ echo "Output filename = "$DEST
 #       https://unix.stackexchange.com/questions/444946/how-can-we-run-a-command-stored-in-a-variable
 #       https://unix.stackexchange.com/questions/29509/transform-an-array-into-arguments-of-a-command
 #
-ARRAY_OPTIONAL_PARAMETERS=()
+#ARRAY_OPTIONAL_PARAMETERS=()
 
 #
 # ----- filter with -where
 #
-if [ "$(jq -r '.filter' $PARMS)" ] && [ "$(jq -r '.filter' $PARMS)" != 'null' ]; then
-  ARRAY_OPTIONAL_PARAMETERS+=( -where )
-  WHERE=$(jq -r '.filter' $PARMS)
-  echo 'Filtering with:'
-  echo $WHERE
-  ARRAY_OPTIONAL_PARAMETERS+=( "$(jq -r '.filter' $PARMS)" )
-fi
+#if [ "$(jq -r '.filter' $PARMS)" ] && [ "$(jq -r '.filter' $PARMS)" != 'null' ]; then
+#  ARRAY_OPTIONAL_PARAMETERS+=( -where )
+#  WHERE=$(jq -r '.filter' $PARMS)
+#  echo 'Filtering with:'
+#  echo $WHERE
+#  ARRAY_OPTIONAL_PARAMETERS+=( "$(jq -r '.filter' $PARMS)" )
+#fi
 
 #
 # ----- invert
 #
-if [ $(jq '.invert' $PARMS) == '"True"' ]; then
-  ARRAY_OPTIONAL_PARAMETERS+=( -i )
-fi
+#if [ $(jq '.invert' $PARMS) == '"True"' ]; then
+#  ARRAY_OPTIONAL_PARAMETERS+=( -i )
+#fi
 
 # echo Optional parameters array length = "${#ARRAY_OPTIONAL_PARAMETERS[@]}"
 # echo "${ARRAY_OPTIONAL_PARAMETERS[*]}"
@@ -83,7 +83,11 @@ echo -e "\nRe-projecting."
   -f 'ESRI Shapefile' $WORKING_FOLDER"_t0.shp" \
   "$SOURCE"
 
-"$SLATE_SCRIPTS_FOLDER"shapefile_to_raster.sh $PARMS
+"$SLATE_SCRIPTS_FOLDER"shapefile_to_prox_raster.sh $PARMS a
+
+if [ $(jq '.internal_and_external' $PARMS) == '"True"' ]; then
+  "$SLATE_SCRIPTS_FOLDER"shapefile_to_prox_raster.sh $PARMS b
+fi
 
 #
 # ----- convert vector to raster
@@ -106,45 +110,56 @@ echo -e "\nRe-projecting."
 # ----- remove temporary file if it exists
 #       if it exists gdal_proximity will try and use it and give an error if not the same resolution
 #
-if test -e $WORKING_FOLDER"_t2.tiff"; then
-  rm $WORKING_FOLDER"_t2.tiff"
-fi
+#if test -e $WORKING_FOLDER"_t2.tiff"; then
+#  rm $WORKING_FOLDER"_t2.tiff"
+#fi
 
 #
 # ----- proximity raster, two versions with and without max distance
 #
-if [ -z "$(jq -r '.max_distance' $PARMS)" ]
-then
-  echo -e "\nCalculating proximity raster."
-  gdal_proximity.py \
-  $WORKING_FOLDER"_t1.tiff" \
-  $WORKING_FOLDER"_t2.tiff" \
-  -values 1 \
-  -distunits GEO \
-  -nodata $NODATA_FLOAT32 \
-  -of GTiff
-else
-  echo -e "\nCalculating proximity raster with max distance."
-  gdal_proximity.py \
-  $WORKING_FOLDER"_t1.tiff" \
-  $WORKING_FOLDER"_t2.tiff" \
-  -values 1 \
-  -distunits GEO \
-  -nodata $NODATA_FLOAT32 \
-  -maxdist $(jq -r '.max_distance' $PARMS) \
-  -of GTiff
-fi
+#if [ -z "$(jq -r '.max_distance' $PARMS)" ]
+#then
+#  echo -e "\nCalculating proximity raster."
+#  gdal_proximity.py \
+#  $WORKING_FOLDER"_t1.tiff" \
+#  $WORKING_FOLDER"_t2.tiff" \
+#  -values 1 \
+#  -distunits GEO \
+#  -nodata $NODATA_FLOAT32 \
+#  -of GTiff
+#else
+#  echo -e "\nCalculating proximity raster with max distance."
+#  gdal_proximity.py \
+#  $WORKING_FOLDER"_t1.tiff" \
+#  $WORKING_FOLDER"_t2.tiff" \
+#  -values 1 \
+#  -distunits GEO \
+#  -nodata $NODATA_FLOAT32 \
+#  -maxdist $(jq -r '.max_distance' $PARMS) \
+#  -of GTiff
+#fi
 
 #
 # ----- replace 0 (on the feature values)
 #
-echo -e "\nReplacing 0 values (on the feature) with 1."
-gdal_calc.py \
---overwrite \
---quiet \
--A $WORKING_FOLDER"/_t2.tiff" \
---outfile=$WORKING_FOLDER"/_t3.tiff" \
---calc="where(A>0,A,1)"
+#echo -e "\nReplacing 0 values (on the feature) with 1."
+#gdal_calc.py \
+#--overwrite \
+#--quiet \
+#-A $WORKING_FOLDER"/_t2.tiff" \
+#--outfile=$WORKING_FOLDER"/_t3.tiff" \
+#--calc="where(A>0,A,1)"
+
+MASK_INPUT="_t3a.tiff"
+if [ $(jq '.internal_and_external' $PARMS) == '"True"' ]; then
+  echo -e "\nMerging internal and external proximity rasters."
+  gdal_calc.py \
+    -A $WORKING_FOLDER"_t3a.tiff" \
+    -B $WORKING_FOLDER"_t3b.tiff" \
+    --calc="numpy.where(B > 1, B*-1, A)" \
+    --outfile=$WORKING_FOLDER"_t4.tiff"
+  MASK_INPUT="_t4.tiff"
+fi
 
 #
 # ----- apply study area mask
@@ -152,7 +167,7 @@ gdal_calc.py \
 echo -e "\nApplying study area mask."
 "$SLATE_PYTHON_APPS_FOLDER"mask.py \
 $(jq -r '.maskFilename' $PARMS) \
-$WORKING_FOLDER"_t3.tiff" \
+$WORKING_FOLDER$MASK_INPUT \
 "$DEST" \
 -mv $NODATA_BYTE \
 -ov $NODATA_FLOAT32 \
