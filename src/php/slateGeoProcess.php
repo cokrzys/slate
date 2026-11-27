@@ -97,6 +97,11 @@ class slateGeoProcess extends algaeTblBase
     // $this->available_geoprocesses[] = array('Re-Project Shapefile', 'edit_reproject_shapefile.php');
     // $this->available_geoprocesses[] = array('Similarity Model', 'edit_similarity_model.php');
     // $this->available_geoprocesses[] = array('Subset Shapefile', 'edit_subset_shapefile.php');
+    foreach ($app->config->geoprocesses_json as $item)
+    {
+      $this->available_geoprocesses[] = array($item->name, 'edit_generic_geoprocess.php');
+    }
+    sort($this->available_geoprocesses);
   }
     
   /**
@@ -601,7 +606,7 @@ class slateGeoProcess extends algaeTblBase
       // echo 'DEBUG: ', $this->study_area->rowid, '<p />';
       // echo '<input type="hidden" name="study_area_rowid_fk" value="', $this->study_area->rowid, '" />';
       echo algaeForm::selectWithArray('geoprocess', '', 
-        array_column($this->available_geoprocesses, 0), algaeForm::REQUIRED);
+        array_column($this->available_geoprocesses, 0), algaeForm::REQUIRED, 500);
       //
       // ----- end form
       //

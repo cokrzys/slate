@@ -10,6 +10,7 @@ class slateConfig extends algaeConfig
   public $places_folder;
   public $model_palette_file;
   public $projects_base_folder;
+  public $geoprocesses_json;
   
   /**
    * Constructor.
@@ -30,7 +31,7 @@ class slateConfig extends algaeConfig
     $this->config_path = $this->getAppConfigParameter($this->app_name, 'configPath');
     $this->show_query_link = True;
     //
-    // -----
+    // ----- additional slate variables
     //
     $this->projects_base_folder = '/opt/slate';
     $this->geoprocesses_folder = 'gp';
@@ -44,15 +45,15 @@ class slateConfig extends algaeConfig
     $this->annotated_suffix = '_annotated.png';
     $this->overlay_suffix = '_overlay.png';
     $this->run_geoprocesses_app = 'rungeoprocesses.py';
-    // $this->vector_data_sub_directory = 'vector';
-    // $this->raster_data_sub_directory = 'raster';
-    // $this->other_data_sub_directory = 'other';
+    $this->geoprocesses_json = array();
     //
     // ----- load detailed configuration files
     //
     if ($load_detailed_config)
     {
       $this->loadConfigFiles();
+      $this->loadJSONConfig(algaeCore::getFullPath($this->config_path, $this->app_name . '_geoprocesses.json'), 
+        $this->geoprocesses_json);
     }
   }
   
