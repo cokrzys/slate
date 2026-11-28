@@ -482,6 +482,11 @@ class slateGeoProcess extends algaeTblBase
     }
   }
   
+  protected function initFromParameters()
+  // --------------------------------------------------------------------------
+  {
+  }
+  
   /**
    * Read parameters with a geoprocess rowid on the URL.
    */
@@ -496,6 +501,7 @@ class slateGeoProcess extends algaeTblBase
       if ($this->rowid > 0)
       {
         $this->read_row_from_database_with_rowid($this->rowid);
+        $this->initFromParameters();
         if (strlen($this->command) > 0)
         {
           $this->project->read_row_from_database_with_rowid($this->project->rowid);
@@ -736,6 +742,15 @@ class slateGeoProcess extends algaeTblBase
     echo '</div>';
   }
   
+  protected function showSQLTab($id, $form)
+  // --------------------------------------------------------------------------
+  {
+    echo '<div id="', $id, '">';
+    echo '<textarea name="sql" id="sql" class="fullwidth" cols="110" rows="18">', algaeCore::toHtml($this->sql), '</textarea><p />';
+    algaeCore::addJavaScript("algaefw.makeTextareaCodeMirror('sql', 'sql', 500);");
+    echo '</div>';
+  }
+  
   /**
    * Show batch parameters tab.
    */
@@ -766,6 +781,7 @@ class slateGeoProcess extends algaeTblBase
     $mainTabId = 'main_tab';
     $batchParametersId = 'batch_parameters_tab';
     $existingRecordsId = 'existing_records_tab';
+    $sqlTabId = 'sql_tab';
     
     if (isset($_REQUEST['rowid']))
     {
@@ -783,6 +799,11 @@ class slateGeoProcess extends algaeTblBase
     // ----- setup tabs
     //
     $tabs_array = array(array('#' . $mainTabId, $this->mainTabName));
+    
+    if (property_exists($this, 'sql'))
+    {
+      $tabs_array[] = array('#' . $sqlTabId, 'SQL');
+    }
     if ($this->showBatchParametersTab)
     {
       $tabs_array[] = array('#' . $batchParametersId, 'Batch Parameters');
@@ -797,6 +818,10 @@ class slateGeoProcess extends algaeTblBase
     //
     //
     $this->showMainTabForm($mainTabId, $f);
+    if (property_exists($this, 'sql'))
+    {
+      $this->showSQLTab($sqlTabId, $f);
+    }
     if ($this->showBatchParametersTab)
     {
       $this->showBatchParametersTab($batchParametersId);

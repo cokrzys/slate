@@ -14,7 +14,8 @@
 class slateGeoProcGeneric extends slateGeoProcess
 {
   
-  public $parameters_from_dex;
+  public $parameters_from_config;
+  public $unique_id;
   
   /**
    * Constructor.
@@ -31,16 +32,39 @@ class slateGeoProcGeneric extends slateGeoProcess
   {
     parent::init();
     $this->mainTabName = 'Parameters';
-    $this->parameters_from_dex = null;
-    $this->initFromDEX();
+    $this->parameters_from_config = null;
+    $this->unique_id = null;
+    $this->initFromURLProcessName();
   }
   
-  protected function initFromDEX()
+  protected function initFromParameters()
+  // --------------------------------------------------------------------------
+  {
+    global $app;
+    $a = json_decode($this->parameters, true);
+    if ($a != null)
+    {
+      if (array_key_exists('unique_id', $a))
+      {
+        $this->unique_id = $a['unique_id'];
+        foreach ($app->config->geoprocesses_json as $item)
+        {
+          if ($item->uniqueId == $this->unique_id)
+          {
+            $this->initFromConfig($item);
+            $this->decodeParameters();
+            break;
+          }
+        }
+      }
+    }
+  }
+  
+  protected function initFromURLProcessName()
   // --------------------------------------------------------------------------
   {
     global $app;
     $urlVar = 'process';
-    echo 'DEBUG: In initFromDEX().<p />';
     if (isset($_REQUEST[$urlVar]))
     {
       $process_name = algaeForm::cleanInput($_REQUEST[$urlVar]);
@@ -48,21 +72,28 @@ class slateGeoProcGeneric extends slateGeoProcess
       {
         if ($item->name == $process_name)
         {
-          $this->parameters_from_dex = $item->parameters;
-          $this->mainTabName = $item->name;
-          $this->command = $item->command;
+          $this->initFromConfig($item);
           break;
         }
       }
-      if ($this->parameters_from_dex != null)
+    }
+  }
+  
+  protected function initFromConfig($config)
+  // --------------------------------------------------------------------------
+  {
+    $this->parameters_from_config = $config->parameters;
+    $this->mainTabName = $config->name;
+    $this->command = $config->command;
+    $this->unique_id = $config->uniqueId;
+    if ($this->parameters_from_config != null)
+    {
+      //
+      // ----- dynamically add variables to the class for each parameter
+      //
+      foreach ($this->parameters_from_config as $parameter)
       {
-        //
-        // ----- dynamically add variables to the class for each parameter
-        //
-        foreach ($this->parameters_from_dex as $parameter)
-        {
-          $this->{$parameter->controlId} = null;
-        }
+        $this->{$parameter->controlId} = null;
       }
     }
   }
@@ -76,15 +107,36 @@ class slateGeoProcGeneric extends slateGeoProcess
   // --------------------------------------------------------------------------
   {
     parent::addDerivedFieldsToForm();
-    if ( ($this->parameters_from_dex != null) && (count($this->parameters_from_dex) > 0) )
+    if ( ($this->parameters_from_config != null) && (count($this->parameters_from_config) > 0) )
     {
       echo '<p />'; 
-      foreach ($this->parameters_from_dex as $parameter)
+      foreach ($this->parameters_from_config as $parameter)
       {
         if ($parameter->type == 'textInput')
         {
           algaeTable::writeTwoColumns($parameter->prompt, 
             algaeForm::inputText($parameter->controlId, $this->{$parameter->controlId}, 40), False);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Decode parameters.
+   * {@inheritDoc}
+   * @see slateGeoprocess::decodeParameters()
+   */
+  protected function decodeParameters()
+  // --------------------------------------------------------------------------
+  {
+    $a = json_decode($this->parameters, true);
+    if ($a != null)
+    {
+      foreach ($this->parameters_from_config as $parameter)
+      {        
+        if (array_key_exists($parameter->controlId, $a))
+        {
+          $this->{$parameter->controlId} = $a[$parameter->controlId];
         }
       }
     }
@@ -100,10 +152,20 @@ class slateGeoProcGeneric extends slateGeoProcess
   {
     parent::processDerivedVariables();
     //
+    // the single quotes do not need to be escaped with trim(pg_escape_string($str))
+    // in the algaeForm::cleanInput() call below, seems like this is different from the paramaterized
+    // newer logic vs writing in-line sql like before
+    //
+    if (property_exists($this, 'sql'))
+    {
+      $this->sql = $_POST['sql'];
+    }
+    //
     // ----- write parameters to JSON so they can be saved generically with the geoprocess
     //
     $a = array();
-    foreach ($this->parameters_from_dex as $parameter)
+    $a['unique_id'] = $this->unique_id;
+    foreach ($this->parameters_from_config as $parameter)
     {
       $a[$parameter->controlId] = $this->{$parameter->controlId};
     }

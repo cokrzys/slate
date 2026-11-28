@@ -1,6 +1,7 @@
 [
   {
     "name": "Export PostGIS to Shapefile",
+    "uniqueId": "gp001",
     "command": "postgis_to_shapefile.sh",
     "description": "Export PostGIS data to a shapefile using a SQL statement.",
     "parameters": 

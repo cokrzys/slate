@@ -96,8 +96,10 @@ class slateGeoProcProximityFromPostGIS extends slateGeoprocess
     // in the algaeForm::cleanInput() call below, seems like this is different from the paramaterized
     // newer logic vs writing in-line sql like before
     //
-    $this->sql = $_POST['sql'];
-    
+    if (property_exists($this, 'sql'))
+    {
+      $this->sql = $_POST['sql'];
+    }
     $a = array();
     $a['output_prefix'] = $this->output_prefix;
     $a['max_distance'] = $this->max_distance;
