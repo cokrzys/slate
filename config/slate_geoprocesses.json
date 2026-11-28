@@ -7,10 +7,12 @@
     [
       {
         "controlId": "sql",
+        "prompt": "SQL",
         "type": "sqlTextBox"
       },
       {
         "controlId": "output_shapefile",
+        "prompt": "Output Shapefile",
         "type": "textInput"
       }  
     ]

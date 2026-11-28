@@ -569,7 +569,7 @@ class slateGeoProcess extends algaeTblBase
           {
             if ($gp[0] == $geoprocess)
             {
-              header("Location: " . $gp[1]);
+              header("Location: " . $gp[1] . '?process=' . urlencode($gp[0]));
             }
           }
         }

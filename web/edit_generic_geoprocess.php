@@ -27,7 +27,7 @@
   //
   // ----- initial the html page
   //
-  $title = 'TODO: Generic';
+  $title = 'GeoProcess Editor';
   $app->startPage($title);
   $app->showHeader($title);
   //
